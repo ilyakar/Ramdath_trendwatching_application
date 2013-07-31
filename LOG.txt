@@ -1,0 +1,20 @@
+Mon Jul 29
+----------
+
+Started working on commenting script
+Worked on rating script
+Bug fixes
+
+Tue Jul 30
+----------
+
+Finished off commenting script
+Worked on rating script
+Bug fixes
+
+Wed Jul 31
+----------
+
+Finished off rating script
+Started on the research projects page and everything that has to do with workspaces. editing trend etc.
+Restructuring javascript code to make it more readable

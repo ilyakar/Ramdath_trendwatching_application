@@ -1,3 +1,7 @@
-This file was created by JetBrains WebStorm 6.0 for binding GitHub repository
-This file was modified by JetBrains WebStorm 6.0 for binding GitHub repository
-This file was modified by JetBrains PhpStorm 6.0.3 for binding GitHub repository
+Bugs:
+
+- Trend | single global_page_functions() is initiated 2x
+
+
+To do:
+- User id is not sent when submitting new idea

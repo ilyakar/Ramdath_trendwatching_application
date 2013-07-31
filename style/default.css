@@ -152,9 +152,6 @@ li {
 .align_center {
     text-align:center;
 }
-.no_pointer_event {
-    pointer-events:none;
-}
 .clear {
     clear:both;
 }
