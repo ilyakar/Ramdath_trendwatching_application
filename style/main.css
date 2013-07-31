@@ -589,7 +589,7 @@ body div[data-role="content"] {
   margin-bottom: 40px;
   overflow: visible;
 }
-body div[data-role="content"] #new_idea_button:before {
+body div[data-role="content"] #new_trend_button:before {
   background-position: -37px -44px;
   background-size: 170px;
 }

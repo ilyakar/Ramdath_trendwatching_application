@@ -19,7 +19,7 @@
     <a href="#explore" data-transition="slide"data-direction="reverse" class="icon" id="back_icon_explore"></a>
 	<div id="header_logo"></div>
     <div id="header_title"></div>
-	<a href="#new_idea_1" data-transition="slide" class="icon" id="new_icon"></a>
+	<a href="#new_trend_1" data-transition="slide" class="icon" id="new_icon"></a>
 </header>
 
 <div data-role="page" id="home_page" data-title="Welcome to...">
@@ -117,7 +117,7 @@
 
 	<div data-role="content">
 		<div class="mini_container">
-			<a href="#new_idea_1" class="button red" data-transition="slide" id="new_idea_1_button">New idea</a>
+			<a href="#new_trend_1" class="button red" data-transition="slide" id="new_trend_1_button">New trend</a>
 			<a href="#research_projects" class="button" id="my_research_projects_button">My research projects</a>
 			<a href="#" class="button small" id="need_some_help_button">Need some help?</a>
 		</div>
@@ -125,7 +125,7 @@
 
 </div>
 
-<div data-role="page" id="new_idea_1" data-title="New idea | step 1">
+<div data-role="page" id="new_trend_1" data-title="New trend | step 1">
 
 	<div data-role="content">
 		<div class="mini_container">
@@ -133,28 +133,28 @@
 			<form action="/php/upload_images.php" class="dropzone" id="image-upload-dropzone"></form>
 			<input id="uploaded_images_field" type="hidden" />
 			<a href="#" class="button no_image two" data-rel="back">Back</a>
-			<a href="#new_idea_2" class="button no_image red two" data-transition="slide" data-role="disable" id="new_idea_2_button">Next</a>
+			<a href="#new_trend_2" class="button no_image red two" data-transition="slide" data-role="disable" id="new_trend_2_button">Next</a>
 
 		</div>
 	</div>
 </div>
 
-<div data-role="page" id="new_idea_2" data-title="New idea | step 2">
+<div data-role="page" id="new_trend_2" data-title="New trend | step 2">
 
 	<div data-role="content">
 		<div class="maxi_container margin">
 			<form class="margin">
 				<label>General information</label>
-                <input type="text" placeholder="title" id="new_idea_title" />
-				<textarea id="new_idea_description" placeholder="description"></textarea>
-				<input id="new_idea_tagger" />
+                <input type="text" placeholder="title" id="new_trend_title" />
+				<textarea id="new_trend_description" placeholder="description"></textarea>
+				<input id="new_trend_tagger" />
 				<label>Trend categories</label>
-				<div class="tags trend_categories"></div>
+				<div class="tags" id="trend_categories"></div>
 				<label>Trend location</label>
 			    <input type="text" class="trend_location" placeholder="trend location" />
 			</form>
 			<a href="#" class="button no_image two" data-rel="back">Back</a>
-			<a href="#" class="button no_image red two" data-role="disable" id="submit_new_idea">Submit idea</a>
+			<a href="#" class="button no_image red two" data-role="disable" id="submit_new_trend">Submit trend</a>
 		</div>
 	</div>
 
@@ -180,19 +180,19 @@
                 <textarea id="edit_trend_description" placeholder="description"></textarea>
                 <input id="edit_trend_tagger" />
                 <label>Trend categories</label>
-                <div class="tags trend_categories"></div>
+                <div class="tags" id="edit_trend_categories"></div>
                 <label>Trend location</label>
                 <input type="text" class="trend_location" placeholder="trend location" />
             </form>
             <a href="#" class="button no_image two" data-rel="back">Back</a>
-            <a href="#" class="button no_image red two" data-role="disable" id="submit_new_idea">Submit idea</a>
+            <a href="#" class="button no_image red two" id="submit_edit_trend">Edit trend</a>
         </div>
     </div>
 
 </div>
 <!--/Workspace stuff-->
 
-<div data-role="page" id="new_idea_finished_submit" data-title="Thank you for submitting your idea">
+<div data-role="page" id="new_trend_finished_submit" data-title="Thank you for submitting your trend">
 
     <div data-role="content">
         <div class="mini_container">

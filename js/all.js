@@ -35,6 +35,8 @@
 
     }
 
+// ------------------------------ Primary setup ------------------------------
+
 function setup_definitions() {
 
     logged_in   = '';
@@ -95,12 +97,12 @@ function setup_critical_plugins(){
 
                 if (complete_files === total_files) {
 
-                    enable_link('#new_idea_2_button');
+                    enable_link('#new_trend_2_button');
 
                 }
             });
             this.on('reset', function(){
-                disable_link('#new_idea_2_button');
+                disable_link('#new_trend_2_button');
                 total_files = 0,
                     complete_files = 0;
             });
@@ -123,16 +125,21 @@ function load_ajax(){
 
     $.post('php/get_info.php', { username: username, password: password }, function(data){
 
+        // Store the data in a constant
+            stored_data = data;
+
         var projects    = data.research_projects;
         var categories  = data.categories;
         var trends      = data.trends;
         var rater       = data.rater;
+
+
         logged_in       = data.user_info ? 1 : 0;
 
         user_info = data.user_info ? data.user_info : []; // User info from the DB of the logged in user
 
         // -- Categories --
-            var $container = $('.trend_categories');
+            var $container = $('#trend_categories');
 
             for(var i=0; i<categories.length; i++){
 
@@ -140,7 +147,7 @@ function load_ajax(){
                 $container.append(
                     '<div>' +
                         category.name +
-                        '</div>'
+                    '</div>'
                 );
 
             }
@@ -340,9 +347,9 @@ function get_location(){
             geocoder.geocode({
                 'latLng': position
             }, function (results) {
-
-                var city    = results[0]['address_components'][4]['long_name'];
-                var country = results[0]['address_components'][7]['long_name'];
+//                console.log(results);
+                var city    = results[1]['address_components'][3]['long_name'];
+                var country = results[1]['address_components'][4]['long_name'];
 
                 $('.trend_location').val(city+', '+country).removeClass('cross').addClass('tick'); // Adds the gotten city to the .trend_location
 
@@ -354,133 +361,18 @@ function get_location(){
 
 }
 
-function show_app(){
+// ------------------------------ Secondary setup ------------------------------
 
-    // Opened any page other than "trend"
-    if(!(location.hash && $('#home_page').hasClass('ui-page-active'))){
-        loader('hide');
-    }
 
-    // Opened trend which is not loaded at first second
-    else {
-        jQuery.mobile.changePage( $(location.hash) );
-        setTimeout(function(){
-            loader('hide');
-        }, 200);
-    }
+function on_page_change() {
 
-}
+    global_page_functions();
 
-function loader(type){
-
-    type == 'hide' ? $('#page_loading').fadeOut(200) : $('#page_loading').fadeIn(200);
-
-}
-
-function setup_smooth_scroll_plugin(){
-
-    $('#explore').css({ // This one and the one below are necessary to le the plugin init normally whilst the element is invisible
-        display: 'block',
-        visibility: 'hidden'
+    // Runs on page change
+    $(document).delegate('.ui-page', 'pagebeforeshow', function () {
+        console.log('changed');
+        global_page_functions();
     });
-
-    // Smooth div scrolling (for the explore list)
-    $("#image_list").smoothDivScroll({
-        mousewheelScrolling: "allDirections",
-        manualContinuousScrolling: true,
-        hotSpotScrollingStep: 10
-    });
-
-    $('#explore').removeAttr('style');
-
-//    $('#image_list').find('.scrollableArea').children('div').height('');
-
-}
-
-function setup_other_plugins(){
-
-    // Tag plugin
-        $('#new_idea_tagger, #edit_trend_tagger').tagsInput({
-            height: '100%',
-            onChange: function(){
-
-                var $input = $('#new_idea_tagger_tagsinput');
-
-                if($input.children('span').length)  $input.removeClass('cross').addClass('tick');
-                else                                $input.removeClass('tick').addClass('cross');
-
-                setup_form_buttons();
-
-            }
-        });
-
-    // Rating plugin
-        $('.raty').raty({
-            path        : '/style/images/',
-            starOn      : 'raty_star_on.png',
-            starOff     : 'raty_star_off.png',
-            starHalf    : 'raty_star_half.png',
-            halfShow    : true,
-            size        : 22,
-            hints       : ['bad', 'poor', 'regular', 'good', 'amazing'],
-            readOnly    : function() {
-                var user_ids = $(this).attr('data-users');
-                    user_ids = user_ids.split(',');
-
-                if(user_ids.indexOf(user_info.id) != -1) { // Check if the currently logged in user id is contained in the "rated" people section
-                    $(this).parent().find('.message').text('You have already rated.').addClass('show');
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            },
-            score       : function() {
-                return $(this).attr('data-score');
-            },
-            click       : function(num) {
-                var trend_id = location.hash.split('#trend_')[1].split('_')[0];
-                $.post('../php/submit_rating.php', {
-                    trend_id    : trend_id,
-                    user_id     : user_info.id,
-                    rating      : num
-                }, function(){
-
-                    // Rating complete
-                    var $raty_container = $('.ui-page-active').find('.trend_rating');
-                    var $raty           = $raty_container.find('.raty')
-
-                    var score           = $raty.attr('data-score') !== 'NaN' ? $raty.attr('data-score') : 0;
-                    var votes           = $raty.attr('data-votes');
-
-                    var new_votes       = parseInt(votes) + 1;
-                    var new_score       = ( score * votes + num ) / new_votes;
-
-                    $raty // Update score and make readonly
-                        .raty('score', new_score)
-                        .raty('readOnly', true);
-
-                    $raty_container.find('label').find('i').text(new_votes); // Change the number of votes dynamically
-                    $raty_container.find('.message').addClass('show'); // Show message
-
-                });
-            }
-        });
-
-    // Explore plugin
-        setup_smooth_scroll_plugin();
-
-    // Comment plugin
-        $('.trend_comments').comments({
-            author: {
-                id:             user_info.id, // Gotten from global object of "user_info", created when logged in
-                username:       user_info.username,
-                image:          user_info.profile_image
-            },
-            onsubmit: function (){
-//                alert('comment posted');
-            }
-        });
 
 }
 
@@ -506,10 +398,10 @@ function global_click_functions() {
 
     });
 
-    // On new idea submit
-    $('#submit_new_idea').click(function(){
+    // On new trend submit
+    $('#submit_new_trend').click(function(){
 
-        submit_new_idea();
+        submit_new_trend();
 
     });
 
@@ -560,81 +452,162 @@ function global_click_functions() {
     // Workspace stuff
     $('.research_trends').find('a:contains(Edit)').click(function(){
 
-        var $trend = $('.research_trends').find('a:contains(Edit)').parent('div').parent('div');
-        var id = $trend.attr('data-id');
+        var $clicked_trend = $('.research_trends').find('a:contains(Edit)').parent('div').parent('div');
+        var id = $clicked_trend.attr('data-id');
+
+        var trends = stored_data.trends; // gotten from database
+
+        var trend = $.grep(trends, function(e){
+            return e.id == id;
+        });
+        trend = trend[0];
+
+        var description = trend.description .replace('<p>','');
+            description = description       .replace('</p>','');
+
+        // Sets up title & description
+            $('#edit_trend_title')         .val(trend.title);
+            $('#edit_trend_description')   .val(description);
+
+        // Sets tags
+            var tags = trend.tags.split(',');
+            for(var i=0; i<tags.length; i++){
+                var tag = decodeURIComponent(tags[i]);
+                $('#edit_trend_tagger').addTag(tag);
+            }
+
+        // Sets categories
+            var categories = trend.categories.split(',');
+            for(var i=0; i<categories.length; i++){
+                var category = decodeURIComponent(categories[i]);
+                $('#trend_categories').find('div:contains('+category+')').addClass('selected');
+            }
 
         $.mobile.changePage('#edit_trend', 'pop');
 
     });
 
+    $('#submit_edit_trend').click(function(){
+
+        if($(this).attr('data-role') == 'disabled') return;
+
+        var title       = $('#edit_trend_title')        .val();
+        var description = $('#edit_trend_description')  .val();
+        var categories  = get_categories('#edit_trend_categories');
+
+    })
+
 }
 
-function submit_new_idea(){
+function setup_other_plugins(){
 
-    if($(this).hasClass('disabled')) return;
+    // Tag plugin
+    $('#new_trend_tagger, #edit_trend_tagger').tagsInput({
+        height: '100%',
+        onChange: function(){
 
-    // Title
-        var title = $('#new_idea_title').val();
+            var $input = $('#new_trend_tagger_tagsinput');
 
-    // Description
-        var description = $('#new_idea_description').val();
+            if($input.children('span').length)  $input.removeClass('cross').addClass('tick');
+            else                                $input.removeClass('tick').addClass('cross');
 
-    // Tags
-        var tags = '';
-        var $tags = $('#new_idea_tagger_tagsinput').children('span.tag');
-        var num     = $tags.length;
-        for(var i=0;i<num;i++){
-
-            var tag = '';
-            tag = $tags.eq(i).children('span').text();
-            tag = trim_whitespace(tag);
-            tag = encodeURIComponent(tag);
-            tag = tag+',';
-
-            tags += tag;
+            setup_form_buttons();
 
         }
-        tags = tags.substring(0, tags.length - 1);
+    });
 
-    // Categories
-        var categories = '';
-        var $categories = $.mobile.activePage.find('.trend_categories').children('div.selected');
-        var num = $categories.length;
+    // Rating plugin
+    $('.raty').raty({
+        path        : '/style/images/',
+        starOn      : 'raty_star_on.png',
+        starOff     : 'raty_star_off.png',
+        starHalf    : 'raty_star_half.png',
+        halfShow    : true,
+        size        : 22,
+        hints       : ['bad', 'poor', 'regular', 'good', 'amazing'],
+        readOnly    : function() {
+            var user_ids = $(this).attr('data-users');
+            user_ids = user_ids.split(',');
 
-        for(var i=0; i<num; i++){
-
-            var $category = $categories.eq(i);
-            var  category = $category.text();
-                 category = encodeURIComponent(category);
-
-            categories += category+',';
-
-        }
-        categories = categories.substring(0, categories.length - 1);
-
-
-    // Location
-        var location = $('.trend_location').val();
-
-    var uploaded_images = $('#uploaded_images_field').val();
-
-    // Submit info
-        $.post('../php/submit_new_idea.php', {
-            uploaded_images : uploaded_images,
-            title           : title,
-            description     : description,
-            tags            : tags,
-            categories      : categories,
-            location        : location
-        },function(data){
-
-            if(data){
-                console.log(data);
+            if(user_ids.indexOf(user_info.id) != -1) { // Check if the currently logged in user id is contained in the "rated" people section
+                $(this).parent().find('.message').text('You have already rated.').addClass('show');
+                return true;
             }
+            else {
+                return false;
+            }
+        },
+        score       : function() {
+            return $(this).attr('data-score');
+        },
+        click       : function(num) {
+            var trend_id = location.hash.split('#trend_')[1].split('_')[0];
+            $.post('../php/submit_rating.php', {
+                trend_id    : trend_id,
+                user_id     : user_info.id,
+                rating      : num
+            }, function(){
 
-            $.mobile.changePage('#new_idea_finished_submit', 'pop');
+                // Rating complete
+                var $raty_container = $('.ui-page-active').find('.trend_rating');
+                var $raty           = $raty_container.find('.raty')
 
+                var score           = $raty.attr('data-score') !== 'NaN' ? $raty.attr('data-score') : 0;
+                var votes           = $raty.attr('data-votes');
+
+                var new_votes       = parseInt(votes) + 1;
+                var new_score       = ( score * votes + num ) / new_votes;
+
+                $raty // Update score and make readonly
+                    .raty('score', new_score)
+                    .raty('readOnly', true);
+
+                $raty_container.find('label').find('i').text(new_votes); // Change the number of votes dynamically
+                $raty_container.find('.message').addClass('show'); // Show message
+
+            });
+        }
+    });
+
+    // Explore plugin
+    setup_smooth_scroll_plugin();
+
+    // Comment plugin
+    $('.trend_comments').comments({
+        author: {
+            id:             user_info.id, // Gotten from global object of "user_info", created when logged in
+            username:       user_info.username,
+            image:          user_info.profile_image
+        },
+        onsubmit: function (){
+//                alert('comment posted');
+        }
+    });
+
+    ///////////////////
+
+
+    function setup_smooth_scroll_plugin(){
+
+        $('#explore').css({ // This one and the one below are necessary to le the plugin init normally whilst the element is invisible
+            display: 'block',
+            visibility: 'hidden'
         });
+
+        // Smooth div scrolling (for the explore list)
+        $("#image_list").smoothDivScroll({
+            mousewheelScrolling: "allDirections",
+            manualContinuousScrolling: true,
+            hotSpotScrollingStep: 10
+        });
+
+        $('#explore').removeAttr('style');
+
+//    $('#image_list').find('.scrollableArea').children('div').height('');
+
+    }
+
+    ///////////////////
 
 }
 
@@ -707,6 +680,222 @@ function form_stuff() {
 
 }
 
+function show_app(){
+
+    // Opened any page other than "trend"
+    if(!(location.hash && $('#home_page').hasClass('ui-page-active'))){
+        loader('hide');
+    }
+
+    // Opened trend which is not loaded at first second
+    else {
+        jQuery.mobile.changePage( $(location.hash) );
+        setTimeout(function(){
+            loader('hide');
+        }, 200);
+    }
+
+}
+
+// ---------------- Other functions (called by other plugins) -----------------
+
+function global_page_functions(){
+
+    disable_given_links();
+
+    // Different layouts (home | not home)
+    // Hash tags don't exist, so HOME
+    if(!location.hash) {
+
+        if(logged_in) {  // If logged in, then forwards the user to the CREATE page
+            jQuery.mobile.changePage( $('#create'), true );
+            global_page_functions(); // Calls this to start the "not home page" changes after the page has automatically been forwared
+
+            return;
+        }
+
+        setup_slideshow();
+
+        $header.addClass('home');
+        $footer.addClass('home').find('.selected').removeClass('selected');
+
+        $footer.find('#create_button').click(function(){
+
+            if($footer.hasClass('home')){ // Only work if on HOME page
+
+                $footer.hasClass('reveal') ? $footer.removeClass('reveal') : $footer.addClass('reveal');
+
+                return false; // Don't let the link take the user the the actual page
+
+            }
+
+        });
+
+    }
+
+    // Not home page
+    else {
+
+        if(location.hash !== '#create' && location.hash !== '#explore'){
+            $footer.addClass('hide');
+            $('#new_icon').removeClass('show'); // Hide "new_trend_button"
+
+            if_single_trend_page(); // Does stuff if trend page
+
+        }
+        else {
+            if(location.hash == '#create'){ // Changes the cookie to "create"
+                $.cookie('view', 'create');
+
+                $('#new_icon').addClass('show'); // Show "new_trend_button"
+
+            }
+            if(location.hash == '#explore'){ // Changes the cookie to "explore"
+                $.cookie('view', 'explore');
+            }
+            $footer.removeClass('hide');
+        }
+
+        // Change header
+        $header.removeAttr('class').addClass($.cookie('view'));
+
+        // Move footer back down to be "normal"
+        $footer.removeClass('reveal home');
+
+        var view = $.cookie('view'); // Gets either "create" or "explore"
+
+        $footer.find('.selected').removeClass('selected'); // Remove class
+        $footer.find('#'+view+'_button').addClass('selected'); // Add class
+
+    }
+
+    // Back button or menu button (top-left)
+    // Menu button
+    if(location.hash == '#create' || location.hash == '#explore'){
+
+        // Back button hide
+        $('#menu_icon').show(0);
+        $('#back_icon_create').removeClass('active');
+        $('#back_icon_explore').removeClass('active');
+
+        // Logo show, title hide
+        $('#header_logo').show(0);
+        $('#header_title').hide(0);
+
+    }
+
+    // Back button
+    else if(location.hash){
+
+        // Back button show
+        $('#menu_icon').hide(0);
+
+        if(view == 'create'){ // CREATE
+            $('#back_icon_create')    .addClass('active');
+            $('#back_icon_explore')   .removeClass('active');
+        }
+        else { // EXPLORE - Single trend page
+            $('#back_icon_create')    .removeClass('active');
+            $('#back_icon_explore')   .addClass('active');
+        }
+
+        // Logo hide, title show
+        $('#header_logo').hide(0);
+        $('#header_title').show(0).text('');
+
+    }
+
+    // Always change the #header_title accordingly
+    $('#header_title').text(document.title)
+
+}
+
+function loader(type){
+
+    type == 'hide' ? $('#page_loading').fadeOut(200) : $('#page_loading').fadeIn(200);
+
+}
+
+function submit_new_trend(){
+
+    if($(this).hasClass('disabled')) return;
+
+    // Title
+        var title       = $('#new_trend_title').val();
+        var description = $('#new_trend_description').val();
+        var tags        = get_tags('#new_trend_tagger_tagsinput');
+        var categories  = get_categories('#trend_categories');
+
+
+    // Location
+        var location = $('.trend_location').val();
+
+    var uploaded_images = $('#uploaded_images_field').val();
+
+    // Submit info
+        $.post('../php/submit_new_trend.php', {
+            uploaded_images : uploaded_images,
+            title           : title,
+            description     : description,
+            tags            : tags,
+            categories      : categories,
+            location        : location
+        },function(data){
+
+            if(data){
+                console.log(data);
+            }
+
+            $.mobile.changePage('#new_trend_finished_submit', 'pop');
+
+        });
+
+}
+
+// --- Get stuff ---
+    function get_tags(container) {
+
+        var tags = '';
+        var $tags = $(container).children('span.tag');
+        var num     = $tags.length;
+        for(var i=0;i<num;i++){
+
+            var tag = '';
+            tag = $tags.eq(i).children('span').text();
+            tag = trim_whitespace(tag);
+            tag = encodeURIComponent(tag);
+            tag = tag+',';
+
+            tags += tag;
+
+        }
+        tags = tags.substring(0, tags.length - 1);
+
+        return tags;
+
+    }
+
+    function get_categories(container) {
+
+        var categories = '';
+        var $categories = $.mobile.activePage.find(container).children('div.selected');
+        var num = $categories.length;
+
+        for(var i=0; i<num; i++){
+
+            var $category = $categories.eq(i);
+            var  category = $category.text();
+            category = encodeURIComponent(category);
+
+            categories += category+',';
+
+        }
+        categories = categories.substring(0, categories.length - 1);
+
+        return categories;
+
+    }
+
 function setup_form_buttons() {
 
     // ----- forms -----
@@ -746,14 +935,14 @@ function setup_form_buttons() {
     }
 
     if(
-        $('#new_idea_description')      .hasClass('tick') &&
-        $('#new_idea_tagger_tagsinput') .hasClass('tick') &&
+        $('#new_trend_description')      .hasClass('tick') &&
+        $('#new_trend_tagger_tagsinput') .hasClass('tick') &&
         $('.trend_location')            .hasClass('tick')
     ){
-        enable_link('#submit_new_idea');
+        enable_link('#submit_new_trend');
     }
     else {
-        disable_link('#submit_new_idea');
+        disable_link('#submit_new_trend');
     }
 
     if(
@@ -767,129 +956,6 @@ function setup_form_buttons() {
     }
 
     // --------------
-
-}
-
-function on_page_change() {
-
-    global_page_functions();
-
-    // Runs on page change
-    $(document).delegate('.ui-page', 'pagebeforeshow', function () {
-        console.log('changed');
-        global_page_functions();
-    });
-
-}
-
-function global_page_functions(){
-
-    disable_given_links();
-
-    // Different layouts (home | not home)
-        // Hash tags don't exist, so HOME
-        if(!location.hash) {
-
-            if(logged_in) {  // If logged in, then forwards the user to the CREATE page
-                jQuery.mobile.changePage( $('#create'), true );
-                global_page_functions(); // Calls this to start the "not home page" changes after the page has automatically been forwared
-
-                return;
-            }
-
-            setup_slideshow();
-
-            $header.addClass('home');
-            $footer.addClass('home').find('.selected').removeClass('selected');
-
-            $footer.find('#create_button').click(function(){
-
-                if($footer.hasClass('home')){ // Only work if on HOME page
-
-                    $footer.hasClass('reveal') ? $footer.removeClass('reveal') : $footer.addClass('reveal');
-
-                    return false; // Don't let the link take the user the the actual page
-
-                }
-
-            });
-
-        }
-
-        // Not home page
-        else {
-
-            if(location.hash !== '#create' && location.hash !== '#explore'){
-                $footer.addClass('hide');
-                $('#new_icon').removeClass('show'); // Hide "new_idea_button"
-
-                if_single_trend_page(); // Does stuff if trend page
-
-            }
-            else {
-                if(location.hash == '#create'){ // Changes the cookie to "create"
-                    $.cookie('view', 'create');
-
-                    $('#new_icon').addClass('show'); // Show "new_idea_button"
-
-                }
-                if(location.hash == '#explore'){ // Changes the cookie to "explore"
-                    $.cookie('view', 'explore');
-                }
-                $footer.removeClass('hide');
-            }
-
-            // Change header
-            $header.removeAttr('class').addClass($.cookie('view'));
-
-            // Move footer back down to be "normal"
-            $footer.removeClass('reveal home');
-
-            var view = $.cookie('view'); // Gets either "create" or "explore"
-
-            $footer.find('.selected').removeClass('selected'); // Remove class
-            $footer.find('#'+view+'_button').addClass('selected'); // Add class
-
-        }
-
-    // Back button or menu button (top-left)
-        // Menu button
-        if(location.hash == '#create' || location.hash == '#explore'){
-
-            // Back button hide
-            $('#menu_icon').show(0);
-            $('#back_icon_create').removeClass('active');
-            $('#back_icon_explore').removeClass('active');
-
-            // Logo show, title hide
-            $('#header_logo').show(0);
-            $('#header_title').hide(0);
-
-        }
-
-        // Back button
-        else if(location.hash){
-
-            // Back button show
-            $('#menu_icon').hide(0);
-
-            if(view == 'create'){ // CREATE
-                $('#back_icon_create')    .addClass('active');
-                $('#back_icon_explore')   .removeClass('active');
-            }
-            else { // EXPLORE - Single trend page
-                $('#back_icon_create')    .removeClass('active');
-                $('#back_icon_explore')   .addClass('active');
-            }
-
-            // Logo hide, title show
-            $('#header_logo').hide(0);
-            $('#header_title').show(0).text('');
-
-        }
-
-    // Always change the #header_title accordingly
-    $('#header_title').text(document.title)
 
 }
 
