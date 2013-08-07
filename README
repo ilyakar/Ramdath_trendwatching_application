@@ -1,7 +1,28 @@
+Functions:
+
+go_home(on_back){
+
+if at a certain point the user does something that he isn't supposed to etc going to an illegal page, or going back after trend submit. The page will take the user back home.
+
+    if(on_back){
+        The user goes home on back button click.
+    }
+    else {
+        Then take the user home.
+    }
+
+}
+
+login_check(){
+
+If a user chooses to login with facebook: The username is gotten from facebook, the password is the MD5d id gotten from facebook
+
+}
+
 Bugs:
 
 - Trend | single global_page_functions() is initiated 2x
 
 
 To do:
-- User id is not sent when submitting new idea
+- Work on check_login, get as much info from facebook login as possible

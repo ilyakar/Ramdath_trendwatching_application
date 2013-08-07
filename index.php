@@ -11,12 +11,13 @@
 
 <!--  BODY  -->
 
-<div id="page_loading"></div>
+<div id="page_loading">
+    <span>No internet connection<br>Please try again...</span>
+</div>
 
 <header id="main_header">
 	<a href="#" class="icon" id="menu_icon"></a>
-    <a href="#" data-rel="back" data-transition="slide" class="icon" id="back_icon_create"></a>
-    <a href="#explore" data-transition="slide"data-direction="reverse" class="icon" id="back_icon_explore"></a>
+    <a href="#" data-rel="back" data-direction="reverse" data-transition="slide" class="icon" id="back_icon"></a>
 	<div id="header_logo"></div>
     <div id="header_title"></div>
 	<a href="#new_trend_1" data-transition="slide" class="icon" id="new_icon"></a>
@@ -24,6 +25,12 @@
 
 <div data-role="page" id="home_page" data-title="Welcome to...">
 	<section id="home_image">
+        <div class="text">
+            <p>live.</p>
+            <p>explore.</p>
+            <p>create.</p>
+        </div>
+        <div class="gradient"></div>
         <img src="/style/images/home_screen_image/images/1.jpg" alt="home_image" />
         <img src="/style/images/home_screen_image/images/2.jpg" alt="home_image" />
         <img src="/style/images/home_screen_image/images/3.jpg" alt="home_image" />
@@ -36,7 +43,7 @@
 	<a href="#create" class="button uppercase" id="create_button">create<span>start finding trends</span></a>
 	<a href="#explore" class="button uppercase" id="explore_button">explore<span>explore new trends</span></a>
 	<section id="login">
-		<a href="#create" id="login_with_facebook" data-transition="pop" class="button red no_image">login with facebook</a>
+		<a href="#" id="login_with_facebook" data-transition="pop" class="button red no_image">login with facebook</a>
 		<a href="#" id="login_with_google" class="button red no_image">login with google</a>
 		<a href="#login_with_account" id="login_with_account_button" data-transition="pop" class="button no_image">login with account</a>
 	</section>
@@ -66,51 +73,99 @@
 	<div data-role="content">
 		<div class="mini_container">
 			<form>
+                <label>General information</label>
 				<input type="text" id="reg_first_name" placeholder="first name" />
 				<input type="text" id="reg_last_name" placeholder="last name" />
 				<input type="text" id="reg_username" placeholder="username" />
-				<a class="button no_image red" id="register_2_button" data-role="disable" data-transition="slide" href="#register_2">Next</a>
-			</form>
+                <select class="custom_select" id="reg_gender">
+                    <option value="" disabled="disabled" selected="selected">Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+                <input type="password" id="reg_password" placeholder="password" />
+                <input type="password" id="reg_conf_password" placeholder="confirm password" />
+                <a class="button no_image red" id="register_2_button" data-role="disable" data-transition="slide" href="#register_2">Next</a>
+            </form>
 		</div>
 	</div>
 
 </div>
 
+
 <div data-role="page" id="register_2" data-title="Register your account | step 2">
 
-	<div data-role="content">
-		<div class="mini_container">
-			<form>
-				<input type="password" id="reg_date_of_birth" placeholder="Date of birth" />
-				<select class="custom_select" id="reg_gender">
-					<option value="" disabled="disabled" selected="selected">Gender</option>
-					<option value="male">Male</option>
-					<option value="female">Female</option>
-				</select>
-				<input type="password" id="reg_password" placeholder="password" />
-				<input type="password" id="reg_conf_password" placeholder="confirm password" />
-				<a class="button no_image red" id="register_3_button" data-role="disable" data-transition="slide" href="#register_3">Next</a>
-			</form>
-		</div>
-	</div>
+    <div data-role="content">
+        <div class="mini_container">
+            <form>
+                <label>Extra information</label>
+                <input type="text" id="reg_email" placeholder="email" />
+                <input type="text" id="reg_city" placeholder="city" />
+                <input type="text" id="reg_country" placeholder="country" />
+                <a class="button no_image red" id="register_3_button" data-role="disable" data-transition="slide" href="#register_3">Next</a>
+            </form>
+        </div>
+    </div>
 
 </div>
 
 <div data-role="page" id="register_3" data-title="Register your account | step 3">
-
-	<div data-role="content">
-		<div class="mini_container">
-			<form>
-				<input type="text" id="reg_email" placeholder="email" />
-				<input type="text" id="reg_city" placeholder="city" />
-				<input type="text" id="reg_country" placeholder="country" />
-				<a class="button no_image red" id="finish_registration_button" data-role="disable" data-transition="slide" href="#create">Complete registration</a>
-			</form>
-		</div>
-	</div>
-
+    <div data-role="content">
+        <div class="mini_container">
+            <form>
+                <label>Date of birth</label>
+                <fieldset class="date_of_birth">
+                    <input type="text" id="reg_date_of_birth_1" maxlength="2" placeholder="DD" />
+                    <input type="text" id="reg_date_of_birth_2" maxlength="2" placeholder="MM" />
+                    <input type="text" id="reg_date_of_birth_3" maxlength="4" placeholder="YYYY" />
+                </fieldset>
+                <a class="button no_image red" id="submit_registration_button" data-role="disable" data-transition="slide" href="#">Complete registration</a>
+            </form>
+        </div>
+    </div>
 </div>
 <!--/Register-->
+
+<!--Edit account-->
+<div data-role="page" id="edit_account" data-title="Editing your account">
+
+    <div data-role="content">
+        <div class="mini_container">
+            <form>
+
+                <label>General information</label>
+                <input type="text" id="edit_username" placeholder="username" disabled />
+                <input type="text" id="edit_first_name" placeholder="first name" />
+                <input type="text" id="edit_last_name" placeholder="last name" />
+                <select class="custom_select" id="edit_gender">
+                    <option value="" selected="selected" disabled>Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+
+                <label>Extra information</label>
+                <input type="text" id="edit_email" placeholder="email" />
+                <input type="text" id="edit_city" placeholder="city" />
+                <input type="text" id="edit_country" placeholder="country" />
+
+                <label>Date of birth</label>
+                <fieldset class="date_of_birth">
+                    <input type="text" id="edit_date_of_birth_1" maxlength="2" placeholder="DD" />
+                    <input type="text" id="edit_date_of_birth_2" maxlength="2" placeholder="MM" />
+                    <input type="text" id="edit_date_of_birth_3" maxlength="4" placeholder="YYYY" />
+                </fieldset>
+
+                <label>Change password</label>
+                <input type="password" id="edit_password_old" placeholder="old password" />
+                <input type="password" id="edit_password" data-role="pass" data-pass-id="edit_account_pass" placeholder="password" />
+                <input type="password" id="edit_conf_password" data-role="conf-pass" data-pass-id="edit_account_pass" placeholder="confirm password" />
+
+                <a class="button no_image red" id="submit_account_edit_button" data-role="disable" data-transition="slide" href="#">Submit edit</a>
+
+            </form>
+        </div>
+    </div>
+</div>
+<!--/Edit account-->
 
 <!--Create stuff-->
 <div data-role="page" id="create" data-title="CREATE">
@@ -149,9 +204,9 @@
 				<textarea id="new_trend_description" placeholder="description"></textarea>
 				<input id="new_trend_tagger" />
 				<label>Trend categories</label>
-				<div class="tags" id="trend_categories"></div>
+				<div class="tags" id="new_trend_categories"></div>
 				<label>Trend location</label>
-			    <input type="text" class="trend_location" placeholder="trend location" />
+			    <input type="text" id="new_trend_location" placeholder="trend location" />
 			</form>
 			<a href="#" class="button no_image two" data-rel="back">Back</a>
 			<a href="#" class="button no_image red two" data-role="disable" id="submit_new_trend">Submit trend</a>
@@ -170,6 +225,20 @@
 <!--/Create stuff-->
 
 <!--Workspace stuff-->
+<!--<div data-role="page" id="edit_trend_1" data-title="Edit trend | step 1">-->
+<!---->
+<!--    <div data-role="content">-->
+<!--        <div class="mini_container">-->
+<!---->
+<!--            <form action="/php/upload_images.php" class="dropzone" id="image-upload-dropzone"></form>-->
+<!--            <input id="uploaded_images_field" type="hidden" />-->
+<!--            <a href="#" class="button no_image two" data-rel="back">Back</a>-->
+<!--            <a href="#edit_trend_2" class="button no_image red two" data-transition="slide" data-role="disable" id="edit_trend_2_button">Next</a>-->
+<!---->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
 <div data-role="page" id="edit_trend" data-title="Edit trend">
 
     <div data-role="content">
@@ -182,7 +251,8 @@
                 <label>Trend categories</label>
                 <div class="tags" id="edit_trend_categories"></div>
                 <label>Trend location</label>
-                <input type="text" class="trend_location" placeholder="trend location" />
+                <input type="text" id="edit_trend_location" placeholder="trend location" />
+                <input type="hidden" id="edit_trend_id" value="" />
             </form>
             <a href="#" class="button no_image two" data-rel="back">Back</a>
             <a href="#" class="button no_image red two" id="submit_edit_trend">Edit trend</a>
@@ -191,16 +261,6 @@
 
 </div>
 <!--/Workspace stuff-->
-
-<div data-role="page" id="new_trend_finished_submit" data-title="Thank you for submitting your trend">
-
-    <div data-role="content">
-        <div class="mini_container">
-            Thank you
-        </div>
-    </div>
-
-</div>
 
 <!--Explore stuff-->
 <div data-role="page" id="explore" data-title="EXPLORE">
@@ -224,18 +284,31 @@
 <!--Panel-->
 <div id="settings_panel">
     <div>
-        <div><img src="/images/6G89cMRfKKu4caP9MdNWrIhMF.jpeg" alt="profile_pic"></div>
-        <a href="#">Ilya Karnaukhov <span>(edit)</span></a>
+        <div><img src="/style/images/default_profile_image.jpg" id="account_profile" alt="profile_pic"></div>
+        <a href="#edit_account"><span id="account_username">John Doe</span> <span class="small">(edit)</span></a>
     </div>
+<!--    <div>-->
+<!--        <div></div>-->
+<!--        <a href="#">Settings</a>-->
+<!--    </div>-->
     <div>
         <div></div>
-        <a href="#">Settings</a>
+        <a href="#" id="logout_button">Logout</a>
     </div>
 </div>
 <!--/Panel-->
-
+<div id="fb-root"></div>
 <!-- /BODY  -->
 
+<script> // FB stuff
+    (function(d){
+        var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+        if (d.getElementById(id)) {return;}
+        js = d.createElement('script'); js.id = id; js.async = true;
+        js.src = "//connect.facebook.net/en_US/all.js";
+        ref.parentNode.insertBefore(js, ref);
+    }(document));
+</script>
 <script src="js/jquery_latest.js"></script>
 <script src="js/all.js"></script>
 <script src="js/jquery_mobile.js"></script>
@@ -249,6 +322,7 @@
 <script src="js/jquery_raty.js"></script>
 <script src="js/jquery_comments.js"></script>
 <script src="js/geolocation.js"></script>
-<script src="https://maps.google.com/maps/api/js?sensor=false"></script>
+<script src="js/md5.js"></script>
+<!--<script src="https://maps.google.com/maps/api/js?sensor=false"></script>-->
 </body>
 </html>

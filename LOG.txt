@@ -18,3 +18,35 @@ Wed Jul 31
 Finished off rating script
 Started on the research projects page and everything that has to do with workspaces. editing trend etc.
 Restructuring javascript code to make it more readable
+
+Thu Aug 1
+---------
+
+Fixing all kinds of bugs
+Started working on the home page slider
+
+Mon Aug 5
+---------
+
+Woking on making everything connected to the database
+Making different things available depending on if the user is logged in or not
+
+Tue Aug 6
+---------
+
+Woking on making everything connected to the database
+Making different things available depending on if the user is logged in or not
+Finished facebook connection
+Finished login and logout script for everything except google
+
+Wed Aug 7
+---------
+
+Finished home page slider
+
+- Site functional except for
+    : google login
+    : user settings
+    : need some help?
+    : Filter trends
+

@@ -2,22 +2,15 @@
 
 include 'php_includes.php';
 
+$user_id            = $_POST['user_id'];
+$uploaded_images    = $_POST['uploaded_images'];
+
 $title              = urlencode($_POST['title']);
 $description        = urlencode($_POST['description']);
 $tags               = urlencode($_POST['tags']);
 $categories         = urlencode($_POST['categories']);
 $location           = urlencode($_POST['location']);
 
-$uploaded_images    = $_POST['uploaded_images'];
-
-//$title = urlencode('asda');
-//$description = urlencode('tesco');
-//$tags = urlencode('lidl');
-//$categories = urlencode('categroeies');
-//$location = urlencode('asda');
-//$uploaded_images = 'Fiat-Bravo-Wolverine-09-360x230.jpg';
-
-//print $uploaded_images.'--------------';
 // Moves and removes the uploaded images
     $uploaded_images = explode(',', $uploaded_images);
     $num = count($uploaded_images);
@@ -48,9 +41,32 @@ $uploaded_images    = $_POST['uploaded_images'];
 $description = nl2p($description);
 
 // Add all the info to database
-mysql_query("INSERT INTO trends (user_id, images, title, description, tags, categories, location) VALUES (1, '$files', '$title', '$description', '$tags', '$categories', '$location')") or die(mysql_error());
+mysql_query("INSERT INTO trends (user_id, images, title, description, tags, categories, location) VALUES ('$user_id', '$files', '$title', '$description', '$tags', '$categories', '$location')") or die(mysql_error());
 $trend_id = mysql_insert_id();
 
 mysql_query("INSERT INTO rater (trend_id) VALUES ('$trend_id')");
+
+// ------------ Get values to return ------------
+    $sql = mysql_query("SELECT * FROM rater");
+    while($row = mysql_fetch_array($sql)) {
+        $rows['rater'][] = $row;
+    }
+
+    $sql = mysql_query("SELECT * FROM trends WHERE id='$trend_id'");
+    while($row = mysql_fetch_array($sql)) {
+
+        // Decodes all the encoded info
+        $row['title']       = urldecode($row['title']);
+        $row['description'] = urldecode($row['description']);
+        $row['tags']        = urldecode($row['tags']);
+        $row['categories']  = urldecode($row['categories']);
+        $row['location']    = urldecode($row['location']);
+        // --
+
+        $rows['trend'] = $row;
+    }
+// -----------------------------------------------
+
+print json_encode($rows);
 
 ?>

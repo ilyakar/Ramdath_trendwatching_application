@@ -27,6 +27,9 @@ $.fn.comments = function( options ) {
 
         if(settings.get_comments == true){
 
+            if($this.find('ul').html()) return; // Stops if we're getting the comments for the second time
+            if(!location.hash.split('#trend_')[1]) return; // Stops if we're not on the comment page
+
             var trend_id = location.hash.split('#trend_')[1].split('_')[0];
 
             $.post(settings.get_comments_url, {
@@ -70,10 +73,10 @@ $.fn.comments = function( options ) {
 
     // --- Setup plugin ---
 
-        else {
+        else if(settings.author.id > 0) { // Setup comment post form if logged in
 
             // Starting HTML
-            $this.append(
+            $this.html(
                 '<label>'+ settings.label_text +'</label>' +
                 '<div class="message red">Thank you for commenting.</div>' +
                 '<form>' +
@@ -138,6 +141,11 @@ $.fn.comments = function( options ) {
             });
 
         }
+        else { // If not logged in, fetched comments go here
+
+            $this.html('<ul></ul>');
+
+        }
 
     // ---- Functions ----
 
@@ -194,18 +202,22 @@ $.fn.comments = function( options ) {
                 var comment = $comment_container.find('section').html();
                 var comment = comment;
 
-                $.post(settings.delete_comment_url, {
-                    comment:    comment,
-                    trend_id:   trend_id
-                },function(){
+                if(confirm('Are you sure you want to remove this comment?')){
 
-                    // Kill the comment from the DOM
-                        $comment_container.fadeOut(200);
-                        setTimeout(function(){
-                            $comment_container.remove();
-                        }, 200);
+                    $.post(settings.delete_comment_url, {
+                        comment:    comment,
+                        trend_id:   trend_id
+                    },function(){
 
-                });
+                        // Kill the comment from the DOM
+                            $comment_container.fadeOut(200);
+                            setTimeout(function(){
+                                $comment_container.remove();
+                            }, 200);
+
+                    });
+
+                }
 
             });
         }

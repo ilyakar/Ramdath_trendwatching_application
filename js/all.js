@@ -4,14 +4,21 @@
         // Definitions
         setup_definitions();
 
+        // Check if internet conenction
+        var dead_internet = check_internet_connection();
+        if(dead_internet) return;
+
         // Setup critical plugins
         setup_critical_plugins();
 
-        // Does an ajax call to get important information e.g. if logged in, content etc
-        load_ajax();
+        // Setup facebook and google APIs
+        setup_social_APIs();
+
+        // If logged_in
+        check_login(); // -> then calls load_ajax();
 
         // Gets the location (not critical, but needs time to get the location)
-        get_location();
+//        get_location();
 
     });
 
@@ -25,7 +32,7 @@
         global_click_functions();
 
         // Plugin setup
-        setup_other_plugins();
+        setup_other_plugins('all');
 
         // Form stuff
         form_stuff();
@@ -39,9 +46,26 @@
 
 function setup_definitions() {
 
-    logged_in   = '';
-    $header     = $('#main_header');
-    $footer     = $('#main_footer');
+    logged_in                       = '';
+
+    $header                         = $('#main_header');
+    $footer                         = $('#main_footer');
+
+    stored_data                     = [];
+    stored_data.categories          = [];
+    stored_data.trends              = [];
+    stored_data.rater               = [];
+    stored_data.user_info           = [];
+    stored_data.research_projects   = [];
+
+}
+
+function check_internet_connection(){
+
+    if(!navigator.onLine){
+        $('#page_loading').children('span').show(0);
+        return 'dead';
+    }
 
 }
 
@@ -97,49 +121,71 @@ function setup_critical_plugins(){
 
                 if (complete_files === total_files) {
 
-                    enable_link('#new_trend_2_button');
+                    enable_link('#new_trend_2_button'); // Either "#new_trend_2_button" or "#edit_trend_2_button"
 
                 }
             });
             this.on('reset', function(){
-                disable_link('#new_trend_2_button');
-                total_files = 0,
-                    complete_files = 0;
+                disable_link('#new_trend_2_button'); // Either "#new_trend_2_button" or "#edit_trend_2_button"
+                total_files = 0;
+                complete_files = 0;
             });
+
+            var _this = this;
+
+            $("#submit_new_trend").click(function(){
+
+                // Resets the form after 1 second... Cause it still has to be accessed first
+                setTimeout(function(){
+                    $('#uploaded_images_field').val('');
+                    _this.removeAllFiles();
+                    disable_link('#new_trend_2_button');
+                }, 1000);
+
+            })
         }
     };
 
 }
 
-function load_ajax(){
+function setup_social_APIs(){
 
-    // Login stuff
-    if(typeof($.cookie('username')) !== 'undefined' && typeof($.cookie('password')) !== 'undefined'){
-        var username = $.cookie('username');
-        var password = $.cookie('password');
-    }
-    else {
-        var username = '';
-        var password = '';
+    window.fbAsyncInit = function() {
+        console.log('setting up facebook API');
+        FB.init({
+            appId      : '1401875310032112', // App ID
+            channelUrl : '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
+            status     : true, // check login status
+            cookie     : true, // enable cookies to allow the server to access the session
+            xfbml      : true  // parse XFBML
+        });
+
+        FB.Event.subscribe('auth.authResponseChange', function(data){
+
+            // Login
+            if (data.status === 'connected') {
+                check_login('facebook', 'connected');
+            }
+
+        });
+
     }
 
-    $.post('php/get_info.php', { username: username, password: password }, function(data){
+}
+
+function load_ajax(new_login){
+
+    $.post('php/get_info.php', function(data){
 
         // Store the data in a constant
-            stored_data = data;
+            $.extend(stored_data, data);
 
-        var projects    = data.research_projects;
         var categories  = data.categories;
         var trends      = data.trends;
         var rater       = data.rater;
 
-
-        logged_in       = data.user_info ? 1 : 0;
-
-        user_info = data.user_info ? data.user_info : []; // User info from the DB of the logged in user
-
         // -- Categories --
-            var $container = $('#trend_categories');
+            var $container = $('#new_trend_categories, #edit_trend_categories');
 
             for(var i=0; i<categories.length; i++){
 
@@ -155,180 +201,27 @@ function load_ajax(){
         // -- Trends --
             var num = trends.length;
 
-            var trend_list      = '';
+            var trends_list     = '';
             var trends_single   = '';
 
             for(var i=0; i<num; i++){
 
                 var trend = trends[i]; // JSON of trend
 
-                trend.link_title    = 'trend_' + trend.id + '_' + trend.title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
-
-                // Fills up EXPLORE page (trend list)
-                trend_list +=
-                    '<div>' +
-                        '<div class="image_container">' +
-                            '<a href="#'+ trend.link_title +'" data-transition="slide">View trend</a>' +
-                            '<img src="/images/'+ trend.images.split(',')[0] +'" alt="trend pic" />' +
-                        '</div>' +
-                        '<section>' +
-                            '<header><h1><i>'+ (i+1) +'</i>. '+ trend.title +'</h1></header>' +
-                            truncate(trend.description, 400, 1) +
-                        '</section>' +
-                    '</div>';
-
-                // Fills up TREND page (singular)
-                var trend_images = '';
-                var trend_images_array = trend.images.split(',');
-
-                for(var b=0; b<trend_images_array.length; b++){
-                    var image = trend_images_array[b];
-
-                    trend_images += '<div><img src="/images/'+ image +'" alt="trend image"></div>';
-
-                }
-
-                // Turns retrieved tags into HTML
-                var tags_html = '';
-                var tags = trend.tags.split(',');
-                for(var b=0; b<tags.length; b++){
-
-                    tags_html += '<div>' + decodeURIComponent(tags[b]) + '</div>';
-
-                }
-
-                // Turns retrieved categories into HTML
-                var categories_html = '';
-                var categories = trend.categories.split(',');
-                for(var b=0; b<categories.length; b++){
-
-                    categories_html += '<div>' + categories[b] + '</div>';
-
-                }
-
-                // Searches the "rater" array to get the array of the current trend
-                var rating = $.grep(rater, function(e){
-                    return e.trend_id == trend.id;
-                });
-                if(!rating.length) {
-                    rating = [];
-                }
-                else {
-                    rating = rating[0];
-                }
-                if(!rating.value) rating.value = 0;
-                if(!rating.votes) rating.votes = 0;
-
-                trends_single +=
-                    '<div data-role="page" id="'+ trend.link_title +'" data-title="'+ trend.title +'">' +
-
-                        '<div data-role="content">' +
-                            '<div class="maxi_container trend_single">' +
-
-                            '<div>' +
-                                '<div class="image_container">' + trend_images + '</div>' +
-
-                                    '<section>' +
-
-                                        trend.description +
-
-                                        '<div class="trend_rating">' +
-                                            '<label>Rating <span><i>'+ rating.votes +'</i> votes</span></label>' +
-                                            '<div class="raty" data-score="'+ (rating.value / rating.votes) +'" data-votes="'+ rating.votes +'" data-users="'+ rating.user_ids +'"></div>' +
-                                            '<div class="message red">Thanks for rating.</div>' +
-                                        '</div>' +
-
-                                        '<label>Tags</label>' +
-                                        '<div class="tags">' + tags_html + '</div>' +
-
-                                        '<label>Categories</label>' +
-                                        '<div class="tags">' + categories_html + '</div>' +
-
-                                    '</section>' +
-                                '</div>' +
-
-                                '<div class="trend_comments"></div>' +
-
-                            '</div>' +
-                        '</div>' +
-
-                    '</div>';
-
+                trends_list += get_trend_list(trend, i); // Inserts the trend into EXPLORE
+                trends_single += get_trend_single(trend, rater); // Inserts the trend into a single trend into HTML
 
             }
 
-        // -- Research projects --
-            $container = $('#research_projects').find('.research_projects');
-            var project_pages = '';
+        $('#image_list')    .append(trends_list);
+        $('body')           .append(trends_single);
 
-            // Loop per research project
-            for(var i=0; i<projects.length; i++){
-
-                var project = projects[i];
-
-                project.link_title = 'project_' + project.id + '_' + project.name.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
-
-                $container.append(
-                    '<a href="#'+ project.link_title +'" class="tag">' +
-                        '<span>'+ (i+1) +'.</span> '+ project.name +
-                    '</a>'
-                );
-
-
-                var project_trends = $.grep(trends, function(e){
-                    return e.research_project == project.id;
-                });
-
-                var trend_html = '';
-
-                // Loop per trend in research project
-                for(var b=0; b<project_trends.length; b++) {
-
-                    var project_trend = project_trends[b];
-
-                    trend_html +=
-                        '<div data-id="'+ project_trend.id +'">' +
-                            '<a href="#'+ project_trend.link_title +'">' +
-                                '<img src="/images/'+ project_trend.images.split(',')[0] +'" alt="research project image">' +
-                                '<span>'+ truncate(project_trend.title, 30) + '</span>' +
-                            '</a>' +
-                            add_extra_html() +
-                        '</div>';
-
-                }
-
-                // Adds the delete & remove button
-                function add_extra_html() {
-
-                    var html =
-                        '<div class="extra">' +
-                            '<a href="#" class="button no_image edit">Edit</a>' +
-                            '<a href="#" class="button red no_image delete">Delete</a>' +
-                        '</div>';
-
-                    return html;
-
-                }
-
-                project_pages +=
-                    '<div data-role="page" id="'+ project.link_title +'" data-title="'+ project.name +'">' +
-
-                        '<div data-role="content">' +
-                            '<div class="maxi_container research_trends">' +
-                                trend_html +
-                            '</div>' +
-                        '</div>' +
-
-                    '</div>'
-
+        if(logged_in){
+            setup_logged_in_stuff(new_login); // Continues onward | load rest is fired when the function finished
         }
-
-        $('#image_list')    .append(trend_list);
-        $('body')           .append(trends_single)
-                            .append(project_pages);
-
-        load_rest();
-
+        else {
+            load_rest();
+        }
 
     }, 'JSON');
 
@@ -347,7 +240,7 @@ function get_location(){
             geocoder.geocode({
                 'latLng': position
             }, function (results) {
-//                console.log(results);
+
                 var city    = results[1]['address_components'][3]['long_name'];
                 var country = results[1]['address_components'][4]['long_name'];
 
@@ -363,6 +256,112 @@ function get_location(){
 
 // ------------------------------ Secondary setup ------------------------------
 
+function check_login(type, status) {
+
+    if(logged_in && status !== 'logout') return; // When facebook connects and user is already logged in, it causes some ajax to load twice
+
+    if(type == 'facebook'){ // Type == 'facebook' when facebook is initated and it calls 'check_login()' back
+
+        if(status == 'connected'){
+            db_login_check('facebook');
+        }
+
+    }
+    else if($.cookie('username_cookie') && $.cookie('password_cookie')){
+
+        db_login_check('username');
+
+    }
+    else {
+
+        db_login_check('not_logged_in')
+
+    }
+
+    function db_login_check(type){
+
+        var username, password, md5;
+
+        if(type == 'not_logged_in'){
+            logged_in = 0;
+            load_ajax();
+        }
+        else if(type == 'username'){
+
+            username    = $.cookie('username_cookie');
+            password    = $.cookie('password_cookie');
+
+            md5         = '';
+
+            start_ajax(username, password, md5, type, '');
+
+        }
+        else if(type == 'facebook'){
+
+            FB.api('/me', function(data) {
+
+                var fb_data = data;
+
+                username    = fb_data.username;
+                password    = fb_data.id;
+
+                md5         = 1;
+
+                start_ajax(username, password, md5, type, fb_data);
+
+            });
+        }
+
+
+        function start_ajax(username, password, md5, type, extra_info) {
+
+            $.post('../php/check_login.php', {
+
+                username    : username,
+                password    : password,
+                md5         : md5,
+                type        : type,
+                extra_info  : extra_info
+
+            }, function(data){
+
+                // Logged in
+                if(data.user_info){
+                    $.extend(stored_data, data); // Updates the stored_data to hold the user information
+
+                    if(type == 'facebook'){ // Sets the cookies here cause it needs to get the pass from DB
+                        $.cookie('username_cookie', stored_data.user_info.username);
+                        $.cookie('password_cookie', stored_data.user_info.password);
+                    }
+
+                    logged_in = 1;
+
+                    if(type == 'facebook'){
+                        load_ajax(1); // 1 is for (new_login), so that "load_rest()" isn't fired once more
+                        FB.logout(); // Got the data, got the cookies. Now logout from facebook. No more need for it
+                        $.mobile.changePage('#create', 'pop');
+                    }
+                    else {
+                        load_ajax();
+                    }
+
+                }
+
+                // Invalid username or password in cookie
+                else {
+                    $.removeCookie('username_cookie');
+                    $.removeCookie('password_cookie');
+
+                    check_login(); // Will now either do a google or facebook login check
+
+                }
+
+            }, 'JSON');
+        }
+
+    }
+
+}
 
 function on_page_change() {
 
@@ -370,13 +369,41 @@ function on_page_change() {
 
     // Runs on page change
     $(document).delegate('.ui-page', 'pagebeforeshow', function () {
-        console.log('changed');
         global_page_functions();
     });
 
 }
 
 function global_click_functions() {
+
+    $footer.find('#create_button').click(function(){
+
+        if($footer.hasClass('home')){ // Only work if on HOME page
+
+            $footer.hasClass('reveal') ? $footer.removeClass('reveal') : $footer.addClass('reveal');
+            $('#home_image').hasClass('move') ? $('#home_image').removeClass('move') : $('#home_image').addClass('move');
+
+
+
+            return false; // Don't let the link take the user the the actual page
+
+        }
+
+        // This can only happen if the button is clicked whilst on the EXPLORE page.
+        // Will take the user to the home page and open the slider panel
+        else if(!logged_in){
+
+            $.mobile.changePage('#home_page', 'pop');
+
+            $('#explore_button').removeClass('selected');
+
+            $footer.find('#create_button').click();
+
+            return false;
+
+        }
+
+    });
 
     // On menu icon click
     $('#menu_icon').click(function(){
@@ -391,6 +418,16 @@ function global_click_functions() {
 
     });
 
+    // Login with facebook
+    $('#login_with_facebook').click(function(){
+        FB.login();
+    });
+
+    // Logout
+    $('#logout_button').click(function(){
+       account_logout();
+    });
+
     // On tag click
     $('.tags').find('div').click(function(){
 
@@ -401,7 +438,9 @@ function global_click_functions() {
     // On new trend submit
     $('#submit_new_trend').click(function(){
 
-        submit_new_trend();
+        if($(this).attr('data-role') == 'disable') return;
+
+        submit_trend();
 
     });
 
@@ -423,169 +462,185 @@ function global_click_functions() {
 
         if($(this).attr('data-role') == 'disable') return; // Only continue if the link is active
 
-        var username = $('#login_username').val();
-        var password = $('#login_password').val();
+        submit_login();
 
-        $.post('../php/check_login.php', {
-            username   : username,
-            password: password
-        },function(data){
+    });
 
-            if(data){ // good
+    $('#submit_registration_button').click(function(){
 
-                $.cookie('username', username);
-                $.cookie('password', data);
+        if($(this).attr('data-role') == 'disable') return; // Only continue if the link is active
 
-                $.mobile.changePage('#create', 'pop');
+        submit_register();
 
-            }
-            else { // bad
+    });
 
-                $('#login_with_account').find('.message').addClass('show');
+    $('#submit_account_edit_button').click(function(){
 
-            }
+        if($(this).attr('data-role') == 'disable') return; // Only continue if the link is active
 
-        })
+        submit_account_edit();
 
     });
 
     // Workspace stuff
-    $('.research_trends').find('a:contains(Edit)').click(function(){
+        $('.research_trends').find('a:contains(Edit)').click(function(){
 
-        var $clicked_trend = $('.research_trends').find('a:contains(Edit)').parent('div').parent('div');
-        var id = $clicked_trend.attr('data-id');
+            edit_trend(this);
 
-        var trends = stored_data.trends; // gotten from database
-
-        var trend = $.grep(trends, function(e){
-            return e.id == id;
         });
-        trend = trend[0];
+        $('.research_trends').find('a:contains(Delete)').click(function(){
 
-        var description = trend.description .replace('<p>','');
-            description = description       .replace('</p>','');
+            delete_trend(this);
 
-        // Sets up title & description
-            $('#edit_trend_title')         .val(trend.title);
-            $('#edit_trend_description')   .val(description);
-
-        // Sets tags
-            var tags = trend.tags.split(',');
-            for(var i=0; i<tags.length; i++){
-                var tag = decodeURIComponent(tags[i]);
-                $('#edit_trend_tagger').addTag(tag);
-            }
-
-        // Sets categories
-            var categories = trend.categories.split(',');
-            for(var i=0; i<categories.length; i++){
-                var category = decodeURIComponent(categories[i]);
-                $('#trend_categories').find('div:contains('+category+')').addClass('selected');
-            }
-
-        $.mobile.changePage('#edit_trend', 'pop');
-
-    });
+        });
 
     $('#submit_edit_trend').click(function(){
 
-        if($(this).attr('data-role') == 'disabled') return;
+        if($(this).attr('data-role') == 'disable') return;
 
+        var trend_id    = $('#edit_trend_id').val();
         var title       = $('#edit_trend_title')        .val();
         var description = $('#edit_trend_description')  .val();
+        var tags        = get_tags('#edit_trend_tagger_tagsinput');
         var categories  = get_categories('#edit_trend_categories');
+        var location    = $('#edit_trend_location').val();
+
+        // Submit info
+        $.post('../php/update_trend.php', {
+            trend_id        : trend_id,
+            title           : title,
+            description     : description,
+            tags            : tags,
+            categories      : categories,
+            location        : location
+        },function(data){
+
+            var link_title = 'trend_' + trend_id + '_' + title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
+            $.mobile.changePage('#'+link_title, 'pop');
+
+        });
+
 
     })
 
 }
 
-function setup_other_plugins(){
+function setup_other_plugins(which){
 
     // Tag plugin
-    $('#new_trend_tagger, #edit_trend_tagger').tagsInput({
-        height: '100%',
-        onChange: function(){
+    if(which == 'all'){
+        $('#new_trend_tagger, #edit_trend_tagger').tagsInput({
+            height: '100%',
+            onChange: function(){
 
-            var $input = $('#new_trend_tagger_tagsinput');
+                var $input = $('#new_trend_tagger_tagsinput');
 
-            if($input.children('span').length)  $input.removeClass('cross').addClass('tick');
-            else                                $input.removeClass('tick').addClass('cross');
+                if($input.children('span').length)  $input.removeClass('cross').addClass('tick');
+                else                                $input.removeClass('tick').addClass('cross');
 
-            setup_form_buttons();
+                setup_form_buttons();
 
-        }
-    });
+            }
+        });
+    }
 
     // Rating plugin
-    $('.raty').raty({
-        path        : '/style/images/',
-        starOn      : 'raty_star_on.png',
-        starOff     : 'raty_star_off.png',
-        starHalf    : 'raty_star_half.png',
-        halfShow    : true,
-        size        : 22,
-        hints       : ['bad', 'poor', 'regular', 'good', 'amazing'],
-        readOnly    : function() {
-            var user_ids = $(this).attr('data-users');
-            user_ids = user_ids.split(',');
+    if(which == 'all'){
+        $('.raty').raty({
+            path        : '/style/images/',
+            starOn      : 'raty_star_on.png',
+            starOff     : 'raty_star_off.png',
+            starHalf    : 'raty_star_half.png',
+            halfShow    : true,
+            size        : 22,
+            hints       : ['bad', 'poor', 'regular', 'good', 'amazing'],
+            readOnly    : function() {
+                var user_ids = $(this).attr('data-users');
+                user_ids = user_ids.split(',');
 
-            if(user_ids.indexOf(user_info.id) != -1) { // Check if the currently logged in user id is contained in the "rated" people section
-                $(this).parent().find('.message').text('You have already rated.').addClass('show');
-                return true;
+                if(user_ids.indexOf(stored_data.user_info.id) != -1) { // Check if the currently logged in user id is contained in the "rated" people section
+                    $(this).parent().find('.message').text('You have already rated.').addClass('show');
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+            score       : function() {
+                return $(this).attr('data-score');
+            },
+            click       : function(num) {
+                var trend_id = location.hash.split('#trend_')[1].split('_')[0];
+                $.post('../php/submit_rating.php', {
+                    trend_id    : trend_id,
+                    user_id     : stored_data.user_info.id,
+                    rating      : num
+                }, function(){
+
+                    // Rating complete
+                    var $raty_container = $('.ui-page-active').find('.trend_rating');
+                    var $raty           = $raty_container.find('.raty')
+
+                    var score           = $raty.attr('data-score') !== 'NaN' ? $raty.attr('data-score') : 0;
+                    var votes           = $raty.attr('data-votes');
+
+                    var new_votes       = parseInt(votes) + 1;
+                    var new_score       = ( score * votes + num ) / new_votes;
+
+                    $raty // Update score and make readonly
+                        .raty('score', new_score)
+                        .raty('readOnly', true);
+
+                    $raty_container.find('label').find('i').text(new_votes); // Change the number of votes dynamically
+                    $raty_container.find('.message').addClass('show'); // Show message
+
+                });
             }
-            else {
-                return false;
-            }
-        },
-        score       : function() {
-            return $(this).attr('data-score');
-        },
-        click       : function(num) {
-            var trend_id = location.hash.split('#trend_')[1].split('_')[0];
-            $.post('../php/submit_rating.php', {
-                trend_id    : trend_id,
-                user_id     : user_info.id,
-                rating      : num
-            }, function(){
-
-                // Rating complete
-                var $raty_container = $('.ui-page-active').find('.trend_rating');
-                var $raty           = $raty_container.find('.raty')
-
-                var score           = $raty.attr('data-score') !== 'NaN' ? $raty.attr('data-score') : 0;
-                var votes           = $raty.attr('data-votes');
-
-                var new_votes       = parseInt(votes) + 1;
-                var new_score       = ( score * votes + num ) / new_votes;
-
-                $raty // Update score and make readonly
-                    .raty('score', new_score)
-                    .raty('readOnly', true);
-
-                $raty_container.find('label').find('i').text(new_votes); // Change the number of votes dynamically
-                $raty_container.find('.message').addClass('show'); // Show message
-
-            });
-        }
-    });
+        });
+    }
 
     // Explore plugin
-    setup_smooth_scroll_plugin();
+    if(which == 'all'){
+        setup_smooth_scroll_plugin();
+    }
 
     // Comment plugin
-    $('.trend_comments').comments({
-        author: {
-            id:             user_info.id, // Gotten from global object of "user_info", created when logged in
-            username:       user_info.username,
-            image:          user_info.profile_image
-        },
-        onsubmit: function (){
-//                alert('comment posted');
-        }
-    });
+    if(which == 'all' || which == 'comments'){
+        $('.trend_comments').comments({
+            author: {
+                id:             stored_data.user_info.id, // Gotten from global object of "user_info", created when logged in
+                username:       stored_data.user_info.username,
+                image:          stored_data.user_info.profile_image
+            }
+        });
+    }
+
+    // Trend single gallery setup
+    if(which == 'all'){
+        setup_single_trend_gallery();
+    }
 
     ///////////////////
 
+    function setup_single_trend_gallery(){
+
+        $('.trend_single').find('.image_container').children('div').not(':first-child').click(function(){
+
+            var $el1    = $(this);
+            var $el2    = $(this).parents('.image_container').children('div:first-child');
+
+            var $img1       = $el1.children('img');
+            var $img2       = $el2.children('img');
+
+            var src1    = $img1.attr('src');
+            var src2    = $img2.attr('src');
+
+            $img1.attr('src', src2);
+            $img2.attr('src', src1);
+
+        });
+
+    }
 
     function setup_smooth_scroll_plugin(){
 
@@ -641,9 +696,11 @@ function form_stuff() {
     });
 
     // Password stuff
-    $('input#conf_password').keyup(function(){
+    $('input[data-role="conf-pass"]').keyup(function(){
 
-        var val_pass = $('input#password').val();
+        var id = $(this).attr('data-pass-id');
+
+        var val_pass = $('input[data-role="pass"][data-pass-id="'+ id +'"]').val();
         var val_conf = $(this).val();
 
         if(val_conf == val_pass){
@@ -697,14 +754,595 @@ function show_app(){
 
 }
 
-// ---------------- Other functions (called by other plugins) -----------------
+// ---------------- Other functions (called by other functions) -----------------
+
+function submit_account_edit(){
+
+    var first_name  = $('#edit_first_name')     .val();
+    var last_name   = $('#edit_last_name')      .val();
+    var gender      = $('#edit_gender')         .val();
+
+    var email       = $('#edit_email')          .val();
+    var city        = $('#edit_city')           .val();
+    var country     = $('#edit_country')        .val();
+
+    var date_1      = $('#edit_date_of_birth_1').val();
+    var date_2      = $('#edit_date_of_birth_2').val();
+    var date_3      = $('#edit_date_of_birth_3').val();
+
+    var date = date_3+'-'+date_2+'-'+date_1;
+
+    var password    = $('#edit_password')       .val();
+
+    $.post('../php/edit_account_info.php', {
+        account_id      : stored_data.user_info.id,
+        first_name      : first_name,
+        last_name       : last_name,
+        date_of_birth   : date,
+        gender          : gender,
+        email           : email,
+        city            : city,
+        country         : country,
+        password        : password
+    }, function(data){
+
+        $.mobile.changePage('#create', 'pop');
+
+        if(password){
+            $.cookie('password_cookie', data)
+        }
+
+    });
+
+}
+
+function setup_account_edit_page(){
+
+    console.log(stored_data.user_info);
+
+    var info = stored_data.user_info;
+
+    $('#edit_username')     .val(info.username);
+    $('#edit_first_name')   .val(info.first_name);
+    $('#edit_last_name')    .val(info.last_name);
+    $('#edit_gender')       .val(info.gender).parent().removeClass('cross').addClass('tick').children('span').text(info.gender.charAt(0).toUpperCase() + info.gender.slice(1));
+
+    $('#edit_email')        .val(info.email);
+    $('#edit_city')         .val(info.city);
+    $('#edit_country')      .val(info.country);
+
+    $('#edit_date_of_birth_1').val(info.date_of_birth.split('-')[2]);
+    $('#edit_date_of_birth_2').val(info.date_of_birth.split('-')[1]);
+    $('#edit_date_of_birth_3').val(info.date_of_birth.split('-')[0]);
+
+    $('#edit_password_old').attr('data-pass', info.password);
+
+    setTimeout(function(){
+        setup_form_buttons();
+    }, 200);
+
+    // Setup password stuff
+    $('#edit_password_old').removeClass('cross').addClass('cross_perm').keyup(function(){
+
+        // When old password is inserted and it's correct
+        if(md5($(this).val()) == $(this).attr('data-pass')){
+            $(this).removeClass('cross_perm').addClass('tick');
+        }
+        else {
+            $(this).removeClass('tick').addClass('cross_perm');
+        }
+
+    });
+
+
+}
+
+function account_logout(){
+
+    $.removeCookie('username_cookie');
+    $.removeCookie('password_cookie');
+    window.location = ''; // On logout of facebook go back home
+
+}
+
+function setup_logged_in_stuff(new_login){
+
+    load_logged_in_ajax(new_login);
+    setup_account_stuff();
+
+    if(new_login){
+        setup_other_plugins('comments'); // Sets up comments once more
+    }
+
+}
+
+function setup_account_stuff(){
+
+    // Setup username (settings panel)
+        $('#account_username').text(stored_data.user_info.username);
+
+    // Setup profile picture (settings panel)
+        var img_src = '/images/'+stored_data.user_info.profile_image;
+        if(UrlExists(img_src)){
+            $('#account_profile').attr('src', img_src);
+        }
+
+}
+
+function delete_trend(clicked){
+
+    var $clicked_trend = $(clicked).parent('div').parent('div');
+    var id = $clicked_trend.attr('data-id');
+
+    if(confirm('Are you sure you want to remove this trend?')){
+        $.post('../php/delete_trend.php', {
+            trend_id: id
+        });
+
+        $clicked_trend.fadeOut(200);
+    }
+
+}
+
+function edit_trend($clicked){
+
+    reset_edit_trend_form();
+
+    var $clicked_trend = $clicked.parent('div').parent('div');
+    var id = $clicked_trend.attr('data-id');
+
+    var trends = stored_data.trends; // gotten from database
+
+    var trend = $.grep(trends, function(e){
+        return e.id == id;
+    });
+    trend = trend[0];
+
+    var description = trend.description .replace('<p>','');
+    description = description       .replace('</p>','');
+
+    // Sets up title & description
+    $('#edit_trend_title')         .val(trend.title).removeClass('cross').addClass('tick');
+    $('#edit_trend_description')   .val(description).removeClass('cross').addClass('tick');
+
+    // Sets tags
+    var tags = trend.tags.split(',');
+    for(var i=0; i<tags.length; i++){
+        var tag = decodeURIComponent(tags[i]);
+        $('#edit_trend_tagger').addTag(tag);
+    }
+    $('#edit_trend_tagger_tagsinput').removeClass('cross').addClass('tick')
+
+    // Sets categories
+    var categories = trend.categories.split(',');
+    for(var i=0; i<categories.length; i++){
+        var category = decodeURIComponent(categories[i]);
+        $('#edit_trend_categories').find('div:contains('+category+')').addClass('selected');
+    }
+
+    // Sets location
+    $('#edit_trend_location').val(trend.location).removeClass('cross').addClass('tick').keyup(); // Calls keyup to enable the SUBMIT button
+
+    // Sets trend_id
+    $('#edit_trend_id').val(trend.id);
+
+    $.mobile.changePage('#edit_trend', 'pop');
+
+}
+
+function submit_register(){
+    var first_name      = $('#reg_first_name').val();
+    var last_name       = $('#reg_last_name').val();
+    var username        = $('#reg_username').val();
+    var date_of_birth   = $('#reg_date_of_birth_3').val() +'-'+ $('#reg_date_of_birth_1').val() +'-'+ $('#reg_date_of_birth_1').val();
+    var gender          = $('#reg_gender').val();
+    var password        = $('#reg_password').val();
+    var email           = $('#reg_email').val();
+    var city            = $('#reg_city').val();
+    var country         = $('#reg_country').val();
+    $.post('../php/submit_register.php', {
+        first_name      : first_name,
+        last_name       : last_name,
+        username        : username,
+        date_of_birth   : date_of_birth,
+        gender          : gender,
+        password        : password,
+        email           : email,
+        city            : city,
+        country         : country
+    }, function(data){
+
+        $.cookie('username_cookie', username);
+        $.cookie('password_cookie', data); // Returns the MD5d password
+
+        check_login(); // Does the AJAX for a logged in account
+
+        $.mobile.changePage('#create', 'pop');
+
+    });
+}
+
+function submit_login(){
+    var username = $('#login_username').val();
+    var password = $('#login_password').val();
+    $.post('../php/check_login.php', {
+        username: username,
+        password: password,
+        md5     : 1
+    }, function(data){
+
+        if(data){ // good
+
+            $.extend(stored_data, data); // Updates the stored_data to hold the user information
+
+            $.cookie('username_cookie', stored_data.user_info.username);
+            $.cookie('password_cookie', stored_data.user_info.password);
+
+            logged_in = stored_data.user_info ? 1 : 0; // Sets the "logged_in" attribute
+
+            setup_logged_in_stuff(1); // Continues onward (the 1 is to tell the script that it's a new login (don't start "load_rest()"))
+
+            $.mobile.changePage('#create', 'pop');
+
+        }
+        else { // bad
+
+            $('#login_with_account').find('.message').addClass('show');
+
+        }
+
+    }, 'JSON');
+
+}
+
+function check_if_allowed_page(){
+
+    var allowed_page = '';
+
+    if(
+        !location.hash                              || // Home page
+        $.cookie('view_type')    == 'explore'            || // Trend page
+        location.hash       == '#explore'           || // Explore page
+        location.hash       == '#login_with_account'|| // Login page
+        location.hash       == '#register_1'        || // Register page
+        location.hash       == '#register_2'        || // Register page
+        location.hash       == '#register_3'           // Register page
+    ){
+        allowed_page = 1
+        $('#new_icon').addClass('hide');
+    }
+
+    if(logged_in){
+        allowed_page = 1;
+        $('#new_icon').removeClass('hide');
+    }
+
+    if(!allowed_page){
+        window.location = '/';
+    }
+
+}
+
+function optimise_image(img){
+
+    var $img = $(img);
+console.log($img.width(), $img.parents('div').width());
+    if($img.width() < $img.parents('div').width()){
+
+        $img.css({
+            width   : '100%',
+            height  : 'auto'
+
+        });
+
+    }
+
+}
+
+function reset_new_trend_form(){
+
+    $('#new_trend_title')       .val('').removeClass('tick').addClass('cross');
+    $('#new_trend_description') .val('').removeClass('tick').addClass('cross');
+    $('#new_trend_location')    .val('').removeClass('tick').addClass('cross');
+
+    $('#new_trend_categories')  .find('div').removeClass('selected');
+    $('#new_trend_tagger')      .importTags('');
+
+}
+
+
+function reset_edit_trend_form(){
+
+    $('#edit_trend_title')      .val('').removeClass('tick').addClass('cross');
+    $('#edit_trend_description').val('').removeClass('tick').addClass('cross');
+    $('#edit_trend_location')   .val('').removeClass('tick').addClass('cross');
+
+    $('#edit_trend_categories') .find('div').removeClass('selected');
+    $('#edit_trend_tagger')     .importTags('');
+
+}
+
+function go_home(on_back){
+
+    if(on_back){ // Goes home on back click
+
+        window.onpopstate = function(event){ // HTML5 function that gets the page change info
+
+            if(!event.state) return; // Does nothing if not going back, cause state is empty
+
+            if(event.state.direction == 'back'){
+
+                go();
+
+            }
+
+        }
+
+    }
+    else { // Goes home immediately
+
+        go();
+
+    }
+
+    function go(){
+
+        var where = '';
+
+        if($.cookie('view_type') == 'explore'){
+            where = $('#explore');
+        }
+        else {
+            where = $('#create');
+        }
+
+        jQuery.mobile.changePage(
+            where,
+            {
+                transition  : 'slide',
+                reverse     : true
+            }
+        );
+
+        // Cancels the default behaviour of the back button
+            $(document).bind("pagebeforechange", function(e) {
+                e.preventDefault();
+            });
+
+        // Re-enables the default page behaviour
+            setTimeout(function(){
+                $(document).unbind("pagebeforechange");
+            }, 500);
+
+    }
+
+}
+
+function get_trend_list(trend, i){
+
+    trend.link_title    = 'trend_' + trend.id + '_' + trend.title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
+
+    // Fills up EXPLORE page (trend list)
+    var trend_list =
+        '<div>' +
+            '<div class="image_container">' +
+                '<a href="#'+ trend.link_title +'" data-transition="slide">View trend</a>' +
+                '<img src="/images/'+ trend.images.split(',')[0] +'" alt="trend pic" onload="optimise_image(this)" />' +
+            '</div>' +
+            '<section>' +
+                '<header><h1><i>'+ (i+1) +'</i>'+ trend.title +'</h1></header>' +
+                truncate(trend.description, 400, 1) +
+            '</section>' +
+        '</div>';
+
+    return trend_list;
+
+}
+
+function get_trend_single(trend, rater){
+
+    trend.link_title    = 'trend_' + trend.id + '_' + trend.title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
+
+    // Fills up TREND page (singular)
+        var trend_images = '';
+        var trend_images_array = trend.images.split(',');
+
+        for(var b=0; b<trend_images_array.length; b++){
+            var image = trend_images_array[b];
+
+            trend_images += '<div><img src="/images/'+ image +'" alt="trend image"></div>';
+
+        }
+
+        // Turns retrieved tags into HTML
+        var tags_html = '';
+        var tags = trend.tags.split(',');
+        for(var b=0; b<tags.length; b++){
+
+            tags_html += '<div>' + decodeURIComponent(tags[b]) + '</div>';
+
+        }
+
+        // Turns retrieved categories into HTML
+        var categories_html = '';
+        var categories = trend.categories.split(',');
+        for(var b=0; b<categories.length; b++){
+
+            categories_html += '<div>' + categories[b] + '</div>';
+
+        }
+
+        // Searches the "rater" array to get the array of the current trend
+        var rating = $.grep(rater, function(e){
+            return e.trend_id == trend.id;
+        });
+        if(!rating.length) {
+            rating = [];
+        }
+        else {
+            rating = rating[0];
+        }
+        if(!rating.value) rating.value = 0;
+        if(!rating.votes) rating.votes = 0;
+
+        var trend_single =
+            '<div data-role="page" id="'+ trend.link_title +'" data-title="'+ trend.title +'">' +
+
+                '<div data-role="content">' +
+                    '<div class="maxi_container trend_single">' +
+
+                        '<div>' +
+                        '<div class="image_container">' + trend_images + '</div>' +
+
+                        '<section>' +
+
+                            trend.description +
+
+                            '<div class="trend_rating">' +
+                                '<label>Rating <span><i>'+ rating.votes +'</i> votes</span></label>' +
+                                '<div class="raty" data-score="'+ (rating.value / rating.votes) +'" data-votes="'+ rating.votes +'" data-users="'+ rating.user_ids +'"></div>' +
+                                '<div class="message red">Thanks for rating.</div>' +
+                            '</div>' +
+
+                            '<label>Tags</label>' +
+                            '<div class="tags">' + tags_html + '</div>' +
+
+                            '<label>Categories</label>' +
+                            '<div class="tags">' + categories_html + '</div>' +
+
+                            '</section>' +
+                        '</div>' +
+
+                    '<div class="trend_comments"></div>' +
+
+                '</div>' +
+            '</div>' +
+
+        '</div>';
+
+    return trend_single;
+
+}
+
+function load_logged_in_ajax(new_login){
+
+    var $container = $('#research_projects').find('.research_projects');
+
+    if(stored_data.user_info.project_ids){
+
+        $.post('../php/get_logged_in_info.php', {
+            project_ids: stored_data.user_info.project_ids
+        },function(data){
+
+            $.extend(stored_data, data);
+
+            var projects = stored_data.research_projects; // Updates the stored data with "research_projects"
+
+            var project_pages = '';
+
+            // Loop per research project
+            for(var i=0; i<projects.length; i++){
+
+                var project = projects[i];
+
+                project.link_title = 'project_' + project.id + '_' + project.name.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
+
+                $container.append(
+                    '<a href="#'+ project.link_title +'" class="tag">' +
+                        '<span>'+ (i+1) +'.</span> '+ project.name +
+                    '</a>'
+                );
+
+                var project_trends = $.grep(stored_data.trends, function(e){
+                    return e.research_project == project.id;
+                });
+
+                var trend_html = '';
+
+                // Loop per trend in research project
+                for(var b=0; b<project_trends.length; b++) {
+
+                    var project_trend = project_trends[b];
+
+                    trend_html +=
+                        '<div data-id="'+ project_trend.id +'">' +
+                            '<a href="#'+ project_trend.link_title +'">' +
+                                '<img src="/images/'+ project_trend.images.split(',')[0] +'" alt="research project image">' +
+                                '<span>'+ truncate(project_trend.title, 30) + '</span>' +
+                            '</a>' +
+                            add_extra_html() +
+                        '</div>';
+
+                }
+                if(!project_trends.length){
+
+                    trend_html += '<div class="message show no_float red">No trends...</div>';
+
+                }
+
+                // Adds the delete & remove button
+                function add_extra_html() {
+
+                    var html =
+                        '<div class="extra">' +
+                            '<a href="#" class="button no_image edit">Edit</a>' +
+                            '<a href="#" class="button red no_image delete">Delete</a>' +
+                        '</div>';
+
+                    return html;
+
+                }
+
+                project_pages +=
+                    '<div data-role="page" id="'+ project.link_title +'" data-title="'+ project.name +'">' +
+
+                        '<div data-role="content">' +
+                            '<div class="maxi_container research_trends">' +
+                                trend_html +
+                            '</div>' +
+                        '</div>' +
+
+                    '</div>'
+
+            }
+
+            $('body').append(project_pages);
+
+            // Calls on page load, not on new login
+            if(!new_login){
+                load_rest();
+            }
+
+        }, 'JSON');
+
+        setup_account_edit_page();
+
+    }
+    else {
+
+        $container.append('<div class="message show no_float red">No workspaces...</div>');
+
+        if(!new_login){
+            load_rest();
+        }
+
+    }
+
+}
 
 function global_page_functions(){
 
     disable_given_links();
 
-    // Different layouts (home | not home)
-    // Hash tags don't exist, so HOME
+    // If logged in, there is never a need for the slideshow
+    if(!logged_in){
+        setup_slideshow();
+    }
+    else {
+        setup_slideshow(1); // 1 removes the slideshow as a whole
+    }
+
+    // HOME
     if(!location.hash) {
 
         if(logged_in) {  // If logged in, then forwards the user to the CREATE page
@@ -714,22 +1352,8 @@ function global_page_functions(){
             return;
         }
 
-        setup_slideshow();
-
         $header.addClass('home');
-        $footer.addClass('home').find('.selected').removeClass('selected');
-
-        $footer.find('#create_button').click(function(){
-
-            if($footer.hasClass('home')){ // Only work if on HOME page
-
-                $footer.hasClass('reveal') ? $footer.removeClass('reveal') : $footer.addClass('reveal');
-
-                return false; // Don't let the link take the user the the actual page
-
-            }
-
-        });
+        $footer.addClass('home');
 
     }
 
@@ -737,35 +1361,44 @@ function global_page_functions(){
     else {
 
         if(location.hash !== '#create' && location.hash !== '#explore'){
+
             $footer.addClass('hide');
             $('#new_icon').removeClass('show'); // Hide "new_trend_button"
-
-            if_single_trend_page(); // Does stuff if trend page
 
         }
         else {
             if(location.hash == '#create'){ // Changes the cookie to "create"
-                $.cookie('view', 'create');
+                $
+                    .cookie('view_type', 'create');
 
                 $('#new_icon').addClass('show'); // Show "new_trend_button"
 
             }
             if(location.hash == '#explore'){ // Changes the cookie to "explore"
-                $.cookie('view', 'explore');
+
+                $.cookie('view_type', 'explore');
+
             }
             $footer.removeClass('hide');
         }
 
+        check_if_allowed_page(); // Checks if this is an allowed page for NOT logged in users
+
+        if_single_trend_page(); // Loads trend comments if single trend page
+
         // Change header
-        $header.removeAttr('class').addClass($.cookie('view'));
+        $header.removeAttr('class').addClass($.cookie('view_type'));
 
-        // Move footer back down to be "normal"
+        // Move footer and home_image back down to be "normal"
         $footer.removeClass('reveal home');
+        $('#home_image').removeClass('move');
 
-        var view = $.cookie('view'); // Gets either "create" or "explore"
+        var view = $.cookie('view_type'); // Gets either "create" or "explore"
 
         $footer.find('.selected').removeClass('selected'); // Remove class
         $footer.find('#'+view+'_button').addClass('selected'); // Add class
+
+        if($('body').hasClass('open_panel'))$('body').removeClass('open_panel'); // Makes the side panel hide on page change
 
     }
 
@@ -774,9 +1407,8 @@ function global_page_functions(){
     if(location.hash == '#create' || location.hash == '#explore'){
 
         // Back button hide
+        $('#back_icon').hide(0);
         $('#menu_icon').show(0);
-        $('#back_icon_create').removeClass('active');
-        $('#back_icon_explore').removeClass('active');
 
         // Logo show, title hide
         $('#header_logo').show(0);
@@ -784,20 +1416,23 @@ function global_page_functions(){
 
     }
 
-    // Back button
+    // If any page other than HOME and #create & #explore
     else if(location.hash){
 
         // Back button show
         $('#menu_icon').hide(0);
+        $('#back_icon').show(0);
 
-        if(view == 'create'){ // CREATE
-            $('#back_icon_create')    .addClass('active');
-            $('#back_icon_explore')   .removeClass('active');
+
+        if(view == 'explore') { // EXPLORE - Single trend page
+
+            go_home(1); // Goes home on back click (EXPLORE page)
+
         }
-        else { // EXPLORE - Single trend page
+
             $('#back_icon_create')    .removeClass('active');
             $('#back_icon_explore')   .addClass('active');
-        }
+
 
         // Logo hide, title show
         $('#header_logo').hide(0);
@@ -806,7 +1441,7 @@ function global_page_functions(){
     }
 
     // Always change the #header_title accordingly
-    $('#header_title').text(document.title)
+    $('#header_title').text(document.title);
 
 }
 
@@ -816,24 +1451,22 @@ function loader(type){
 
 }
 
-function submit_new_trend(){
-
-    if($(this).hasClass('disabled')) return;
-
+function submit_trend(){
+console.log('submit trend()');
     // Title
         var title       = $('#new_trend_title').val();
         var description = $('#new_trend_description').val();
         var tags        = get_tags('#new_trend_tagger_tagsinput');
-        var categories  = get_categories('#trend_categories');
-
+        var categories  = get_categories('#new_trend_categories');
 
     // Location
-        var location = $('.trend_location').val();
+        var location    = $('#new_trend_location').val();
 
     var uploaded_images = $('#uploaded_images_field').val();
 
     // Submit info
-        $.post('../php/submit_new_trend.php', {
+        $.post('../php/submit_trend.php', {
+            user_id         : stored_data.user_info.id,
             uploaded_images : uploaded_images,
             title           : title,
             description     : description,
@@ -841,14 +1474,25 @@ function submit_new_trend(){
             categories      : categories,
             location        : location
         },function(data){
+            console.log('trend submit data:', data);
+            // Insert HTML
+            var trend_single = get_trend_single(data.trend, data.rater);
+            $('body').append(trend_single);
 
-            if(data){
-                console.log(data);
-            }
+            setup_other_plugins('all');
 
-            $.mobile.changePage('#new_trend_finished_submit', 'pop');
+            var link_title    = 'trend_' + data.trend.id + '_' + title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
+            $.mobile.changePage('#'+link_title, 'pop');
 
-        });
+            $.cookie('view_type', 'explore'); // Makes sure that the back button will take the user to the explore page by changing the cookie
+console.log('GO HOME');
+            // The back button will take the user HOME
+            go_home(1);
+
+            // Reset new trend form (in case the user wants to add another new trend)
+            reset_new_trend_form();
+
+        }, 'JSON');
 
 }
 
@@ -901,9 +1545,12 @@ function setup_form_buttons() {
     // ----- forms -----
 
     if(
-        $('#reg_first_name').hasClass('tick') &&
-        $('#reg_last_name') .hasClass('tick') &&
-        $('#reg_username')  .hasClass('tick')
+        $('#reg_first_name')                .hasClass('tick') &&
+        $('#reg_last_name')                 .hasClass('tick') &&
+        $('#reg_username')                  .hasClass('tick') &&
+        $('#reg_gender').parent('.select')  .hasClass('tick') &&
+        $('#reg_password')                  .hasClass('tick') &&
+        $('#reg_conf_password')             .hasClass('tick')
     ){
         enable_link('#register_2_button');
     }
@@ -912,10 +1559,9 @@ function setup_form_buttons() {
     }
 
     if(
-        $('#reg_date_of_birth')             .hasClass('tick') &&
-        $('#reg_gender').parent('.select')  .hasClass('tick') &&
-        $('#reg_password')                  .hasClass('tick') &&
-        $('#reg_conf_password')             .hasClass('tick')
+        $('#reg_email')     .hasClass('tick') &&
+        $('#reg_city')      .hasClass('tick') &&
+        $('#reg_country')   .hasClass('tick')
     ){
         enable_link('#register_3_button');
     }
@@ -924,20 +1570,21 @@ function setup_form_buttons() {
     }
 
     if(
-        $('#reg_email')     .hasClass('tick') &&
-        $('#reg_city')      .hasClass('tick') &&
-        $('#reg_country')   .hasClass('tick')
-    ){
-        enable_link('#finish_registration_button');
+        $('#reg_date_of_birth_1')           .hasClass('tick') &&
+            $('#reg_date_of_birth_2')       .hasClass('tick') &&
+            $('#reg_date_of_birth_3')       .hasClass('tick')
+        ){
+        enable_link('#submit_registration_button');
     }
     else {
-        disable_link('#finish_registration_button');
+        disable_link('#submit_registration_button');
     }
 
     if(
-        $('#new_trend_description')      .hasClass('tick') &&
-        $('#new_trend_tagger_tagsinput') .hasClass('tick') &&
-        $('.trend_location')            .hasClass('tick')
+        $('#new_trend_title')           .hasClass('tick') &&
+        $('#new_trend_description')     .hasClass('tick') &&
+        $('#new_trend_tagger_tagsinput').hasClass('tick') &&
+        $('#new_trend_location')        .hasClass('tick')
     ){
         enable_link('#submit_new_trend');
     }
@@ -955,14 +1602,67 @@ function setup_form_buttons() {
         disable_link('#submit_login');
     }
 
+    if(
+        $('#edit_trend_title')           .hasClass('tick') &&
+        $('#edit_trend_description')     .hasClass('tick') &&
+        $('#edit_trend_tagger_tagsinput').hasClass('tick') &&
+        $('#edit_trend_location')        .hasClass('tick')
+    ){
+        enable_link('#submit_edit_trend');
+    }
+    else {
+        disable_link('#submit_edit_trend');
+    }
+
+    if(
+        $('#edit_first_name')       .hasClass('tick') &&
+        $('#edit_last_name')        .hasClass('tick') &&
+        $('#edit_gender').parent()  .hasClass('tick') &&
+
+        $('#edit_email')            .hasClass('tick') &&
+        $('#edit_city')             .hasClass('tick') &&
+        $('#edit_country')          .hasClass('tick') &&
+
+        $('#edit_date_of_birth_1')  .hasClass('tick') &&
+        $('#edit_date_of_birth_2')  .hasClass('tick') &&
+        $('#edit_date_of_birth_3')  .hasClass('tick')
+    ){
+        if(
+            (
+                $('#edit_password_old') .hasClass('cross') &&
+                $('#edit_password')     .hasClass('cross') &&
+                $('#edit_conf_password').hasClass('cross')
+            ) || (
+                $('#edit_password_old') .hasClass('tick') &&
+                $('#edit_password')     .hasClass('tick') &&
+                $('#edit_conf_password').hasClass('tick')
+            )
+        ){
+            enable_link('#submit_account_edit_button');
+        }
+        else {
+            disable_link('#submit_account_edit_button');
+        }
+    }
+    else {
+        disable_link('#submit_account_edit_button');
+    }
+
     // --------------
 
 }
 
 function if_single_trend_page(){
 
-    // Trend page
-    if($.cookie('view') == 'explore' && location.hash !== '#login_with_account'){
+    if(
+        $.cookie('view_type')    == 'explore'               && // Explore cookie
+        location.hash           !== '#explore'              && // Explore page
+        location.hash           !== '#login_with_account'   && // Login page
+        location.hash           !== '#register_1'           && // Register page
+        location.hash           !== '#register_2'           && // Register page
+        location.hash           !== '#register_3'              // Register page
+    )
+    {
         get_trend_comments();
     }
 
@@ -977,33 +1677,57 @@ function get_trend_comments() {
     $trend_comments.comments({
         get_comments: true,
         author: {
-            id: user_info.id
+            id: stored_data.user_info.id
         }
     });
 
 }
 
-function setup_slideshow() {
+function setup_slideshow(disable) {
 
-    var $img = $('#home_image').children('img').eq(0); // first image
-    var timeout = 5000;
+    if(disable){
+
+        $('#home_image').remove();
+
+        return;
+
+    }
+
+    var $img = $('#home_image').find('img').eq(0); // first image
+    var direction = 'right';
+    animate_image($img, direction);
+
+    var timeout = 8000;
 
     setInterval(function(){
 
         if($img.next().length){ // if we can get the NEXT image
-            var $next = $img.next();
+            var $next = $img.next('img');
         }
         else { // otherwise use the first again
-            var $next = $img.prevAll().last(); // gets the first
+            var $next = $img.prevAll('img').last(); // gets the first
         }
 
-        $img.fadeOut(400);
-        $next.fadeIn(400);
+        if(direction == 'right')    direction = 'left';
+        else                        direction = 'right';
+
+        // Set the $next image CSS left so that the image is on its right side
+        if(direction == 'left'){
+            $next.css({
+                left: -($next.width() - $(window).width())
+            });
+        }
+
+
+        $img.fadeOut(1600);
+        $next.fadeIn(1600);
 
         $img = $next;
 
-        full_slideshow();
+        animate_image($img, direction);
 
+        full_slideshow();
+//
     }, timeout);
 
     function full_slideshow() {
@@ -1019,8 +1743,8 @@ function setup_slideshow() {
         }
 
         // Set variables
-        var orig_img_height = $img.height();
-        var orig_img_width  = $img.width();
+        var orig_img_height = $img.height() * 0.85;
+        var orig_img_width  = $img.width() * 0.85;
 
         var window_height = $(window).height();
         var window_width  = $(window).width();
@@ -1043,14 +1767,34 @@ function setup_slideshow() {
 
         }
 
-        var img_left   = ( img_width - window_width ) / 2;
-
-        $img.height(img_height)
-            .width(img_width)
+        $img
+            .height(img_height * 1.15)
+            .width(img_width * 1.15)
             .css({
-                maxWidth: 'none',
-                left: -img_left
+                maxWidth: 'none'
             });
+
+    }
+
+
+    function animate_image($img, direction){
+
+        if(direction == 'right'){
+            var movement = $img.width() - $(window).width();
+        }
+        else if(direction == 'left') {
+            var movement = 0;
+        }
+
+        move_image(-movement);
+
+        function move_image(movement){
+
+            $img.animate({
+                left: movement
+            }, 7000, 'easeInOutSine');
+
+        }
 
     }
 
@@ -1106,6 +1850,14 @@ function truncate(string, number, use_word_boundary){
         s_ = toLong ? string.substr(0,number-1) : string;
     s_ = use_word_boundary && toLong ? s_.substr(0,s_.lastIndexOf(' ')) : s_;
     return  toLong ? s_ + '&hellip;' : s_;
-};
+}
+
+function UrlExists(url)
+{
+    var http = new XMLHttpRequest();
+    http.open('HEAD', url, false);
+    http.send();
+    return http.status!=404;
+}
 
 // ---------------------------------------------------

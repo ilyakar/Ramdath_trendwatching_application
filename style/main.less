@@ -11,6 +11,7 @@
 @grey                       : #2e2e2e;
 @slightly_light_grey        : #333333;
 @slightly_more_light_grey   : #393939;
+@a_bit_more_light_grey      : #cbcaca;
 @light_grey                 : #979696;
 @lighter_grey               : #dfdfdf;
 @red                        : #ac0a12;
@@ -70,7 +71,7 @@ body {
         font-size: 30px;
         background: @grey;
         padding: 15px 80px;
-        width: 350px;
+        width: 400px;
         color: @white;
         display: block;
         margin-bottom: 10px;
@@ -132,12 +133,14 @@ body {
         padding-top: 21px;
         padding-bottom: 21px;
         margin-bottom: 15px;
-        width: 360px;
-        padding: 15px 70px;
-        padding-left: 30px;
-        margin: 0 auto 20px;
+        padding: 22px 70px 23px 30px;
+        margin: 0 auto 10px;
         .opacity(0);
         .transition();
+        &.no_float {
+            float: none;
+            margin: 0 auto;
+        }
         &.show {
             .opacity(1);
         }
@@ -163,13 +166,13 @@ body {
             display: block;
             overflow: visible;
             font-family: latolight;
-            background: @lighter_grey 408px 14px no-repeat;
-            width: 358px;
+            background: @lighter_grey 458px 14px no-repeat;
+            width: 408px;
             &:focus, &.focus {
                 border: solid 1px @grey;
                 outline: none;
             }
-            &.cross {
+            &.cross, &.cross_perm, &.cross_perm.tick {
                 background-image: url('images/form/cross_deselected.png');
                 &:focus, &.focus {
                     background-image: url('images/form/cross_selected.png');
@@ -179,11 +182,29 @@ body {
                 border: solid 1px @grey;
                 background-image: url('images/form/tick_selected.png');
             }
+            &[disabled]{
+                background: @a_bit_more_light_grey;
+                color: @light_grey;
+                border: solid 1px @light_grey;
+            }
         }
         textarea {
             height: 120px;
             resize: vertical;
             font-size: 20px;
+        }
+        fieldset.date_of_birth {
+            > input {
+                float: left;
+                width: 55px;
+                margin-right: 10px;
+                background-position: 105px 14px;
+                &:last-child {
+                    width: 74px;
+                    margin-right: 0;
+                    background-position: 124px 14px;
+                }
+            }
         }
         .tagsinput {
             font-size: 20px;
@@ -394,6 +415,11 @@ body {
                 }
             }
         }
+        #new_icon.hide {
+            .transition();
+            .opacity(0);
+            visibility: hidden;
+        }
         div#header_logo {
             height: 37px;
             margin: 12px auto 11px;
@@ -418,7 +444,7 @@ body {
             height: 60px;
             background: @grey @icons_png -53px 3px;
         }
-        a.icon#back_icon_create, a.icon#back_icon_explore {
+        a.icon#back_icon {
             position: absolute;
             left: 0;
             top: 0;
@@ -443,12 +469,38 @@ body {
         background: @grey;
         width: 100%;
         height: 100%;
-        img {
-            width: 100%;
+        position: absolute;
+        bottom: 0;
+        .transition();
+        &.move {
+            bottom: 400px - 63px;
+        }
+        div.text {
             position: absolute;
+            bottom: 120px;
+            color: @white;
+            font-size: 40px;
+            z-index: 3;
+            left: 20px;
+            p {
+                margin-bottom: 7px;
+            }
+        }
+        div.gradient {
+            position: absolute;
+            z-index: 2;
+            .opacity(0.3);
+            width: 100%;
+            height: 100%;
+            background: url('images/home_screen_image/gradient.png') bottom center repeat-x, url('images/home_screen_image/gradient_reverse.png') top center repeat-x;
+        }
+        img {
+            width: 115%;
+            position: absolute;
+            left: 0;
             bottom: 0;
             display: none;
-            &:first-child {
+            &:nth-child(3) {
                 display: block;
             }
         }
@@ -548,6 +600,14 @@ body {
                     }
                 }
             }
+            &:nth-child(3){
+                > div {
+                    &:first-child {
+                        background: url('images/settings_panel/logout_icon.png') no-repeat center center;
+                        background-size: 45%;
+                    }
+                }
+            }
             > div, > a {
                 color: @white;
                 float: left;
@@ -563,7 +623,9 @@ body {
                 }
                 span {
                     display: inline;
-                    font-size: 14px;
+                    &.small{
+                        font-size: 14px;
+                    }
                 }
             }
         }
@@ -661,11 +723,26 @@ body {
                         section {
                             padding: 0 30px;
                             header {
+                                overflow: visible;
                                 h1 {
                                     margin: 15px 0;
                                     font-size: 20px;
                                     font-weight: bold;
                                     text-transform: uppercase;
+                                    position: relative;
+                                    overflow: visible;
+                                    i {
+                                        position: absolute;
+                                        top: -4px;
+                                        left: -30px;
+                                        font-style: normal;
+                                        background: @red;
+                                        padding: 6px 6px;
+                                        color: #fff;
+                                        font-size: 15px;
+                                        float: left;
+                                        display: block;
+                                    }
                                 }
                             }
                             p {
@@ -688,8 +765,8 @@ body {
                     width: 400px;
                     div {
                         float: left;
-                        width: 200px;
-                        height: 112.5px;
+                        width: 100px;
+                        height: 56.25px;
                         position: relative;
                         &:first-child {
                             width: 400px;
@@ -855,6 +932,15 @@ body {
         height: 100%;
         z-index: 1000;
         background: url('images/ajax-loader.gif') @white center center no-repeat;
+        span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: 20px;
+            margin-left: -78px;
+            text-align: center;
+            display: none;
+        }
     }
     // -------------------
     // jQuery mobile stuff

@@ -1,6 +1,6 @@
 <?php
 
-error_reporting (E_ALL);
+error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
 $db_host = '127.0.0.1:3306';
 $db_user = 'root';

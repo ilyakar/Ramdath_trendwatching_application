@@ -71,7 +71,7 @@ body input[type="submit"] {
   font-size: 30px;
   background: #2e2e2e;
   padding: 15px 80px;
-  width: 350px;
+  width: 400px;
   color: #ececec;
   display: block;
   margin-bottom: 10px;
@@ -145,10 +145,8 @@ body .message {
   padding-top: 21px;
   padding-bottom: 21px;
   margin-bottom: 15px;
-  width: 360px;
-  padding: 15px 70px;
-  padding-left: 30px;
-  margin: 0 auto 20px;
+  padding: 22px 70px 23px 30px;
+  margin: 0 auto 10px;
   -moz-opacity: 0;
   -khtml-opacity: 0;
   -webkit-opacity: 0;
@@ -159,6 +157,10 @@ body .message {
   -moz-transition: all 0.2s ease-out;
   -o-transition: all 0.2s ease-out;
   transition: all 0.2s ease-out;
+}
+body .message.no_float {
+  float: none;
+  margin: 0 auto;
 }
 body .message.show {
   -moz-opacity: 1;
@@ -191,8 +193,8 @@ body form .tagsinput {
   display: block;
   overflow: visible;
   font-family: latolight;
-  background: #dfdfdf 408px 14px no-repeat;
-  width: 358px;
+  background: #dfdfdf 458px 14px no-repeat;
+  width: 408px;
 }
 body form input[type="text"]:focus,
 body form input[type="password"]:focus,
@@ -211,7 +213,17 @@ body form input[type="text"].cross,
 body form input[type="password"].cross,
 body form .select.cross,
 body form textarea.cross,
-body form .tagsinput.cross {
+body form .tagsinput.cross,
+body form input[type="text"].cross_perm,
+body form input[type="password"].cross_perm,
+body form .select.cross_perm,
+body form textarea.cross_perm,
+body form .tagsinput.cross_perm,
+body form input[type="text"].cross_perm.tick,
+body form input[type="password"].cross_perm.tick,
+body form .select.cross_perm.tick,
+body form textarea.cross_perm.tick,
+body form .tagsinput.cross_perm.tick {
   background-image: url('images/form/cross_deselected.png');
 }
 body form input[type="text"].cross:focus,
@@ -219,11 +231,31 @@ body form input[type="password"].cross:focus,
 body form .select.cross:focus,
 body form textarea.cross:focus,
 body form .tagsinput.cross:focus,
+body form input[type="text"].cross_perm:focus,
+body form input[type="password"].cross_perm:focus,
+body form .select.cross_perm:focus,
+body form textarea.cross_perm:focus,
+body form .tagsinput.cross_perm:focus,
+body form input[type="text"].cross_perm.tick:focus,
+body form input[type="password"].cross_perm.tick:focus,
+body form .select.cross_perm.tick:focus,
+body form textarea.cross_perm.tick:focus,
+body form .tagsinput.cross_perm.tick:focus,
 body form input[type="text"].cross.focus,
 body form input[type="password"].cross.focus,
 body form .select.cross.focus,
 body form textarea.cross.focus,
-body form .tagsinput.cross.focus {
+body form .tagsinput.cross.focus,
+body form input[type="text"].cross_perm.focus,
+body form input[type="password"].cross_perm.focus,
+body form .select.cross_perm.focus,
+body form textarea.cross_perm.focus,
+body form .tagsinput.cross_perm.focus,
+body form input[type="text"].cross_perm.tick.focus,
+body form input[type="password"].cross_perm.tick.focus,
+body form .select.cross_perm.tick.focus,
+body form textarea.cross_perm.tick.focus,
+body form .tagsinput.cross_perm.tick.focus {
   background-image: url('images/form/cross_selected.png');
 }
 body form input[type="text"].tick,
@@ -234,10 +266,30 @@ body form .tagsinput.tick {
   border: solid 1px #2e2e2e;
   background-image: url('images/form/tick_selected.png');
 }
+body form input[type="text"][disabled],
+body form input[type="password"][disabled],
+body form .select[disabled],
+body form textarea[disabled],
+body form .tagsinput[disabled] {
+  background: #cbcaca;
+  color: #979696;
+  border: solid 1px #979696;
+}
 body form textarea {
   height: 120px;
   resize: vertical;
   font-size: 20px;
+}
+body form fieldset.date_of_birth > input {
+  float: left;
+  width: 55px;
+  margin-right: 10px;
+  background-position: 105px 14px;
+}
+body form fieldset.date_of_birth > input:last-child {
+  width: 74px;
+  margin-right: 0;
+  background-position: 124px 14px;
 }
 body form .tagsinput {
   font-size: 20px;
@@ -473,6 +525,19 @@ body header#main_header.create #new_icon.show {
   -ms-filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100);
   filter: alpha(opacity=100);
 }
+body header#main_header #new_icon.hide {
+  -webkit-transition: all 0.2s ease-out;
+  -moz-transition: all 0.2s ease-out;
+  -o-transition: all 0.2s ease-out;
+  transition: all 0.2s ease-out;
+  -moz-opacity: 0;
+  -khtml-opacity: 0;
+  -webkit-opacity: 0;
+  opacity: 0;
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0);
+  filter: alpha(opacity=0);
+  visibility: hidden;
+}
 body header#main_header div#header_logo {
   height: 37px;
   margin: 12px auto 11px;
@@ -497,8 +562,7 @@ body header#main_header a.icon#menu_icon {
   height: 60px;
   background: #2e2e2e url('images/icons.png') -53px 3px;
 }
-body header#main_header a.icon#back_icon_create,
-body header#main_header a.icon#back_icon_explore {
+body header#main_header a.icon#back_icon {
   position: absolute;
   left: 0;
   top: 0;
@@ -507,8 +571,7 @@ body header#main_header a.icon#back_icon_explore {
   background: #2e2e2e url('images/icons.png') -110px -53px;
   display: none;
 }
-body header#main_header a.icon#back_icon_create.active,
-body header#main_header a.icon#back_icon_explore.active {
+body header#main_header a.icon#back_icon.active {
   display: block;
 }
 body header#main_header a.icon#new_icon {
@@ -523,14 +586,48 @@ body section#home_image {
   background: #2e2e2e;
   width: 100%;
   height: 100%;
+  position: absolute;
+  bottom: 0;
+  -webkit-transition: all 0.2s ease-out;
+  -moz-transition: all 0.2s ease-out;
+  -o-transition: all 0.2s ease-out;
+  transition: all 0.2s ease-out;
+}
+body section#home_image.move {
+  bottom: 337px;
+}
+body section#home_image div.text {
+  position: absolute;
+  bottom: 120px;
+  color: #ececec;
+  font-size: 40px;
+  z-index: 3;
+  left: 20px;
+}
+body section#home_image div.text p {
+  margin-bottom: 7px;
+}
+body section#home_image div.gradient {
+  position: absolute;
+  z-index: 2;
+  -moz-opacity: 0.3;
+  -khtml-opacity: 0.3;
+  -webkit-opacity: 0.3;
+  opacity: 0.3;
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(opacity=30);
+  filter: alpha(opacity=30);
+  width: 100%;
+  height: 100%;
+  background: url('images/home_screen_image/gradient.png') bottom center repeat-x, url('images/home_screen_image/gradient_reverse.png') top center repeat-x;
 }
 body section#home_image img {
-  width: 100%;
+  width: 115%;
   position: absolute;
+  left: 0;
   bottom: 0;
   display: none;
 }
-body section#home_image img:first-child {
+body section#home_image img:nth-child(3) {
   display: block;
 }
 body footer#main_footer {
@@ -626,6 +723,10 @@ body div#settings_panel > div:nth-child(2) > div:first-child {
   background: url('images/settings_panel/settings_icon.png') no-repeat center center;
   background-size: 45%;
 }
+body div#settings_panel > div:nth-child(3) > div:first-child {
+  background: url('images/settings_panel/logout_icon.png') no-repeat center center;
+  background-size: 45%;
+}
 body div#settings_panel > div > div,
 body div#settings_panel > div > a {
   color: #ececec;
@@ -645,6 +746,9 @@ body div#settings_panel > div > a:first-child {
 body div#settings_panel > div > div span,
 body div#settings_panel > div > a span {
   display: inline;
+}
+body div#settings_panel > div > div span.small,
+body div#settings_panel > div > a span.small {
   font-size: 14px;
 }
 body div[data-role="page"] {
@@ -733,11 +837,28 @@ body #explore div[data-role="content"] #image_list .scrollableArea > div .image_
 body #explore div[data-role="content"] #image_list .scrollableArea > div section {
   padding: 0 30px;
 }
+body #explore div[data-role="content"] #image_list .scrollableArea > div section header {
+  overflow: visible;
+}
 body #explore div[data-role="content"] #image_list .scrollableArea > div section header h1 {
   margin: 15px 0;
   font-size: 20px;
   font-weight: bold;
   text-transform: uppercase;
+  position: relative;
+  overflow: visible;
+}
+body #explore div[data-role="content"] #image_list .scrollableArea > div section header h1 i {
+  position: absolute;
+  top: -4px;
+  left: -30px;
+  font-style: normal;
+  background: #ac0a12;
+  padding: 6px 6px;
+  color: #fff;
+  font-size: 15px;
+  float: left;
+  display: block;
 }
 body #explore div[data-role="content"] #image_list .scrollableArea > div section p {
   margin: 0 0 15px;
@@ -750,8 +871,8 @@ body .maxi_container.trend_single div .image_container {
 }
 body .maxi_container.trend_single div .image_container div {
   float: left;
-  width: 200px;
-  height: 112.5px;
+  width: 100px;
+  height: 56.25px;
   position: relative;
 }
 body .maxi_container.trend_single div .image_container div:first-child {
@@ -900,6 +1021,15 @@ body #page_loading {
   height: 100%;
   z-index: 1000;
   background: url('images/ajax-loader.gif') #ececec center center no-repeat;
+}
+body #page_loading span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: 20px;
+  margin-left: -78px;
+  text-align: center;
+  display: none;
 }
 body .dropzone {
   min-height: 200px;
