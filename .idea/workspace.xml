@@ -2,35 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="64ee2cd6-a76b-459b-8260-bf57ef832e0e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/php/delete_trend.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/php/edit_account_info.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/php/get_logged_in_info.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/md5.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/php/submit_register.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/php/update_trend.php" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/jquery_custom_select.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/style/images/home_screen_image/background_behind.png" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/style/images/home_screen_image/background_filter-bottom.png" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/style/images/home_screen_image/background_filter_bottom-left.png" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/style/images/home_screen_image/background_filter_left.png" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/php/submit_new_trend.php" afterPath="$PROJECT_DIR$/php/submit_trend.php" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/style/images/home_screen_image/images/1.png" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/LOG.txt" afterPath="$PROJECT_DIR$/LOG.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README" afterPath="$PROJECT_DIR$/README" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/all.js" afterPath="$PROJECT_DIR$/js/all.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/check_login.php" afterPath="$PROJECT_DIR$/php/check_login.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/connect_to_mysql.php" afterPath="$PROJECT_DIR$/php/connect_to_mysql.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/get_info.php" afterPath="$PROJECT_DIR$/php/get_info.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.php" afterPath="$PROJECT_DIR$/index.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/jquery_comments.js" afterPath="$PROJECT_DIR$/js/jquery_comments.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/style/main.css" afterPath="$PROJECT_DIR$/style/main.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/style/main.less" afterPath="$PROJECT_DIR$/style/main.less" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Website.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="64ee2cd6-a76b-459b-8260-bf57ef832e0e" time="1375861190570" ignored="false" />
+    <file path="/Dummy.txt" changelist="64ee2cd6-a76b-459b-8260-bf57ef832e0e" time="1375948245880" ignored="false" />
     <file path="/main.less" changelist="64ee2cd6-a76b-459b-8260-bf57ef832e0e" time="1375886576331" ignored="false" />
     <file path="/index.html" changelist="64ee2cd6-a76b-459b-8260-bf57ef832e0e" time="1374507473886" ignored="false" />
     <file path="/reset.css" changelist="64ee2cd6-a76b-459b-8260-bf57ef832e0e" time="1373976712563" ignored="false" />
@@ -68,7 +52,7 @@
     <file path="/delete_comment.php" changelist="64ee2cd6-a76b-459b-8260-bf57ef832e0e" time="1375178167341" ignored="false" />
     <file path="/README" changelist="64ee2cd6-a76b-459b-8260-bf57ef832e0e" time="1375714677459" ignored="false" />
     <file path="/submit_rating.php" changelist="64ee2cd6-a76b-459b-8260-bf57ef832e0e" time="1375254727144" ignored="false" />
-    <file path="/LOG.txt" changelist="64ee2cd6-a76b-459b-8260-bf57ef832e0e" time="1375875608954" ignored="false" />
+    <file path="/LOG.txt" changelist="64ee2cd6-a76b-459b-8260-bf57ef832e0e" time="1375887275082" ignored="false" />
     <file path="/get_login_info.php" changelist="64ee2cd6-a76b-459b-8260-bf57ef832e0e" time="1375346772548" ignored="false" />
     <file path="/submit_trend.php" changelist="64ee2cd6-a76b-459b-8260-bf57ef832e0e" time="1375703366085" ignored="false" />
     <file path="/update_trend.php" changelist="64ee2cd6-a76b-459b-8260-bf57ef832e0e" time="1375360858553" ignored="false" />
@@ -104,7 +88,7 @@
       <file leaf-file-name="all.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/all.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1132" column="47" selection-start="32246" selection-end="32246" vertical-scroll-proportion="-9.84">
+            <state line="1132" column="47" selection-start="32246" selection-end="32246" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -113,7 +97,7 @@
       <file leaf-file-name="md5.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/md5.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="152" column="17" selection-start="5339" selection-end="5343" vertical-scroll-proportion="-9.8">
+            <state line="152" column="17" selection-start="5339" selection-end="5343" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -122,22 +106,19 @@
       <file leaf-file-name="edit_account_info.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/php/edit_account_info.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="44" column="0" selection-start="813" selection-end="813" vertical-scroll-proportion="-21.375">
+            <state line="44" column="0" selection-start="813" selection-end="813" vertical-scroll-proportion="0.0">
               <folding>
                 <marker date="1375884163000" expanded="true" signature="394:591" placeholder="UPDATE accou..." />
                 <marker date="1375884163000" expanded="true" signature="394:587" placeholder="UPDATE accou..." />
-                <marker date="1375884163000" expanded="true" signature="394:587" placeholder="UPDATE accou..." />
-                <marker date="1375884163000" expanded="true" signature="400:591" placeholder="INSERT INTO ..." />
-                <marker date="1375884163000" expanded="true" signature="682:759" placeholder="UPDATE accou..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LOG.txt" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="LOG.txt" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/LOG.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="47" column="18" selection-start="977" selection-end="977" vertical-scroll-proportion="0.0">
+            <state line="54" column="0" selection-start="1082" selection-end="1082" vertical-scroll-proportion="0.8598131">
               <folding />
             </state>
           </provider>
@@ -146,16 +127,16 @@
       <file leaf-file-name="index.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="306" column="57" selection-start="12113" selection-end="12113" vertical-scroll-proportion="-7.0">
+            <state line="306" column="57" selection-start="12113" selection-end="12113" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.less" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="main.less" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/style/main.less">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="738" column="56" selection-start="20742" selection-end="20742" vertical-scroll-proportion="0.5778146">
+            <state line="594" column="27" selection-start="15742" selection-end="16026" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -192,9 +173,9 @@
         <option value="$PROJECT_DIR$/js/md5.js" />
         <option value="$PROJECT_DIR$/php/edit_account_info.php" />
         <option value="$PROJECT_DIR$/index.php" />
-        <option value="$PROJECT_DIR$/LOG.txt" />
         <option value="$PROJECT_DIR$/js/all.js" />
         <option value="$PROJECT_DIR$/style/main.less" />
+        <option value="$PROJECT_DIR$/LOG.txt" />
       </list>
     </option>
   </component>
@@ -332,9 +313,9 @@
     <property name="restartRequiresConfirmation" value="true" />
     <property name="FullScreen" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
-    <property name="dynamic.classpath" value="false" />
-    <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
+    <property name="dynamic.classpath" value="false" />
   </component>
   <component name="PublishConfig">
     <servers>
@@ -389,6 +370,10 @@
     </key>
   </component>
   <component name="RunManager" selected="PHP Built-in Web Server.Unnamed">
+    <configuration default="true" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
+      <TestRunner />
+      <method />
+    </configuration>
     <configuration default="true" type="PhpBuiltInWebServerConfigurationType" factoryName="PHP Built-in Web Server">
       <method />
     </configuration>
@@ -400,6 +385,9 @@
         <option name="engineId" value="embedded" />
         <option name="fileUrl" />
       </JSDebuggerConfigurationSettings>
+      <method />
+    </configuration>
+    <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server">
       <method />
     </configuration>
     <configuration default="true" type="com.intellij.persistence.run.ConsoleRunConfigurationType" factoryName="Query Language Console">
@@ -465,7 +453,7 @@
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292683" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32950467" sideWeight="0.67014927" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2017229" sideWeight="0.6746269" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2045944" sideWeight="0.6746269" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="true" content_ui="tabs" />
@@ -547,9 +535,7 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/js/jquery_tags.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="140" selection-start="41" selection-end="140" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="0" column="140" selection-start="41" selection-end="140" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/php/delete_trend.php">
@@ -564,16 +550,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/README">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="71" selection-start="626" selection-end="626" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="27" column="71" selection-start="626" selection-end="626" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="19" selection-start="2252" selection-end="2252" vertical-scroll-proportion="-8.125">
-          <folding />
-        </state>
+        <state line="13" column="19" selection-start="2252" selection-end="2252" vertical-scroll-proportion="-8.125" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/php/connect_to_mysql.php">
@@ -593,64 +575,57 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/jquery_comments.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="100" selection-start="1043" selection-end="1043" vertical-scroll-proportion="-9.6">
-          <folding />
-        </state>
+        <state line="30" column="100" selection-start="1043" selection-end="1043" vertical-scroll-proportion="-9.6" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/php/submit_register.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="6" column="35" selection-start="150" selection-end="150" vertical-scroll-proportion="-3.0">
-          <folding>
-            <marker date="1375788706000" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/md5.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="152" column="17" selection-start="5339" selection-end="5343" vertical-scroll-proportion="-9.8">
+        <state line="152" column="17" selection-start="5339" selection-end="5343" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/php/edit_account_info.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="44" column="0" selection-start="813" selection-end="813" vertical-scroll-proportion="-21.375">
+        <state line="44" column="0" selection-start="813" selection-end="813" vertical-scroll-proportion="0.0">
           <folding>
             <marker date="1375884163000" expanded="true" signature="394:591" placeholder="UPDATE accou..." />
             <marker date="1375884163000" expanded="true" signature="394:587" placeholder="UPDATE accou..." />
-            <marker date="1375884163000" expanded="true" signature="394:587" placeholder="UPDATE accou..." />
-            <marker date="1375884163000" expanded="true" signature="400:591" placeholder="INSERT INTO ..." />
-            <marker date="1375884163000" expanded="true" signature="682:759" placeholder="UPDATE accou..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/index.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="306" column="57" selection-start="12113" selection-end="12113" vertical-scroll-proportion="-7.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/LOG.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="18" selection-start="977" selection-end="977" vertical-scroll-proportion="0.0">
+        <state line="306" column="57" selection-start="12113" selection-end="12113" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/all.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1132" column="47" selection-start="32246" selection-end="32246" vertical-scroll-proportion="-9.84">
+        <state line="1132" column="47" selection-start="32246" selection-end="32246" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/style/main.less">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="738" column="56" selection-start="20742" selection-end="20742" vertical-scroll-proportion="0.5778146">
+        <state line="594" column="27" selection-start="15742" selection-end="16026" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LOG.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="54" column="0" selection-start="1082" selection-end="1082" vertical-scroll-proportion="0.8598131">
           <folding />
         </state>
       </provider>

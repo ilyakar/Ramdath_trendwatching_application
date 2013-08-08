@@ -43,10 +43,12 @@ Wed Aug 7
 ---------
 
 Finished home page slider
+Finished account edit
+fixed bugs
 
 - Site functional except for
-    : google login
-    : user settings
-    : need some help?
-    : Filter trends
+      : google login
+    //: user settings
+      : need some help?
+      : Filter trends
 

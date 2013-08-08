@@ -720,10 +720,6 @@ body div#settings_panel > div:nth-child(1) > div img {
   height: 60px;
 }
 body div#settings_panel > div:nth-child(2) > div:first-child {
-  background: url('images/settings_panel/settings_icon.png') no-repeat center center;
-  background-size: 45%;
-}
-body div#settings_panel > div:nth-child(3) > div:first-child {
   background: url('images/settings_panel/logout_icon.png') no-repeat center center;
   background-size: 45%;
 }
