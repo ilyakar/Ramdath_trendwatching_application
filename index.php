@@ -173,7 +173,7 @@
 	<div data-role="content">
 		<div class="mini_container">
 			<a href="#new_trend_1" class="button red" data-transition="slide" id="new_trend_1_button">New trend</a>
-			<a href="#research_projects" class="button" id="my_research_projects_button">My research projects</a>
+			<a href="#research_projects" data-transition="slide" class="button" id="my_research_projects_button">My research projects</a>
 			<a href="#" class="button small" id="need_some_help_button">Need some help?</a>
 		</div>
 	</div>
@@ -268,9 +268,17 @@
     <div data-role="content">
         <div id="filter_by">
             <label>Filter posts by:</label>
-            <a href="#">Category</a>
-            <a href="#">Popularity</a>
-            <a href="#">Date</a>
+            <a href="#" data-d-id="category">Category</a>
+            <div data-d-id="category"></div>
+
+            <a href="#" data-d-id="popularity">Popularity</a>
+            <div data-d-id="popularity">
+                <a href="#">Views</a>
+                <a href="#">Rating</a>
+                <a href="#">Discussions</a>
+            </div>
+
+            <a href="#" data-d-id="date">Date</a>
         </div>
         <div id="image_list">
             <!-- Dynamically created -->
@@ -285,7 +293,7 @@
 <div id="settings_panel">
     <div>
         <div><img src="/style/images/default_profile_image.jpg" id="account_profile" alt="profile_pic"></div>
-        <a href="#edit_account"><span id="account_username">John Doe</span> <span class="small">(edit)</span></a>
+        <a href="#edit_account" data-transition="slide"><span id="account_username">John Doe</span> <span class="small">(edit)</span></a>
     </div>
 <!--    <div>-->
 <!--        <div></div>-->
@@ -323,6 +331,7 @@
 <script src="js/jquery_comments.js"></script>
 <script src="js/geolocation.js"></script>
 <script src="js/md5.js"></script>
+<script src="js/jquery_dropdown.js"></script>
 <!--<script src="https://maps.google.com/maps/api/js?sensor=false"></script>-->
 </body>
 </html>

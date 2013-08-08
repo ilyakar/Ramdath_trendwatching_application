@@ -785,6 +785,7 @@ body #explore div[data-role="content"] #filter_by {
   background: #2e2e2e;
   font-size: 15px;
   color: #ececec;
+  overflow: visible;
 }
 body #explore div[data-role="content"] #filter_by label {
   padding: 10px 15px;
@@ -795,6 +796,37 @@ body #explore div[data-role="content"] #filter_by a {
   border-left: solid 1px #393939;
   float: left;
   color: #ececec;
+  background: #2e2e2e;
+  position: relative;
+  overflow: visible;
+}
+body #explore div[data-role="content"] #filter_by a.selected:after {
+  content: '';
+  position: absolute;
+  top: 35px;
+  left: 50%;
+  margin-left: -5px;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #2e2e2e;
+}
+body #explore div[data-role="content"] #filter_by div {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 50px;
+}
+body #explore div[data-role="content"] #filter_by div.selected {
+  display: block;
+}
+body #explore div[data-role="content"] #filter_by div div {
+  border-bottom: solid 1px #393939;
+}
+body #explore div[data-role="content"] #filter_by div div a {
+  width: 93px;
+}
+body #explore div[data-role="content"] #filter_by div div a:nth-child(3n) {
+  width: 95px;
 }
 body #explore div[data-role="content"] #image_list .scrollableArea > div {
   height: 1000px;
@@ -831,7 +863,7 @@ body #explore div[data-role="content"] #image_list .scrollableArea > div .image_
   z-index: 4;
 }
 body #explore div[data-role="content"] #image_list .scrollableArea > div section {
-  padding: 0 30px;
+  padding: 0 40px;
 }
 body #explore div[data-role="content"] #image_list .scrollableArea > div section header {
   overflow: visible;
@@ -843,11 +875,12 @@ body #explore div[data-role="content"] #image_list .scrollableArea > div section
   text-transform: uppercase;
   position: relative;
   overflow: visible;
+  white-space: nowrap;
 }
 body #explore div[data-role="content"] #image_list .scrollableArea > div section header h1 i {
   position: absolute;
   top: -4px;
-  left: -30px;
+  left: -40px;
   font-style: normal;
   background: #ac0a12;
   padding: 6px 6px;

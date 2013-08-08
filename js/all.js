@@ -185,16 +185,48 @@ function load_ajax(new_login){
         var rater       = data.rater;
 
         // -- Categories --
-            var $container = $('#new_trend_categories, #edit_trend_categories');
+            var $container  = $('#new_trend_categories, #edit_trend_categories');
+            var $container2 = $('#filter_by').find('div[data-d-id="category"]');
 
             for(var i=0; i<categories.length; i++){
 
-                var category = categories[i];
-                $container.append(
-                    '<div>' +
-                        category.name +
-                    '</div>'
-                );
+                // Trend
+                    var category = categories[i];
+                    $container.append(
+                        '<div>' +
+                            category.name +
+                        '</div>'
+                    );
+
+// todo coninue here
+                // #filter_by
+                    if((i+1) % 3 == 1){
+                        // First
+                            if(i == 0){
+                                $container2.append('<div>');
+//                                console.log(1);
+                            }
+
+                        // Last
+                            else if(i == categories.length-1){
+                                $container2.append('</div>');
+//                                console.log(3);
+                            }
+
+                        // In between
+                            else {
+                                console.log(i);
+                                $container2.append('</div><div>');
+//                                console.log(2);
+                            }
+                    }
+                    $container2.append(
+                        '<a href="#">' +
+                            category.name +
+                        '</a>'
+                    );
+
+
 
             }
 
@@ -214,6 +246,8 @@ function load_ajax(new_login){
             }
 
         $('#image_list')    .append(trends_list);
+        optimise_explore_images();
+
         $('body')           .append(trends_single);
 
         if(logged_in){
@@ -404,6 +438,22 @@ function global_click_functions() {
         }
 
     });
+
+    // Trend filter button click
+//    $('#filter_by').children('a').click(function(){
+//
+//        var id = $(this).attr('data-id');
+//
+//        if($(this).hasClass('selected')){
+//            $(this)                     .removeClass('selected');
+//            $('div[data-id="'+ id +'"]').removeClass('selected');
+//        }
+//        else {
+//            $(this)                     .addClass('selected');
+//            $('div[data-id="'+ id +'"]').addClass('selected');
+//        }
+//
+//    });
 
     // On menu icon click
     $('#menu_icon').click(function(){
@@ -620,6 +670,11 @@ function setup_other_plugins(which){
         setup_single_trend_gallery();
     }
 
+    // Trend filter_by dropdown plugin
+    if(which == 'all'){
+        $('#filter_by').dropdown();
+    }
+
     ///////////////////
 
     function setup_single_trend_gallery(){
@@ -797,8 +852,6 @@ function submit_account_edit(){
 }
 
 function setup_account_edit_page(){
-
-    console.log(stored_data.user_info);
 
     var info = stored_data.user_info;
 
@@ -1023,19 +1076,45 @@ function check_if_allowed_page(){
 
 }
 
-function optimise_image(img){
+function optimise_explore_images(){
 
-    var $img = $(img);
-console.log($img.width(), $img.parents('div').width());
-    if($img.width() < $img.parents('div').width()){
+    var container = [];
+    var new_height, new_width;
+    container.width = 400;
+    container.height = 275;
 
-        $img.css({
-            width   : '100%',
-            height  : 'auto'
+    var img;
 
-        });
+    var images = $('#image_list').find('img');
+    images.load(function(el){
+        var image = $(el.currentTarget);
+        var src = image.attr('src');
 
-    }
+        img = new Image();
+        img.onload = function() {
+
+            new_height = container.width / this.width * this.height;
+
+            // Height 100%
+            if(new_height < container.height){ // If we make width 100% and height is smaller than the container, then the height has to be 100% and width bigger
+                new_height = container.height;
+                new_width = new_height / this.height * this.width;
+            }
+
+            // Width 100%
+            else {
+                new_width = container.width;
+            }
+
+            image
+                .width(new_width)
+                .height(new_height);
+
+        };
+
+        img.src = src;
+
+    });
 
 }
 
@@ -1112,7 +1191,7 @@ function go_home(on_back){
         // Re-enables the default page behaviour
             setTimeout(function(){
                 $(document).unbind("pagebeforechange");
-            }, 500);
+            }, 1000);
 
     }
 
@@ -1122,15 +1201,17 @@ function get_trend_list(trend, i){
 
     trend.link_title    = 'trend_' + trend.id + '_' + trend.title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
 
+    var num = i+1 < 10 ? '0'+(i+1) : i+1;
+
     // Fills up EXPLORE page (trend list)
     var trend_list =
         '<div>' +
             '<div class="image_container">' +
                 '<a href="#'+ trend.link_title +'" data-transition="slide">View trend</a>' +
-                '<img src="/images/'+ trend.images.split(',')[0] +'" alt="trend pic" onload="optimise_image(this)" />' +
+                '<img src="/images/'+ trend.images.split(',')[0] +'" alt="trend pic" />' +
             '</div>' +
             '<section>' +
-                '<header><h1><i>'+ (i+1) +'</i>'+ trend.title +'</h1></header>' +
+                '<header><h1><i>'+ num +'</i>'+ truncate(trend.title, 25) +'</h1></header>' +
                 truncate(trend.description, 400, 1) +
             '</section>' +
         '</div>';
@@ -1248,7 +1329,7 @@ function load_logged_in_ajax(new_login){
                 project.link_title = 'project_' + project.id + '_' + project.name.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
 
                 $container.append(
-                    '<a href="#'+ project.link_title +'" class="tag">' +
+                    '<a href="#'+ project.link_title +'"  data-transition="slide" class="tag">' +
                         '<span>'+ (i+1) +'.</span> '+ project.name +
                     '</a>'
                 );
@@ -1452,7 +1533,7 @@ function loader(type){
 }
 
 function submit_trend(){
-console.log('submit trend()');
+
     // Title
         var title       = $('#new_trend_title').val();
         var description = $('#new_trend_description').val();
@@ -1474,7 +1555,6 @@ console.log('submit trend()');
             categories      : categories,
             location        : location
         },function(data){
-            console.log('trend submit data:', data);
             // Insert HTML
             var trend_single = get_trend_single(data.trend, data.rater);
             $('body').append(trend_single);
@@ -1485,7 +1565,7 @@ console.log('submit trend()');
             $.mobile.changePage('#'+link_title, 'pop');
 
             $.cookie('view_type', 'explore'); // Makes sure that the back button will take the user to the explore page by changing the cookie
-console.log('GO HOME');
+
             // The back button will take the user HOME
             go_home(1);
 

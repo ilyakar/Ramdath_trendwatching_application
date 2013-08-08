@@ -5,7 +5,7 @@ include '../php/connect_to_mysql.php';
 
 //mysql_query("ALTER TABLE `SOTT`.`accounts` ADD COLUMN `asda` VARCHAR(45) NULL ;");
 
-$file = file_get_contents('dump.csv');
+$file = file_get_contents('dumps.csv');
 
 $lines = explode("\n", $file);
 

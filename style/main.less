@@ -670,6 +670,7 @@ body {
                 background: @grey;
                 font-size: 15px;
                 color: @white;
+                overflow: visible;
                 label {
                     padding: 10px 15px;
                     float: left;
@@ -679,6 +680,39 @@ body {
                     border-left: solid 1px @slightly_more_light_grey;
                     float: left;
                     color: @white;
+                    background: @grey;
+                    position: relative;
+                    overflow: visible;
+                    &.selected {
+                        &:after {
+                            content: '';
+                            position: absolute;
+                            top: 35px;
+                            left: 50%;
+                            margin-left: -5px;
+                            border-left: 10px solid transparent;
+                            border-right: 10px solid transparent;
+                            border-top: 10px solid @grey;
+                        }
+                    }
+                }
+                div {
+                    display: none;
+                    position: absolute;
+                    right: 0;
+                    top: 50px;
+                    &.selected {
+                        display: block;
+                    }
+                    div {
+                        border-bottom: solid 1px @slightly_more_light_grey;
+                        a {
+                            width: 93px;
+                            &:nth-child(3n){
+                                width: 95px;
+                            }
+                        }
+                    }
                 }
             }
             #image_list {
@@ -688,6 +722,7 @@ body {
                         float: left;
                         width: 400px;
                         &:hover {
+//                            background: @lighter_grey;
                             .image_container {
                                 a {
                                     display: block;
@@ -721,7 +756,7 @@ body {
                             }
                         }
                         section {
-                            padding: 0 30px;
+                            padding: 0 40px;
                             header {
                                 overflow: visible;
                                 h1 {
@@ -731,10 +766,11 @@ body {
                                     text-transform: uppercase;
                                     position: relative;
                                     overflow: visible;
+                                    white-space: nowrap;
                                     i {
                                         position: absolute;
                                         top: -4px;
-                                        left: -30px;
+                                        left: -40px;
                                         font-style: normal;
                                         background: @red;
                                         padding: 6px 6px;

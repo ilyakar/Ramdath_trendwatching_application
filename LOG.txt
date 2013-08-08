@@ -45,6 +45,7 @@ Wed Aug 7
 Finished home page slider
 Finished account edit
 fixed bugs
+Logout works perfectly (I think)
 
 - Site functional except for
       : google login
@@ -52,3 +53,8 @@ fixed bugs
       : need some help?
       : Filter trends
 
+Thu Aug 8
+---------
+
+Explore trends pictures are optimised
+Fixed back button problems
