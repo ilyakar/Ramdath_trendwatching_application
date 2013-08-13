@@ -13,12 +13,25 @@ while($row = mysql_fetch_array($sql)) {
     $row['location']    = urldecode($row['location']);
     // --
 
-    $rows['trends'][] = $row;
-}
+    $row['num_comments'] = 0;
 
-$sql = mysql_query("SELECT * FROM rater");
-while($row = mysql_fetch_array($sql)) {
-    $rows['rater'][] = $row;
+    $id = $row['id'];
+
+    $sql2 = mysql_query("SELECT * FROM comments WHERE trend_id='$id'");
+    while($row2 = mysql_fetch_array($sql2)){
+
+        $row['num_comments'] = mysql_num_rows($sql2);
+
+    }
+
+    $sql2 = mysql_query("SELECT * FROM rater WHERE trend_id='$id'");
+    while($row2 = mysql_fetch_array($sql2)) {
+        $row['rating']['value']    = $row2['value'];
+        $row['rating']['votes']    = $row2['votes'];
+        $row['rating']['user_ids'] = $row2['user_ids'];
+    }
+
+    $rows['trends'][] = $row;
 }
 
 $sql = mysql_query("SELECT * FROM categories");

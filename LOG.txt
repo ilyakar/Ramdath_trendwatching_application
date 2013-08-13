@@ -58,3 +58,10 @@ Thu Aug 8
 
 Explore trends pictures are optimised
 Fixed back button problems
+
+Mon Aug 12
+----------
+
+Fixed main menu bug when you go back from explore to create and not logged in
+filter_by has progressed a lot more
+figured out problem of constant site freezing

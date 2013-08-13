@@ -810,6 +810,14 @@ body #explore div[data-role="content"] #filter_by a.selected:after {
   border-right: 10px solid transparent;
   border-top: 10px solid #2e2e2e;
 }
+body #explore div[data-role="content"] #filter_by a.selected.active:after {
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #ac0a12;
+}
+body #explore div[data-role="content"] #filter_by a.active {
+  background: #ac0a12;
+}
 body #explore div[data-role="content"] #filter_by div {
   display: none;
   position: absolute;
@@ -819,14 +827,25 @@ body #explore div[data-role="content"] #filter_by div {
 body #explore div[data-role="content"] #filter_by div.selected {
   display: block;
 }
-body #explore div[data-role="content"] #filter_by div div {
+body #explore div[data-role="content"] #filter_by div ul {
+  margin: 0;
+  padding: 0;
+  width: 113px;
+  float: left;
+}
+body #explore div[data-role="content"] #filter_by div ul:nth-child(3) {
+  width: 115px;
+}
+body #explore div[data-role="content"] #filter_by div ul li {
+  margin: 0;
+  padding: 0;
   border-bottom: solid 1px #393939;
 }
-body #explore div[data-role="content"] #filter_by div div a {
-  width: 93px;
+body #explore div[data-role="content"] #filter_by div ul li:last-child {
+  border-bottom: none;
 }
-body #explore div[data-role="content"] #filter_by div div a:nth-child(3n) {
-  width: 95px;
+body #explore div[data-role="content"] #filter_by div ul li a {
+  width: 100%;
 }
 body #explore div[data-role="content"] #image_list .scrollableArea > div {
   height: 1000px;
@@ -836,10 +855,17 @@ body #explore div[data-role="content"] #image_list .scrollableArea > div {
 body #explore div[data-role="content"] #image_list .scrollableArea > div:hover .image_container a {
   display: block;
 }
+body #explore div[data-role="content"] #image_list .scrollableArea > div.show {
+  display: block;
+}
+body #explore div[data-role="content"] #image_list .scrollableArea > div.hide {
+  display: none;
+}
 body #explore div[data-role="content"] #image_list .scrollableArea > div .image_container {
   height: 270px;
   border-bottom: solid 5px #2e2e2e;
   position: relative;
+  background: url('images/logo_mini.png') no-repeat 50% 50%;
 }
 body #explore div[data-role="content"] #image_list .scrollableArea > div .image_container a {
   position: absolute;
@@ -893,6 +919,9 @@ body #explore div[data-role="content"] #image_list .scrollableArea > div section
   margin: 0 0 15px;
   white-space: pre-wrap;
   line-height: 20px;
+}
+body #explore div[data-role="content"] #image_list_copy {
+  display: none;
 }
 body .maxi_container.trend_single div .image_container {
   float: left;

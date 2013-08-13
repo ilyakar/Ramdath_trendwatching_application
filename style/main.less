@@ -694,6 +694,16 @@ body {
                             border-right: 10px solid transparent;
                             border-top: 10px solid @grey;
                         }
+                        &.active {
+                            &:after {
+                                border-left: 10px solid transparent;
+                                border-right: 10px solid transparent;
+                                border-top: 10px solid @red;
+                            }
+                        }
+                    }
+                    &.active {
+                        background: @red;
                     }
                 }
                 div {
@@ -704,12 +714,23 @@ body {
                     &.selected {
                         display: block;
                     }
-                    div {
-                        border-bottom: solid 1px @slightly_more_light_grey;
-                        a {
-                            width: 93px;
-                            &:nth-child(3n){
-                                width: 95px;
+                    ul {
+                        margin: 0;
+                        padding: 0;
+                        width: 113px;
+                        float: left;
+                        &:nth-child(3){
+                            width: 115px;
+                        }
+                        li {
+                            margin: 0;
+                            padding: 0;
+                            border-bottom: solid 1px @slightly_more_light_grey;
+                            &:last-child {
+                                border-bottom: none;
+                            }
+                            a {
+                                width: 100%;
                             }
                         }
                     }
@@ -729,10 +750,17 @@ body {
                                 }
                             }
                         }
+                        &.show {
+                            display: block;
+                        }
+                        &.hide {
+                            display: none;
+                        }
                         .image_container {
                             height: 270px;
                             border-bottom: solid 5px @grey;
                             position: relative;
+                            background: url('images/logo_mini.png') no-repeat 50% 50%;
                             a {
                                 position: absolute;
                                 width: 200px;
@@ -789,6 +817,9 @@ body {
                         }
                     }
                 }
+            }
+            #image_list_copy {
+                display: none;
             }
         }
     }

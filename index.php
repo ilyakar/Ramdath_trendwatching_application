@@ -273,16 +273,31 @@
 
             <a href="#" data-d-id="popularity">Popularity</a>
             <div data-d-id="popularity">
-                <a href="#">Views</a>
-                <a href="#">Rating</a>
-                <a href="#">Discussions</a>
+                <ul>
+                    <li><a href="#">Views</a></li>
+                </ul>
+                <ul>
+                    <li><a href="#">Rating</a></li>
+                </ul>
+                <ul>
+                    <li><a href="#">Discussions</a></li>
+                </ul>
             </div>
 
             <a href="#" data-d-id="date">Date</a>
+            <div data-d-id="date">
+                <ul>
+                    <li><a href="#">Latest first</a></li>
+                </ul>
+                <ul>
+                    <li><a href="#">Oldest first</a></li>
+                </ul>
+            </div>
         </div>
         <div id="image_list">
             <!-- Dynamically created -->
         </div>
+        <div id="image_list_copy"></div>
     </div>
 
 </div>
@@ -332,6 +347,7 @@
 <script src="js/geolocation.js"></script>
 <script src="js/md5.js"></script>
 <script src="js/jquery_dropdown.js"></script>
+<script src="js/jquery_lazyload.js"></script>
 <!--<script src="https://maps.google.com/maps/api/js?sensor=false"></script>-->
 </body>
 </html>

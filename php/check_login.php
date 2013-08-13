@@ -79,6 +79,3 @@ if($type == 'facebook'){
 }
 
 print json_encode($rows);
-
-
-?>

@@ -24,7 +24,7 @@
 
 // ----- Secondary setup -----
     function load_rest(){
-
+console.log('load_rest()');
         // Init global_page_functions on start AND page change
         on_page_change();
 
@@ -198,37 +198,25 @@ function load_ajax(new_login){
                         '</div>'
                     );
 
-// todo coninue here
                 // #filter_by
-                    if((i+1) % 3 == 1){
-                        // First
-                            if(i == 0){
-                                $container2.append('<div>');
-//                                console.log(1);
-                            }
-
-                        // Last
-                            else if(i == categories.length-1){
-                                $container2.append('</div>');
-//                                console.log(3);
-                            }
-
-                        // In between
-                            else {
-                                console.log(i);
-                                $container2.append('</div><div>');
-//                                console.log(2);
-                            }
-                    }
                     $container2.append(
-                        '<a href="#">' +
+                        '<li><a href="#">' +
                             category.name +
-                        '</a>'
+                        '</a></li>'
                     );
 
-
-
             }
+
+            // Wraps each 3 categories with a div
+                var categories = $container2.children('li');
+                var num = categories.length;
+                var ceil = Math.ceil(num/3);
+
+                for(var i=0; i<num; i+=ceil){
+
+                    categories.slice(i, i+ceil).wrapAll("<ul></ul>");
+
+                }
 
         // -- Trends --
             var num = trends.length;
@@ -245,7 +233,7 @@ function load_ajax(new_login){
 
             }
 
-        $('#image_list')    .append(trends_list);
+        $('#image_list').append(trends_list);
         optimise_explore_images();
 
         $('body')           .append(trends_single);
@@ -348,7 +336,7 @@ function check_login(type, status) {
 
 
         function start_ajax(username, password, md5, type, extra_info) {
-
+console.log('ajax started');
             $.post('../php/check_login.php', {
 
                 username    : username,
@@ -439,21 +427,73 @@ function global_click_functions() {
 
     });
 
-    // Trend filter button click
-//    $('#filter_by').children('a').click(function(){
-//
-//        var id = $(this).attr('data-id');
-//
-//        if($(this).hasClass('selected')){
-//            $(this)                     .removeClass('selected');
-//            $('div[data-id="'+ id +'"]').removeClass('selected');
-//        }
-//        else {
-//            $(this)                     .addClass('selected');
-//            $('div[data-id="'+ id +'"]').addClass('selected');
-//        }
-//
-//    });
+    $('#filter_by').find('li').children('a').click(function(){
+
+        var type                    = $(this).parents('div').attr('data-d-id');
+        var $container              = $('#image_list');
+        var $container_untouched    = $('#image_list_copy');
+
+        // Clones the image_list on first click
+            if(!$container_untouched.html()){
+
+                $container_untouched.html($container.find('.scrollableArea').html());
+            }
+
+        $container.find('.scrollableArea').html($container_untouched.html());
+
+        // Adds the .active class
+            if(!$(this).hasClass('active')){ // Adds the .active class if it didn't yet exist
+                $(this).addClass('active');
+            }
+            else { // Removes the .active class if it exists
+                $(this).removeClass('active');
+            }
+
+            if($(this).parents('div[data-d-id]').find('a.active').length){ // Adds .active class to the main button
+                $('#filter_by').children('a[data-d-id="'+ type +'"]').addClass('active');
+            }
+            else { // Removes .active class from the main button
+                $('#filter_by').children('a[data-d-id="'+ type +'"]').removeClass('active');
+            }
+
+        if(type == 'category'){
+
+            var attributes = '';
+            var els = $(this).parents('div[data-d-id]').find('a.active');
+            for(var i=0; i<els.length; i++){
+                var el = els.eq(i);
+                attributes += '[data-categories*='+ el.text() +']';
+            }
+
+            if(attributes){
+                $container.find('div[data-categories]:not('+ attributes +')').remove();
+            }
+
+        }
+        else if(type == 'popularity'){
+
+            var value = $(this).text().toLocaleLowerCase();
+
+            if(value == 'rating'){
+
+                if($(this).hasClass('active')){
+                    var els = $container.find('[data-rating]');
+                    els.sort(function(a, b) {
+                        return parseInt($(b).attr('data-rating')) - parseInt($(a).attr('data-rating'));
+                    });
+
+                    $container.find('data-rating').remove();
+                    $container.find('.scrollableArea').html(els);
+                }
+
+            }
+
+        }
+        else if(type == 'date'){
+
+        }
+
+    });
 
     // On menu icon click
     $('#menu_icon').click(function(){
@@ -576,8 +616,8 @@ function global_click_functions() {
 }
 
 function setup_other_plugins(which){
-
-    // Tag plugin
+//console.log('setting up other plugins');
+//    // Tag plugin
     if(which == 'all'){
         $('#new_trend_tagger, #edit_trend_tagger').tagsInput({
             height: '100%',
@@ -596,6 +636,46 @@ function setup_other_plugins(which){
 
     // Rating plugin
     if(which == 'all'){
+        setup_raty();
+    }
+
+    // Explore plugin
+    if(which == 'all'){
+        setup_smooth_scroll_plugin();
+    }
+
+    // Comment plugin
+    if(which == 'all' || which == 'comments'){
+        $('.trend_comments').comments({
+            author: {
+                id:             stored_data.user_info.id, // Gotten from global object of "user_info", created when logged in
+                username:       stored_data.user_info.username,
+                image:          stored_data.user_info.profile_image
+            }
+        });
+    }
+
+    // Trend single gallery setup
+    if(which == 'all'){
+        setup_single_trend_gallery();
+    }
+
+    // Trend filter_by dropdown plugin
+    if(which == 'all'){
+        $('#filter_by').dropdown();
+    }
+
+    if(which == 'all'){
+        alert('now');
+        $("img.lazyload").lazyload({
+            effect      : 'fadeIn',
+            container   : $('.scrollWrapper')
+        });
+    }
+
+    ///////////////////
+
+    function setup_raty() {
         $('.raty').raty({
             path        : '/style/images/',
             starOn      : 'raty_star_on.png',
@@ -648,34 +728,6 @@ function setup_other_plugins(which){
             }
         });
     }
-
-    // Explore plugin
-    if(which == 'all'){
-        setup_smooth_scroll_plugin();
-    }
-
-    // Comment plugin
-    if(which == 'all' || which == 'comments'){
-        $('.trend_comments').comments({
-            author: {
-                id:             stored_data.user_info.id, // Gotten from global object of "user_info", created when logged in
-                username:       stored_data.user_info.username,
-                image:          stored_data.user_info.profile_image
-            }
-        });
-    }
-
-    // Trend single gallery setup
-    if(which == 'all'){
-        setup_single_trend_gallery();
-    }
-
-    // Trend filter_by dropdown plugin
-    if(which == 'all'){
-        $('#filter_by').dropdown();
-    }
-
-    ///////////////////
 
     function setup_single_trend_gallery(){
 
@@ -899,7 +951,7 @@ function account_logout(){
 }
 
 function setup_logged_in_stuff(new_login){
-
+console.log('setting up logged in stuff');
     load_logged_in_ajax(new_login);
     setup_account_stuff();
 
@@ -1018,6 +1070,7 @@ function submit_register(){
 function submit_login(){
     var username = $('#login_username').val();
     var password = $('#login_password').val();
+
     $.post('../php/check_login.php', {
         username: username,
         password: password,
@@ -1044,7 +1097,7 @@ function submit_login(){
 
         }
 
-    }, 'JSON');
+    });
 
 }
 
@@ -1200,15 +1253,20 @@ function go_home(on_back){
 function get_trend_list(trend, i){
 
     trend.link_title    = 'trend_' + trend.id + '_' + trend.title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
+    var rating = trend.rating.value / trend.rating.votes;
+
+    if(!rating){
+        rating = 0;
+    }
 
     var num = i+1 < 10 ? '0'+(i+1) : i+1;
 
     // Fills up EXPLORE page (trend list)
     var trend_list =
-        '<div>' +
+        '<div data-categories="'+ trend.categories +'" data-num-comments="'+ trend.num_comments +'" data-rating="'+ rating +'">' +
             '<div class="image_container">' +
                 '<a href="#'+ trend.link_title +'" data-transition="slide">View trend</a>' +
-                '<img src="/images/'+ trend.images.split(',')[0] +'" alt="trend pic" />' +
+                '<img class="lazyload" src="/style/images/transparent.png" data-original="/images/'+ trend.images.split(',')[0] +'" alt="trend pic" />' +
             '</div>' +
             '<section>' +
                 '<header><h1><i>'+ num +'</i>'+ truncate(trend.title, 25) +'</h1></header>' +
@@ -1254,15 +1312,8 @@ function get_trend_single(trend, rater){
         }
 
         // Searches the "rater" array to get the array of the current trend
-        var rating = $.grep(rater, function(e){
-            return e.trend_id == trend.id;
-        });
-        if(!rating.length) {
-            rating = [];
-        }
-        else {
-            rating = rating[0];
-        }
+        var rating = trend.rating;
+
         if(!rating.value) rating.value = 0;
         if(!rating.votes) rating.votes = 0;
 
@@ -1432,6 +1483,9 @@ function global_page_functions(){
 
             return;
         }
+        else {
+            $.removeCookie('view_type');
+        }
 
         $header.addClass('home');
         $footer.addClass('home');
@@ -1497,8 +1551,22 @@ function global_page_functions(){
 
     }
 
+    if(!location.hash){
+
+        // Logo show, title hide
+        $('#header_logo').show(0);
+        $('#header_title').hide(0);
+
+        // Back button hide
+        $('#back_icon').hide(0);
+        $('#menu_icon').hide(0);
+
+        $footer.addClass('home').removeClass('hide').children('a').removeClass('selected');
+
+    }
+
     // If any page other than HOME and #create & #explore
-    else if(location.hash){
+    if(location.hash && location.hash !== '#create' && location.hash !== '#explore'){
 
         // Back button show
         $('#menu_icon').hide(0);
@@ -1510,10 +1578,6 @@ function global_page_functions(){
             go_home(1); // Goes home on back click (EXPLORE page)
 
         }
-
-            $('#back_icon_create')    .removeClass('active');
-            $('#back_icon_explore')   .addClass('active');
-
 
         // Logo hide, title show
         $('#header_logo').hide(0);

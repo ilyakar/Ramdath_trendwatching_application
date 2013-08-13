@@ -1,5 +1,5 @@
-CREATE DATABASE  IF NOT EXISTS `SOTT` /*!40100 DEFAULT CHARACTER SET latin1 */;
-USE `SOTT`;
+-- CREATE DATABASE  IF NOT EXISTS `SOTT` /*!40100 DEFAULT CHARACTER SET latin1 */;
+-- USE `SOTT`;
 -- MySQL dump 10.13  Distrib 5.6.10, for osx10.7 (i386)
 --
 -- Host: localhost    Database: SOTT

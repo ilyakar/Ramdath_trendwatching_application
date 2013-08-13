@@ -7,6 +7,11 @@ $db_user = 'root';
 $db_pass = '';
 $db_name = 'SOTT';
 
+//$db_host = '10.0.29.34:3306';
+//$db_user = 'ucbKt1hE89PwA';
+//$db_pass = 'prWK3KN82zf2p';
+//$db_name = 'd81c41e5fc15f4bb59c6ea65d0dd6488b';
+
 $con = mysql_connect( $db_host , $db_user , $db_pass);
 
 if (!$con){
@@ -19,5 +24,4 @@ $con = mysql_select_db( $db_name );
 if (!$con){
     print '<p>There is a problem connecting to the database (database cannot be selected)</p>';
 }
-
 ?>

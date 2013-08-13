@@ -8,27 +8,27 @@ $.fn.dropdown = function( options ) {
     // Setup variables
     var $this = this;
     var d_timeout = new Array();
-    var id;
+    var id, hide_list;
 
     dropdown_hide_timeout = 400;
     dropdown_speed = 300;
 
-    //--- ">" = only get the first of the li (otherwise it'll show all the dropdowns at once ----
     $this.find('a[data-d-id]').click(function(){
+
+        if($(this).hasClass('selected')){
+            hide_list = 1;
+        }
+        else {
+            hide_list = 0;
+        }
 
         var id = $(this).attr('data-d-id');
 
-console.log($(this).attr('class'));
-        // Not selected
-        if(!$(this).hasClass('selected')){
-            show(id);
-            clearTimeout(d_timeout[id]);
-        }
+        // Hides all shows id
+        hide('all', 1);
 
-        // Selected
-        else {
-            console.log('hide');
-            hide(id, 1);
+        if(!hide_list){
+            show(id);
         }
 
     });
@@ -47,7 +47,7 @@ console.log($(this).attr('class'));
 
     function show(id){
 
-        $('a[data-d-id="'+ id +'"], div[data-d-id="'+ id +'"]').addClass('selected');
+        $('[data-d-id="'+ id +'"]').addClass('selected');
 
     }
 
@@ -56,13 +56,16 @@ console.log($(this).attr('class'));
         if(!immediate){
             d_timeout[id] /* dropdown timeout */ = setTimeout(function(){
 
-                $('a[data-d-id="'+ id +'"], div[data-d-id="'+ id +'"]').removeClass('selected');
+                $('[data-d-id="'+ id +'"]').removeClass('selected');
 
             },dropdown_hide_timeout);
         }
+        else if(id == 'all') { // Close everything
+            $('[data-d-id]').removeClass('selected');
+        }
         else {
             clearTimeout(d_timeout[id]);
-            $('a[data-d-id="'+ id +'"], div[data-d-id="'+ id +'"]').removeClass('selected');
+            $('[data-d-id="'+ id +'"]').removeClass('selected');
         }
 
     }
