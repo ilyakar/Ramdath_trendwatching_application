@@ -11,6 +11,8 @@ while($row = mysql_fetch_array($sql)) {
     $row['tags']        = urldecode($row['tags']);
     $row['categories']  = urldecode($row['categories']);
     $row['location']    = urldecode($row['location']);
+    $row['video']       = urldecode($row['video']);
+    $row['website']     = urldecode($row['website']);
     // --
 
     $row['num_comments'] = 0;
@@ -37,6 +39,11 @@ while($row = mysql_fetch_array($sql)) {
 $sql = mysql_query("SELECT * FROM categories");
 while($row = mysql_fetch_array($sql)) {
     $rows['categories'][] = $row;
+}
+
+$sql = mysql_query("SELECT * FROM mentality_trends");
+while($row = mysql_fetch_array($sql)) {
+    $rows['mentality_trends'][] = $row;
 }
 
 print json_encode($rows);

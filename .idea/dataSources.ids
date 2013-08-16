@@ -61,14 +61,18 @@
     </table>
     <table name="trends" schema="" catalog="SOTT" type="TABLE">
       <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="user_id" sqlType="VARCHAR" length="45" precision="0" nullable="true" jdbcType="12"/>
+      <column name="user_id" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
       <column name="images" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
       <column name="title" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
       <column name="description" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <column name="video" sqlType="VARCHAR" length="100" precision="0" nullable="true" jdbcType="12"/>
+      <column name="website" sqlType="VARCHAR" length="100" precision="0" nullable="true" jdbcType="12"/>
+      <column name="location" sqlType="VARCHAR" length="100" precision="0" nullable="true" jdbcType="12"/>
       <column name="tags" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
       <column name="categories" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
-      <column name="location" sqlType="VARCHAR" length="45" precision="0" nullable="true" jdbcType="12"/>
-      <column name="research_project" sqlType="VARCHAR" length="45" precision="0" nullable="true" jdbcType="12"/>
+      <column name="ment_trend" sqlType="VARCHAR" length="100" precision="0" nullable="true" jdbcType="12"/>
+      <column name="research_project" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
+      <column name="views" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
       <primary-key name="PRIMARY" columns="id"/>
     </table>
     <table name="trends_trash" schema="" catalog="SOTT" type="TABLE">

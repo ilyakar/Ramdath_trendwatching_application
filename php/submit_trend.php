@@ -7,9 +7,13 @@ $uploaded_images    = $_POST['uploaded_images'];
 
 $title              = urlencode($_POST['title']);
 $description        = urlencode($_POST['description']);
+$video              = urlencode($_POST['video']);
+$website            = urlencode($_POST['website']);
+$location           = urlencode($_POST['location']);
+
 $tags               = urlencode($_POST['tags']);
 $categories         = urlencode($_POST['categories']);
-$location           = urlencode($_POST['location']);
+$ment_trend         = urlencode($_POST['ment_trend']);
 
 // Moves and removes the uploaded images
     $uploaded_images = explode(',', $uploaded_images);
@@ -38,20 +42,39 @@ $location           = urlencode($_POST['location']);
     }
     $files = substr_replace($files, '', -1);
 
-$description = nl2p($description);
-
 // Add all the info to database
-mysql_query("INSERT INTO trends (user_id, images, title, description, tags, categories, location) VALUES ('$user_id', '$files', '$title', '$description', '$tags', '$categories', '$location')") or die(mysql_error());
+mysql_query("INSERT INTO trends (
+user_id,
+images,
+
+title,
+description,
+video,
+website,
+location,
+
+tags,
+categories,
+ment_trend
+) VALUES (
+'$user_id',
+'$files',
+
+'$title',
+'$description',
+'$video',
+'$website',
+'$location',
+
+'$tags',
+'$categories',
+'$ment_trend'
+)") or die(mysql_error());
 $trend_id = mysql_insert_id();
 
 mysql_query("INSERT INTO rater (trend_id) VALUES ('$trend_id')");
 
 // ------------ Get values to return ------------
-    $sql = mysql_query("SELECT * FROM rater");
-    while($row = mysql_fetch_array($sql)) {
-        $rows['rater'][] = $row;
-    }
-
     $sql = mysql_query("SELECT * FROM trends WHERE id='$trend_id'");
     while($row = mysql_fetch_array($sql)) {
 
@@ -62,6 +85,13 @@ mysql_query("INSERT INTO rater (trend_id) VALUES ('$trend_id')");
         $row['categories']  = urldecode($row['categories']);
         $row['location']    = urldecode($row['location']);
         // --
+
+        $sql2 = mysql_query("SELECT * FROM rater WHERE trend_id='$trend_id'");
+        while($row2 = mysql_fetch_array($sql2)) {
+            $row['rating']['value']    = $row2['value'];
+            $row['rating']['votes']    = $row2['votes'];
+            $row['rating']['user_ids'] = $row2['user_ids'];
+        }
 
         $rows['trend'] = $row;
     }

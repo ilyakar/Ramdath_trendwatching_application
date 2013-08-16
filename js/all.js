@@ -4,7 +4,7 @@
         // Definitions
         setup_definitions();
 
-        // Check if internet conenction
+        // Check if internet connection dead
         var dead_internet = check_internet_connection();
         if(dead_internet) return;
 
@@ -18,13 +18,17 @@
         check_login(); // -> then calls load_ajax();
 
         // Gets the location (not critical, but needs time to get the location)
-//        get_location();
+        get_location();
+
+        setup_explore();
+
+        preload_images();
 
     });
 
 // ----- Secondary setup -----
     function load_rest(){
-console.log('load_rest()');
+
         // Init global_page_functions on start AND page change
         on_page_change();
 
@@ -32,7 +36,7 @@ console.log('load_rest()');
         global_click_functions();
 
         // Plugin setup
-        setup_other_plugins('all');
+        setup_other_plugins();
 
         // Form stuff
         form_stuff();
@@ -51,10 +55,12 @@ function setup_definitions() {
     $header                         = $('#main_header');
     $footer                         = $('#main_footer');
 
+    first_load                      = '';
+    single_trend_loaded             = '';
+
     stored_data                     = [];
     stored_data.categories          = [];
     stored_data.trends              = [];
-    stored_data.rater               = [];
     stored_data.user_info           = [];
     stored_data.research_projects   = [];
 
@@ -146,6 +152,32 @@ function setup_critical_plugins(){
         }
     };
 
+    tinymce.init({
+        selector: "textarea#new_trend_description",
+        plugins: [
+            "link"
+        ],
+
+        toolbar1: "bold italic underline strikethrough | link unlink | undo redo",
+
+        menubar: false,
+        statusbar: false,
+        toolbar_items_size: 'small',
+
+        height : 300,
+
+        content_css : "/style/tinymce_adjustments_content.css",
+
+        setup: function(ed){
+
+            ed.on('keyup', function(){
+               setup_form_buttons();
+            });
+
+        }
+
+    });
+
 }
 
 function setup_social_APIs(){
@@ -180,9 +212,10 @@ function load_ajax(new_login){
         // Store the data in a constant
             $.extend(stored_data, data);
 
-        var categories  = data.categories;
-        var trends      = data.trends;
-        var rater       = data.rater;
+        var categories          = data.categories;
+        var trends              = data.trends;
+        var rater               = data.rater;
+        var ment_trends         = data.mentality_trends;
 
         // -- Categories --
             var $container  = $('#new_trend_categories, #edit_trend_categories');
@@ -214,29 +247,15 @@ function load_ajax(new_login){
 
                 for(var i=0; i<num; i+=ceil){
 
-                    categories.slice(i, i+ceil).wrapAll("<ul></ul>");
+                    categories.slice(i, i+ceil).wrapAll('<ul></ul>');
 
                 }
 
-        // -- Trends --
-            var num = trends.length;
-
-            var trends_list     = '';
-            var trends_single   = '';
-
-            for(var i=0; i<num; i++){
-
-                var trend = trends[i]; // JSON of trend
-
-                trends_list += get_trend_list(trend, i); // Inserts the trend into EXPLORE
-                trends_single += get_trend_single(trend, rater); // Inserts the trend into a single trend into HTML
-
+        // -- Mentality trends --
+            for(var i=0; i<ment_trends.length; i++){
+                var ment_trend = ment_trends[i]
+                $('#new_trend_ment_trends').append('<option value="'+ ment_trend.name.toLowerCase() +'">'+ ment_trend.name +'</option>');
             }
-
-        $('#image_list').append(trends_list);
-        optimise_explore_images();
-
-        $('body')           .append(trends_single);
 
         if(logged_in){
             setup_logged_in_stuff(new_login); // Continues onward | load rest is fired when the function finished
@@ -266,13 +285,47 @@ function get_location(){
                 var city    = results[1]['address_components'][3]['long_name'];
                 var country = results[1]['address_components'][4]['long_name'];
 
-                $('.trend_location').val(city+', '+country).removeClass('cross').addClass('tick'); // Adds the gotten city to the .trend_location
+                $('#new_trend_location').val(city+', '+country).removeClass('cross').addClass('tick'); // Adds the gotten city to the .trend_location
 
             });
 
         });
 
     }
+
+}
+
+function preload_images() {
+
+    var img1, img2, img3, img4, img5, img6, img7, img8, img9, img10, img11, img12, img13, img14, img15, img16, img17, img18, img19;
+
+    img1 = img2 = img3 = img4 = img5 = img6 = img7 = img8 = img9 = img10 = img11 = img12 = img13 = img14 = img15 = img16 = img17 = img18 = img19 = new Image();
+
+
+    img1.src = '/style/images/ajax-loader.gif';
+
+    img2.src = '/style/images/logo.png';
+
+    img3.src = '/style/images/home_screen_image/gradient.png';
+    img4.src = '/style/images/home_screen_image/gradient_reverse.png';
+
+    img5.src = '/style/images/home_screen_image/images/1.jpg';
+
+    img6.src = '/style/images/icons.png';
+    img7.src = '/style/images/form/cross_deselected.png';
+    img8.src = '/style/images/form/cross_selected.png';
+    img9.src = '/style/images/form/tick_deselected.png';
+    img10.src = '/style/images/form/tick_selected.png';
+
+    img11.src = '/style/images/default_profile_image';
+    img12.src = '/style/images/logo_mini.png';
+    img13.src = '/style/images/mini_red_cross.png';
+    img14.src = '/style/images/raty_star_half.png';
+    img15.src = '/style/images/raty_star_off.png';
+    img16.src = '/style/images/raty_star_on.png';
+    img17.src = '/style/images/transparent.png';
+    img18.src = '/style/images/settings_panel/logout_icon.png';
+    img19.src = '/style/images/settings_panel/settings_icon.png';
 
 }
 
@@ -289,7 +342,7 @@ function check_login(type, status) {
         }
 
     }
-    else if($.cookie('username_cookie') && $.cookie('password_cookie')){
+    else if($.cookie('username_cookie') && $.cookie('password_cookie')){ // todo change
 
         db_login_check('username');
 
@@ -312,6 +365,9 @@ function check_login(type, status) {
 
             username    = $.cookie('username_cookie');
             password    = $.cookie('password_cookie');
+
+//            username    = 'ilyakar';
+//            password    = '184c87a246338443bc78ba0fb7ca5b11';
 
             md5         = '';
 
@@ -391,6 +447,7 @@ function on_page_change() {
 
     // Runs on page change
     $(document).delegate('.ui-page', 'pagebeforeshow', function () {
+        console.log('page change');
         global_page_functions();
     });
 
@@ -427,6 +484,10 @@ function global_click_functions() {
 
     });
 
+    $('#research_projects').find('.research_projects').find('a').click(function(data){
+        setup_research_project_click(data);
+    })
+
     $('#filter_by').find('li').children('a').click(function(){
 
         var type                    = $(this).parents('div').attr('data-d-id');
@@ -442,6 +503,16 @@ function global_click_functions() {
         $container.find('.scrollableArea').html($container_untouched.html());
 
         // Adds the .active class
+
+            // Resets the active class
+                $('a[data-d-id]:not([data-d-id="'+ type +'"])').removeClass('active');
+                $('div[data-d-id]:not([data-d-id="'+ type +'"])').find('a.active').removeClass('active'); // Removes ".active" from elements outside current type
+
+            var $actives = $(this).parents('div[data-d-id]').find('a.active');
+            if(type !== 'category' && $actives.length){
+                $actives.not(this).removeClass('active');
+            }
+
             if(!$(this).hasClass('active')){ // Adds the .active class if it didn't yet exist
                 $(this).addClass('active');
             }
@@ -456,42 +527,55 @@ function global_click_functions() {
                 $('#filter_by').children('a[data-d-id="'+ type +'"]').removeClass('active');
             }
 
-        if(type == 'category'){
+        // Specific filter functions
+            if(type == 'category'){
 
-            var attributes = '';
-            var els = $(this).parents('div[data-d-id]').find('a.active');
-            for(var i=0; i<els.length; i++){
-                var el = els.eq(i);
-                attributes += '[data-categories*='+ el.text() +']';
+                var attributes = '';
+                var els = $(this).parents('div[data-d-id]').find('a.active');
+                for(var i=0; i<els.length; i++){
+                    var el = els.eq(i);
+                    attributes += '[data-categories*='+ el.text() +']';
+                }
+
+                if(attributes){
+                    $container.find('div[data-categories]:not('+ attributes +')').remove();
+                }
+
             }
+            else if(type == 'popularity'){
 
-            if(attributes){
-                $container.find('div[data-categories]:not('+ attributes +')').remove();
-            }
+                var value = $(this).text().toLocaleLowerCase();
 
-        }
-        else if(type == 'popularity'){
-
-            var value = $(this).text().toLocaleLowerCase();
-
-            if(value == 'rating'){
+                if(value == 'views'){
+                    var attr= 'data-views';
+                }
+                else if(value == 'rating'){
+                    var attr = 'data-rating';
+                }
+                else if(value == 'discussions'){
+                    var attr = 'data-num-comments';
+                }
 
                 if($(this).hasClass('active')){
-                    var els = $container.find('[data-rating]');
+                    var els = $container.find('['+ attr +']');
                     els.sort(function(a, b) {
-                        return parseInt($(b).attr('data-rating')) - parseInt($(a).attr('data-rating'));
+                        return parseInt($(b).attr(attr)) - parseInt($(a).attr(attr));
                     });
 
-                    $container.find('data-rating').remove();
+                    $container.find(attr).remove();
                     $container.find('.scrollableArea').html(els);
                 }
 
             }
+            else if(type == 'date'){
 
-        }
-        else if(type == 'date'){
+            }
 
-        }
+        $("#image_list").smoothDivScroll("recalculateScrollableArea");
+        $("img.lazyload").lazyload({
+            effect      : 'fadeIn',
+            container   : $('.scrollWrapper')
+        });
 
     });
 
@@ -588,12 +672,12 @@ function global_click_functions() {
 
         if($(this).attr('data-role') == 'disable') return;
 
-        var trend_id    = $('#edit_trend_id').val();
-        var title       = $('#edit_trend_title')        .val();
-        var description = $('#edit_trend_description')  .val();
+        var trend_id    = $('#edit_trend_id')                       .val();
+        var title       = $('#edit_trend_title')                    .val();
+        var description = $('#edit_trend_description')              .val();
         var tags        = get_tags('#edit_trend_tagger_tagsinput');
         var categories  = get_categories('#edit_trend_categories');
-        var location    = $('#edit_trend_location').val();
+        var location    = $('#edit_trend_location')                 .val();
 
         // Submit info
         $.post('../php/update_trend.php', {
@@ -605,8 +689,7 @@ function global_click_functions() {
             location        : location
         },function(data){
 
-            var link_title = 'trend_' + trend_id + '_' + title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
-            $.mobile.changePage('#'+link_title, 'pop');
+            alert('submitted edit'); // todo continue here
 
         });
 
@@ -615,10 +698,9 @@ function global_click_functions() {
 
 }
 
-function setup_other_plugins(which){
-//console.log('setting up other plugins');
-//    // Tag plugin
-    if(which == 'all'){
+function setup_other_plugins(){
+
+    // Tag plugin
         $('#new_trend_tagger, #edit_trend_tagger').tagsInput({
             height: '100%',
             onChange: function(){
@@ -632,144 +714,14 @@ function setup_other_plugins(which){
 
             }
         });
-    }
-
-    // Rating plugin
-    if(which == 'all'){
-        setup_raty();
-    }
-
-    // Explore plugin
-    if(which == 'all'){
-        setup_smooth_scroll_plugin();
-    }
-
-    // Comment plugin
-    if(which == 'all' || which == 'comments'){
-        $('.trend_comments').comments({
-            author: {
-                id:             stored_data.user_info.id, // Gotten from global object of "user_info", created when logged in
-                username:       stored_data.user_info.username,
-                image:          stored_data.user_info.profile_image
-            }
-        });
-    }
-
-    // Trend single gallery setup
-    if(which == 'all'){
-        setup_single_trend_gallery();
-    }
 
     // Trend filter_by dropdown plugin
-    if(which == 'all'){
         $('#filter_by').dropdown();
-    }
 
-    if(which == 'all'){
-        alert('now');
-        $("img.lazyload").lazyload({
-            effect      : 'fadeIn',
-            container   : $('.scrollWrapper')
-        });
-    }
-
-    ///////////////////
-
-    function setup_raty() {
-        $('.raty').raty({
-            path        : '/style/images/',
-            starOn      : 'raty_star_on.png',
-            starOff     : 'raty_star_off.png',
-            starHalf    : 'raty_star_half.png',
-            halfShow    : true,
-            size        : 22,
-            hints       : ['bad', 'poor', 'regular', 'good', 'amazing'],
-            readOnly    : function() {
-                var user_ids = $(this).attr('data-users');
-                user_ids = user_ids.split(',');
-
-                if(user_ids.indexOf(stored_data.user_info.id) != -1) { // Check if the currently logged in user id is contained in the "rated" people section
-                    $(this).parent().find('.message').text('You have already rated.').addClass('show');
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            },
-            score       : function() {
-                return $(this).attr('data-score');
-            },
-            click       : function(num) {
-                var trend_id = location.hash.split('#trend_')[1].split('_')[0];
-                $.post('../php/submit_rating.php', {
-                    trend_id    : trend_id,
-                    user_id     : stored_data.user_info.id,
-                    rating      : num
-                }, function(){
-
-                    // Rating complete
-                    var $raty_container = $('.ui-page-active').find('.trend_rating');
-                    var $raty           = $raty_container.find('.raty')
-
-                    var score           = $raty.attr('data-score') !== 'NaN' ? $raty.attr('data-score') : 0;
-                    var votes           = $raty.attr('data-votes');
-
-                    var new_votes       = parseInt(votes) + 1;
-                    var new_score       = ( score * votes + num ) / new_votes;
-
-                    $raty // Update score and make readonly
-                        .raty('score', new_score)
-                        .raty('readOnly', true);
-
-                    $raty_container.find('label').find('i').text(new_votes); // Change the number of votes dynamically
-                    $raty_container.find('.message').addClass('show'); // Show message
-
-                });
-            }
-        });
-    }
-
-    function setup_single_trend_gallery(){
-
-        $('.trend_single').find('.image_container').children('div').not(':first-child').click(function(){
-
-            var $el1    = $(this);
-            var $el2    = $(this).parents('.image_container').children('div:first-child');
-
-            var $img1       = $el1.children('img');
-            var $img2       = $el2.children('img');
-
-            var src1    = $img1.attr('src');
-            var src2    = $img2.attr('src');
-
-            $img1.attr('src', src2);
-            $img2.attr('src', src1);
-
-        });
-
-    }
-
-    function setup_smooth_scroll_plugin(){
-
-        $('#explore').css({ // This one and the one below are necessary to le the plugin init normally whilst the element is invisible
-            display: 'block',
-            visibility: 'hidden'
-        });
-
-        // Smooth div scrolling (for the explore list)
-        $("#image_list").smoothDivScroll({
-            mousewheelScrolling: "allDirections",
-            manualContinuousScrolling: true,
-            hotSpotScrollingStep: 10
-        });
-
-        $('#explore').removeAttr('style');
-
-//    $('#image_list').find('.scrollableArea').children('div').height('');
-
-    }
-
-    ///////////////////
+    // Lazyload
+//        $("img.lazyload").lazyload({
+//            effect      : 'fadeIn'
+//        });
 
 }
 
@@ -810,7 +762,7 @@ function form_stuff() {
         var val_pass = $('input[data-role="pass"][data-pass-id="'+ id +'"]').val();
         var val_conf = $(this).val();
 
-        if(val_conf == val_pass){
+        if(val_conf == val_pass && val_conf !== ''){
             $(this).removeClass('cross').addClass('tick');
         }
         else {
@@ -842,6 +794,29 @@ function form_stuff() {
 
     });
 
+    $('.thumbnail_upload').find('[type="file"]').change(function(){
+
+        if (this.files && this.files[0]) {
+
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('.thumbnail_upload').find('img').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(this.files[0]);
+
+            setup_form_buttons();
+        }
+
+    });
+
+    $('.tags').find('div').click(function(){
+
+        setup_form_buttons();
+
+    });
+
 }
 
 function show_app(){
@@ -863,6 +838,353 @@ function show_app(){
 
 // ---------------- Other functions (called by other functions) -----------------
 
+function setup_research_project_click(data){
+
+    var id = $.textParam('id', data.currentTarget.hash);
+
+    var project_trends = $.grep(stored_data.trends, function(e){
+        return e.research_project == id;
+    });
+
+    var trend_html = '';
+
+    // Loop per trend in research project
+        for(var i=0; i<project_trends.length; i++) {
+
+            var project_trend = project_trends[i];
+
+            trend_html +=
+                '<div data-id="'+ project_trend.id +'">' +
+                    '<a href="#'+ project_trend.link_title +'">' +
+                        '<div class="image_container">' +
+                        '   <img src="/images/'+ project_trend.images.split(',')[0] +'" alt="research project image">' +
+                        '</div>' +
+                        '<span>'+ truncate(project_trend.title, 30) + '</span>' +
+                    '</a>' +
+                    add_extra_html() +
+                '</div>';
+
+        }
+        if(!project_trends.length){
+
+            trend_html += '<div class="message show no_float red">No trends...</div>';
+
+        }
+
+    // Adds the delete & remove button
+        function add_extra_html() {
+
+            var html =
+                '<div class="extra">' +
+                    '<a href="#" class="button no_image edit">Edit</a>' +
+                    '<a href="#" class="button red no_image delete">Delete</a>' +
+                '</div>';
+
+            return html;
+
+        }
+
+    var page_html =
+        '<div data-role="content">' +
+            '<div class="maxi_container research_trends">' +
+                trend_html +
+            '</div>' +
+        '</div>';
+
+    $('#view_project').html(page_html);
+
+    $container = $('.research_trends');
+
+    var cnt = 0;
+    var loaded = '';
+
+    $container.find('img').error(function(data){
+
+        cnt++;
+        check_loaded();
+
+    })
+    .load(function(){
+
+        cnt++;
+
+        check_loaded();
+
+    });
+
+    function check_loaded(){
+        console.log(cnt);
+        if(cnt == $container.find('img').length){
+
+            $('.research_trends').masonry({
+                columnWidth: 200
+            });
+
+            loaded = 1;
+
+        }
+    }
+
+}
+
+function setup_single_trend_click(){
+
+    $('#image_list').find('.image_container').children('a').click(function(data){
+        var id = $.textParam('id', data.currentTarget.hash);
+        setup_single_trend(id);
+    });
+
+}
+
+function setup_single_trend(id){
+
+    var trend = $.grep(stored_data.trends, function(e){
+        return e.id == id;
+    });
+    trend = trend[0];
+
+    trend.link_title    = 'trend_' + trend.id + '_' + trend.title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
+
+    // Fills up TREND page (singular)
+    var trend_images = '';
+    var trend_images_array = trend.images.split(',');
+
+    for(var b=0; b<trend_images_array.length; b++){
+        var image = trend_images_array[b];
+
+        trend_images += '<div><img src="/images/'+ image +'" alt="trend image"></div>';
+
+    }
+
+    // Turns retrieved tags into HTML
+    var tags_html = '';
+    var tags = trend.tags.split(',');
+    for(var b=0; b<tags.length; b++){
+
+        tags_html += '<div>' + decodeURIComponent(tags[b]) + '</div>';
+
+    }
+
+    // Turns retrieved categories into HTML
+    var categories_html = '';
+    var categories = trend.categories.split(',');
+    for(var b=0; b<categories.length; b++){
+
+        categories_html += '<div>' + categories[b] + '</div>';
+
+    }
+
+    // Searches the "rater" array to get the array of the current trend
+    var rating = trend.rating;
+
+    if(!rating.value) rating.value = 0;
+    if(!rating.votes) rating.votes = 0;
+
+    // Video embedding stuff
+        var embed_video;
+        if(trend.video){
+            console.log(trend.video);
+            if(trend.video.indexOf('youtube') > -1){
+                console.log('youtube');
+                var video_id = trend.video.split('v=')[1];
+                if(video_id){
+                    embed_video = '<iframe width="400" height="225" src="//www.youtube.com/embed/'+ video_id+ '" frameborder="0" allowfullscreen></iframe>';
+                }
+            }
+            else if(trend.video.indexOf('vimeo')) {
+                console.log('vimeo');
+                var video_id = trend.video.split('.com/')[1];
+                if(video_id){
+                    embed_video = '<iframe src="http://player.vimeo.com/video/'+ video_id +'" width="400" height="225" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+                }
+            }
+        }
+
+    var trend_single =
+        '<div data-role="content">' +
+            '<div class="maxi_container trend_single">' +
+                '<h1>'+ trend.title +'</h1>' +
+                '<div>' +
+                    '<div class="left_container">' +
+                        '<div class="image_container">' + trend_images + '</div>' +
+                        '<div class="video_container">' + embed_video + '</div> ' +
+                    '</div>' +
+
+                    '<section>' +
+
+                        trend.description +
+
+                        '<div class="trend_rating">' +
+                        '<label>Rating <span><i>'+ rating.votes +'</i> votes</span></label>' +
+                        '<div class="raty" data-score="'+ (rating.value / rating.votes) +'" data-votes="'+ rating.votes +'" data-users="'+ rating.user_ids +'"></div>' +
+                        '<div class="message red">Thanks for rating.</div>' +
+                        '</div>' +
+
+                        '<label>Tags</label>' +
+                        '<div class="tags">' + tags_html + '</div>' +
+
+                        '<label>Categories</label>' +
+                        '<div class="tags">' + categories_html + '</div>' +
+
+                        '</section>' +
+                    '</div>' +
+
+                '<div class="trend_comments"></div>' +
+
+            '</div>' +
+        '</div>';
+
+    $('#view_trend').html(trend_single);
+
+    // Setup plugins
+        setup_comments();
+        setup_raty();
+        setup_single_trend_gallery();
+
+    // ---------------------------
+        function setup_comments(){
+            $('#view_trend').find('.trend_comments').comments({
+                trend_id: id,
+                author  : {
+                    id:             stored_data.user_info.id, // Gotten from global object of "user_info", created when logged in
+                    username:       stored_data.user_info.username,
+                    image:          stored_data.user_info.profile_image
+                }
+            });
+        }
+        function setup_raty() {
+            $('.raty').raty({
+                path        : '/style/images/',
+                starOn      : 'raty_star_on.png',
+                starOff     : 'raty_star_off.png',
+                starHalf    : 'raty_star_half.png',
+                halfShow    : true,
+                size        : 22,
+                hints       : ['bad', 'poor', 'regular', 'good', 'amazing'],
+                readOnly    : function() {
+                    var user_ids = $(this).attr('data-users');
+                    user_ids = user_ids.split(',');
+
+                    if(user_ids.indexOf(stored_data.user_info.id) != -1) { // Check if the currently logged in user id is contained in the "rated" people section
+                        $(this).parent().find('.message').text('You have already rated.').addClass('show');
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                },
+                score       : function() {
+                    return $(this).attr('data-score');
+                },
+                click       : function(num) {
+
+                    $.post('../php/submit_rating.php', {
+                        trend_id    : id,
+                        user_id     : stored_data.user_info.id,
+                        rating      : num
+                    }, function(){
+
+                        // Rating complete
+                        var $raty_container = $('.ui-page-active').find('.trend_rating');
+                        var $raty           = $raty_container.find('.raty')
+
+                        var score           = $raty.attr('data-score') !== 'NaN' ? $raty.attr('data-score') : 0;
+                        var votes           = $raty.attr('data-votes');
+
+                        var new_votes       = parseInt(votes) + 1;
+                        var new_score       = ( score * votes + num ) / new_votes;
+
+                        $raty // Update score and make readonly
+                            .raty('score', new_score)
+                            .raty('readOnly', true);
+
+                        $raty_container.find('label').find('i').text(new_votes); // Change the number of votes dynamically
+                        $raty_container.find('.message').addClass('show'); // Show message
+
+                    });
+                }
+            });
+        }
+
+        function setup_single_trend_gallery(){
+
+            $('.trend_single').find('.image_container').children('div').not(':first-child').click(function(){
+
+                var $el1    = $(this);
+                var $el2    = $(this).parents('.image_container').children('div:first-child');
+
+                var $img1       = $el1.children('img');
+                var $img2       = $el2.children('img');
+
+                var src1    = $img1.attr('src');
+                var src2    = $img2.attr('src');
+
+                $img1.attr('src', src2);
+                $img2.attr('src', src1);
+
+            });
+
+        }
+
+    // ----------------------------------
+
+    single_trend_loaded = 1;
+
+}
+
+function setup_explore(){
+
+    $('#explore').css({ // This one and the one below are necessary to le the plugin init normally whilst the element is invisible
+        display: 'block',
+        visibility: 'hidden'
+    });
+
+    // Smooth div scrolling (for the explore list)
+    $("#image_list").smoothDivScroll({
+        mousewheelScrolling: "allDirections",
+        hotSpotScrolling: true,
+        hotSpotScrollingStep: 10,
+        manualContinuousScrolling: false,
+        getContentOnLoad: {
+            method: "getAjaxContent",
+            content: "../php/get_trend_list.php",
+            manipulationMethod: "replace"
+        },
+        addedAjaxContent: function(){
+            $("img.lazyload").lazyload({
+                effect      : 'fadeIn',
+                container   : $('.scrollWrapper')
+            });
+            setup_single_trend_click();
+        }
+    });
+
+    $('#explore').removeAttr('style');
+
+//    $('#image_list').find('.scrollableArea').children('div').height('');
+
+}
+
+function single_trend_viewed(){ // initiated twice!!
+console.log('single_trend');
+    if(first_load == 3){
+        first_load = 2;
+    }
+    else if(!first_load || first_load == 2){
+        first_load = 1;
+    }
+console.log('a: '+first_load);
+    if(first_load == 1){
+        console.log('update');
+        var trend_id = location.hash.split('#trend_')[1].split('_')[0];
+        $.post('../php/add_trend_view_count.php', {
+            trend_id: trend_id
+        });
+        first_load = 3;
+    }
+
+}
+
 function submit_account_edit(){
 
     var first_name  = $('#edit_first_name')     .val();
@@ -881,24 +1203,45 @@ function submit_account_edit(){
 
     var password    = $('#edit_password')       .val();
 
-    $.post('../php/edit_account_info.php', {
-        account_id      : stored_data.user_info.id,
-        first_name      : first_name,
-        last_name       : last_name,
-        date_of_birth   : date,
-        gender          : gender,
-        email           : email,
-        city            : city,
-        country         : country,
-        password        : password
-    }, function(data){
+    // AJAX time
+    $('#edit_profile_form').ajaxSubmit({
+        url: '../php/edit_account_info.php',
+        data: {
+            account_id      : stored_data.user_info.id,
 
-        $.mobile.changePage('#create', 'pop');
+            first_name      : first_name,
+            last_name       : last_name,
+            date_of_birth   : date,
+            gender          : gender,
+            email           : email,
+            city            : city,
+            country         : country,
+            password        : password
+        },
+        success: function(data){
 
-        if(password){
-            $.cookie('password_cookie', data)
-        }
+            // Reset some stuff
 
+            $('#edit_password_old') .val('').keyup();
+            $('#edit_password')     .val('').keyup();
+            $('#edit_conf_password').val('').keyup();
+
+            // --
+
+            $.mobile.changePage('#create', 'pop');
+
+            // If new profile image
+            if(data.hasOwnProperty('profile_image')){
+                $('#account_profile').attr('src', data.profile_image);
+            }
+
+            // If new password
+            if(data.hasOwnProperty('password')){
+                $.cookie('password_cookie', data.password)
+            }
+
+        },
+        dataType: 'json'
     });
 
 }
@@ -907,24 +1250,22 @@ function setup_account_edit_page(){
 
     var info = stored_data.user_info;
 
-    $('#edit_username')     .val(info.username);
-    $('#edit_first_name')   .val(info.first_name);
-    $('#edit_last_name')    .val(info.last_name);
+    $('#edit_username')     .val(info.username).addClass('tick');
+    $('#edit_first_name')   .val(info.first_name).addClass('tick');
+    $('#edit_last_name')    .val(info.last_name).addClass('tick');
     $('#edit_gender')       .val(info.gender).parent().removeClass('cross').addClass('tick').children('span').text(info.gender.charAt(0).toUpperCase() + info.gender.slice(1));
 
-    $('#edit_email')        .val(info.email);
-    $('#edit_city')         .val(info.city);
-    $('#edit_country')      .val(info.country);
+    $('#edit_email')        .val(info.email).addClass('tick');
+    $('#edit_city')         .val(info.city).addClass('tick');
+    $('#edit_country')      .val(info.country).addClass('tick');
 
-    $('#edit_date_of_birth_1').val(info.date_of_birth.split('-')[2]);
-    $('#edit_date_of_birth_2').val(info.date_of_birth.split('-')[1]);
-    $('#edit_date_of_birth_3').val(info.date_of_birth.split('-')[0]);
+    $('#edit_date_of_birth_1').val(info.date_of_birth.split('-')[2]).addClass('tick');
+    $('#edit_date_of_birth_2').val(info.date_of_birth.split('-')[1]).addClass('tick');
+    $('#edit_date_of_birth_3').val(info.date_of_birth.split('-')[0]).addClass('tick');
 
     $('#edit_password_old').attr('data-pass', info.password);
 
-    setTimeout(function(){
-        setup_form_buttons();
-    }, 200);
+    setup_form_buttons();
 
     // Setup password stuff
     $('#edit_password_old').removeClass('cross').addClass('cross_perm').keyup(function(){
@@ -955,10 +1296,6 @@ console.log('setting up logged in stuff');
     load_logged_in_ajax(new_login);
     setup_account_stuff();
 
-    if(new_login){
-        setup_other_plugins('comments'); // Sets up comments once more
-    }
-
 }
 
 function setup_account_stuff(){
@@ -970,6 +1307,7 @@ function setup_account_stuff(){
         var img_src = '/images/'+stored_data.user_info.profile_image;
         if(UrlExists(img_src)){
             $('#account_profile').attr('src', img_src);
+            $('#edit_profile_image_thumbnail').attr('src', img_src);
         }
 
 }
@@ -989,9 +1327,11 @@ function delete_trend(clicked){
 
 }
 
-function edit_trend($clicked){
+function edit_trend(clicked){
 
     reset_edit_trend_form();
+
+    var $clicked = $(clicked);
 
     var $clicked_trend = $clicked.parent('div').parent('div');
     var id = $clicked_trend.attr('data-id');
@@ -1004,7 +1344,7 @@ function edit_trend($clicked){
     trend = trend[0];
 
     var description = trend.description .replace('<p>','');
-    description = description       .replace('</p>','');
+    description     = description       .replace('</p>','');
 
     // Sets up title & description
     $('#edit_trend_title')         .val(trend.title).removeClass('cross').addClass('tick');
@@ -1097,7 +1437,7 @@ function submit_login(){
 
         }
 
-    });
+    }, 'JSON');
 
 }
 
@@ -1126,48 +1466,6 @@ function check_if_allowed_page(){
     if(!allowed_page){
         window.location = '/';
     }
-
-}
-
-function optimise_explore_images(){
-
-    var container = [];
-    var new_height, new_width;
-    container.width = 400;
-    container.height = 275;
-
-    var img;
-
-    var images = $('#image_list').find('img');
-    images.load(function(el){
-        var image = $(el.currentTarget);
-        var src = image.attr('src');
-
-        img = new Image();
-        img.onload = function() {
-
-            new_height = container.width / this.width * this.height;
-
-            // Height 100%
-            if(new_height < container.height){ // If we make width 100% and height is smaller than the container, then the height has to be 100% and width bigger
-                new_height = container.height;
-                new_width = new_height / this.height * this.width;
-            }
-
-            // Width 100%
-            else {
-                new_width = container.width;
-            }
-
-            image
-                .width(new_width)
-                .height(new_height);
-
-        };
-
-        img.src = src;
-
-    });
 
 }
 
@@ -1250,112 +1548,6 @@ function go_home(on_back){
 
 }
 
-function get_trend_list(trend, i){
-
-    trend.link_title    = 'trend_' + trend.id + '_' + trend.title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
-    var rating = trend.rating.value / trend.rating.votes;
-
-    if(!rating){
-        rating = 0;
-    }
-
-    var num = i+1 < 10 ? '0'+(i+1) : i+1;
-
-    // Fills up EXPLORE page (trend list)
-    var trend_list =
-        '<div data-categories="'+ trend.categories +'" data-num-comments="'+ trend.num_comments +'" data-rating="'+ rating +'">' +
-            '<div class="image_container">' +
-                '<a href="#'+ trend.link_title +'" data-transition="slide">View trend</a>' +
-                '<img class="lazyload" src="/style/images/transparent.png" data-original="/images/'+ trend.images.split(',')[0] +'" alt="trend pic" />' +
-            '</div>' +
-            '<section>' +
-                '<header><h1><i>'+ num +'</i>'+ truncate(trend.title, 25) +'</h1></header>' +
-                truncate(trend.description, 400, 1) +
-            '</section>' +
-        '</div>';
-
-    return trend_list;
-
-}
-
-function get_trend_single(trend, rater){
-
-    trend.link_title    = 'trend_' + trend.id + '_' + trend.title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
-
-    // Fills up TREND page (singular)
-        var trend_images = '';
-        var trend_images_array = trend.images.split(',');
-
-        for(var b=0; b<trend_images_array.length; b++){
-            var image = trend_images_array[b];
-
-            trend_images += '<div><img src="/images/'+ image +'" alt="trend image"></div>';
-
-        }
-
-        // Turns retrieved tags into HTML
-        var tags_html = '';
-        var tags = trend.tags.split(',');
-        for(var b=0; b<tags.length; b++){
-
-            tags_html += '<div>' + decodeURIComponent(tags[b]) + '</div>';
-
-        }
-
-        // Turns retrieved categories into HTML
-        var categories_html = '';
-        var categories = trend.categories.split(',');
-        for(var b=0; b<categories.length; b++){
-
-            categories_html += '<div>' + categories[b] + '</div>';
-
-        }
-
-        // Searches the "rater" array to get the array of the current trend
-        var rating = trend.rating;
-
-        if(!rating.value) rating.value = 0;
-        if(!rating.votes) rating.votes = 0;
-
-        var trend_single =
-            '<div data-role="page" id="'+ trend.link_title +'" data-title="'+ trend.title +'">' +
-
-                '<div data-role="content">' +
-                    '<div class="maxi_container trend_single">' +
-
-                        '<div>' +
-                        '<div class="image_container">' + trend_images + '</div>' +
-
-                        '<section>' +
-
-                            trend.description +
-
-                            '<div class="trend_rating">' +
-                                '<label>Rating <span><i>'+ rating.votes +'</i> votes</span></label>' +
-                                '<div class="raty" data-score="'+ (rating.value / rating.votes) +'" data-votes="'+ rating.votes +'" data-users="'+ rating.user_ids +'"></div>' +
-                                '<div class="message red">Thanks for rating.</div>' +
-                            '</div>' +
-
-                            '<label>Tags</label>' +
-                            '<div class="tags">' + tags_html + '</div>' +
-
-                            '<label>Categories</label>' +
-                            '<div class="tags">' + categories_html + '</div>' +
-
-                            '</section>' +
-                        '</div>' +
-
-                    '<div class="trend_comments"></div>' +
-
-                '</div>' +
-            '</div>' +
-
-        '</div>';
-
-    return trend_single;
-
-}
-
 function load_logged_in_ajax(new_login){
 
     var $container = $('#research_projects').find('.research_projects');
@@ -1377,7 +1569,7 @@ function load_logged_in_ajax(new_login){
 
                 var project = projects[i];
 
-                project.link_title = 'project_' + project.id + '_' + project.name.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
+                project.link_title = 'view_project?id=' + project.id + '&name=' + project.name.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
 
                 $container.append(
                     '<a href="#'+ project.link_title +'"  data-transition="slide" class="tag">' +
@@ -1385,60 +1577,7 @@ function load_logged_in_ajax(new_login){
                     '</a>'
                 );
 
-                var project_trends = $.grep(stored_data.trends, function(e){
-                    return e.research_project == project.id;
-                });
-
-                var trend_html = '';
-
-                // Loop per trend in research project
-                for(var b=0; b<project_trends.length; b++) {
-
-                    var project_trend = project_trends[b];
-
-                    trend_html +=
-                        '<div data-id="'+ project_trend.id +'">' +
-                            '<a href="#'+ project_trend.link_title +'">' +
-                                '<img src="/images/'+ project_trend.images.split(',')[0] +'" alt="research project image">' +
-                                '<span>'+ truncate(project_trend.title, 30) + '</span>' +
-                            '</a>' +
-                            add_extra_html() +
-                        '</div>';
-
-                }
-                if(!project_trends.length){
-
-                    trend_html += '<div class="message show no_float red">No trends...</div>';
-
-                }
-
-                // Adds the delete & remove button
-                function add_extra_html() {
-
-                    var html =
-                        '<div class="extra">' +
-                            '<a href="#" class="button no_image edit">Edit</a>' +
-                            '<a href="#" class="button red no_image delete">Delete</a>' +
-                        '</div>';
-
-                    return html;
-
-                }
-
-                project_pages +=
-                    '<div data-role="page" id="'+ project.link_title +'" data-title="'+ project.name +'">' +
-
-                        '<div data-role="content">' +
-                            '<div class="maxi_container research_trends">' +
-                                trend_html +
-                            '</div>' +
-                        '</div>' +
-
-                    '</div>'
-
             }
-
-            $('body').append(project_pages);
 
             // Calls on page load, not on new login
             if(!new_login){
@@ -1446,8 +1585,6 @@ function load_logged_in_ajax(new_login){
             }
 
         }, 'JSON');
-
-        setup_account_edit_page();
 
     }
     else {
@@ -1459,6 +1596,8 @@ function load_logged_in_ajax(new_login){
         }
 
     }
+
+    setup_account_edit_page();
 
 }
 
@@ -1519,7 +1658,7 @@ function global_page_functions(){
 
         check_if_allowed_page(); // Checks if this is an allowed page for NOT logged in users
 
-        if_single_trend_page(); // Loads trend comments if single trend page
+        if_single_trend_page(); // If opened website on trend, redirect to EXPLORE
 
         // Change header
         $header.removeAttr('class').addClass($.cookie('view_type'));
@@ -1543,7 +1682,13 @@ function global_page_functions(){
 
         // Back button hide
         $('#back_icon').hide(0);
-        $('#menu_icon').show(0);
+
+        if(logged_in){
+            $('#menu_icon').show(0);
+        }
+        else {
+            $('#menu_icon').hide(0);
+        }
 
         // Logo show, title hide
         $('#header_logo').show(0);
@@ -1579,9 +1724,17 @@ function global_page_functions(){
 
         }
 
-        // Logo hide, title show
-        $('#header_logo').hide(0);
-        $('#header_title').show(0).text('');
+        if(!if_single_trend_page()){
+            // Logo hide, title show
+            $('#header_logo').hide(0);
+            $('#header_title').show(0).text('');
+        }
+        else {
+            // Logo show, title hide
+            $('#header_logo').show(0);
+            $('#header_title').hide(0);
+        }
+
 
     }
 
@@ -1599,13 +1752,17 @@ function loader(type){
 function submit_trend(){
 
     // Title
-        var title       = $('#new_trend_title').val();
-        var description = $('#new_trend_description').val();
+        var title       = $('#new_trend_title')         .val();
+        var description = tinyMCE.activeEditor          .getContent();
+        var video       = $('#new_trend_video')         .val();
+        var website     = $('#new_trend_website')       .val();
+        var location    = $('#new_trend_location')      .val();
+
         var tags        = get_tags('#new_trend_tagger_tagsinput');
         var categories  = get_categories('#new_trend_categories');
+        var ment_trend = $('#new_trend_ment_trends')   .val();
 
     // Location
-        var location    = $('#new_trend_location').val();
 
     var uploaded_images = $('#uploaded_images_field').val();
 
@@ -1613,20 +1770,24 @@ function submit_trend(){
         $.post('../php/submit_trend.php', {
             user_id         : stored_data.user_info.id,
             uploaded_images : uploaded_images,
+
             title           : title,
             description     : description,
+            video           : video,
+            website         : website,
+            location        : location,
+
             tags            : tags,
             categories      : categories,
-            location        : location
+            ment_trend     : ment_trend
         },function(data){
             // Insert HTML
-            var trend_single = get_trend_single(data.trend, data.rater);
-            $('body').append(trend_single);
 
-            setup_other_plugins('all');
+            stored_data.trends.push(data.trend);
 
-            var link_title    = 'trend_' + data.trend.id + '_' + title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-');
-            $.mobile.changePage('#'+link_title, 'pop');
+            setup_single_trend(data.trend.id);
+
+            $.mobile.changePage('#view_trend', 'pop');
 
             $.cookie('view_type', 'explore'); // Makes sure that the back button will take the user to the explore page by changing the cookie
 
@@ -1634,7 +1795,7 @@ function submit_trend(){
             go_home(1);
 
             // Reset new trend form (in case the user wants to add another new trend)
-            reset_new_trend_form();
+            reset_new_trend_form(); // todo continue here
 
         }, 'JSON');
 
@@ -1714,10 +1875,10 @@ function setup_form_buttons() {
     }
 
     if(
-        $('#reg_date_of_birth_1')           .hasClass('tick') &&
-            $('#reg_date_of_birth_2')       .hasClass('tick') &&
-            $('#reg_date_of_birth_3')       .hasClass('tick')
-        ){
+        $('#reg_date_of_birth_1')       .hasClass('tick') &&
+        $('#reg_date_of_birth_2')       .hasClass('tick') &&
+        $('#reg_date_of_birth_3')       .hasClass('tick')
+    ){
         enable_link('#submit_registration_button');
     }
     else {
@@ -1726,9 +1887,21 @@ function setup_form_buttons() {
 
     if(
         $('#new_trend_title')           .hasClass('tick') &&
-        $('#new_trend_description')     .hasClass('tick') &&
-        $('#new_trend_tagger_tagsinput').hasClass('tick') &&
+        tinyMCE.activeEditor.getContent()                 &&
+        $('#new_trend_video')           .hasClass('tick') &&
+        $('#new_trend_website')         .hasClass('tick') &&
         $('#new_trend_location')        .hasClass('tick')
+    ){
+        enable_link('#new_trend_3_button');
+    }
+    else {
+        disable_link('#new_trend_3_button');
+    }
+
+    if(
+        $('#new_trend_tagger_tagsinput')                .hasClass('tick')         &&
+        $('#new_trend_categories')                      .find('.selected').length &&
+        $('#new_trend_ment_trends').parents('.select')  .hasClass('tick')
     ){
         enable_link('#submit_new_trend');
     }
@@ -1798,32 +1971,11 @@ function setup_form_buttons() {
 
 function if_single_trend_page(){
 
-    if(
-        $.cookie('view_type')    == 'explore'               && // Explore cookie
-        location.hash           !== '#explore'              && // Explore page
-        location.hash           !== '#login_with_account'   && // Login page
-        location.hash           !== '#register_1'           && // Register page
-        location.hash           !== '#register_2'           && // Register page
-        location.hash           !== '#register_3'              // Register page
-    )
-    {
-        get_trend_comments();
-    }
-
-}
-
-function get_trend_comments() {
-
-    var page_id = '#'+ $.mobile.activePage.attr('id');
-
-    var $trend_comments = $(page_id).find('.trend_comments');
-
-    $trend_comments.comments({
-        get_comments: true,
-        author: {
-            id: stored_data.user_info.id
+    if(location.hash.indexOf('view_trend') > -1){
+        if(!single_trend_loaded){
+            $.mobile.changePage('#explore', 'pop');
         }
-    });
+    }
 
 }
 
@@ -1945,6 +2097,12 @@ function setup_slideshow(disable) {
 }
 
 // -------- Collection of different functions ---------
+
+// If u supply a string and param name, it will give the param value
+$.textParam = function(param, string){
+    var results = new RegExp('[\\?&]' + param + '=([^&#]*)').exec(string);
+    return results[1] || 0;
+}
 
 // Disable links
 function disable_given_links() {

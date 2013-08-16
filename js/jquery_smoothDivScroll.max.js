@@ -542,12 +542,13 @@
             if (!(o.hotSpotScrolling)) {
                 el.data("scrollingHotSpotLeft").hide();
                 el.data("scrollingHotSpotRight").hide();
+                console.log(1);
             } else {
-
                 // If the manual continuous scrolling option is set show both
                 if (o.manualContinuousScrolling && o.hotSpotScrolling && o.autoScrollingMode !== "always") {
                     el.data("scrollingHotSpotLeft").show();
                     el.data("scrollingHotSpotRight").show();
+                    console.log(2);
                 }
                 // Autoscrolling not set to always and hotspot scrolling enabled.
                 // Regular hot spot scrolling.
@@ -555,8 +556,10 @@
                     // If the scrollable area is shorter than the scroll wrapper, both hotspots
                     // should be hidden
                     if (el.data("scrollableAreaWidth") <= (el.data("scrollWrapper").innerWidth())) {
+                        console.log(el.data("scrollableAreaWidth"), el.data("scrollWrapper").innerWidth());
                         el.data("scrollingHotSpotLeft").hide();
                         el.data("scrollingHotSpotRight").hide();
+                        console.log(3);
                     }
                     // When you can't scroll further left the left scroll hotspot should be hidden
                     // and the right hotspot visible.
@@ -568,6 +571,7 @@
                         // Clear interval
                         clearInterval(el.data("leftScrollingInterval"));
                         el.data("leftScrollingInterval", null);
+                        console.log(4);
                     }
                     // When you can't scroll further right
                     // the right scroll hotspot should be hidden
@@ -1003,6 +1007,7 @@
 
             // Add up the total width of all the items inside the scrollable area
             el.data("scrollableArea").children(o.countOnlyClass).each(function () {
+
                 // Check to see if the current element in the loop is the one where the scrolling should start
                 if ((o.startAtElementId.length > 0) && (($(this).attr("id")) === o.startAtElementId)) {
                     el.data("startingPosition", tempScrollableAreaWidth);

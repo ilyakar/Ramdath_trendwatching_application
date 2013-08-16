@@ -6,8 +6,9 @@
 @import 'jquery_tags.css';
 @import 'jquery_smoothDivScroll.css';
 @import 'jquery_rater.css';
+@import 'tinymce_adjustments.less';
 
-@white                      : #ececec;
+@white                      : #f6f5f5;
 @grey                       : #2e2e2e;
 @slightly_light_grey        : #333333;
 @slightly_more_light_grey   : #393939;
@@ -16,6 +17,7 @@
 @lighter_grey               : #dfdfdf;
 @red                        : #ac0a12;
 @light_red                  : #fbd8d8;
+@orange                     : #ff9900;
 
 @icons_png                  : url('images/icons.png');
 
@@ -55,6 +57,10 @@ body {
             padding-top: 21px;
             padding-bottom: 21px;
         }
+        .select {
+            width: 698px;
+            background-position: 744px 14px;
+        }
         .tagsinput {
             width: 698px !important;
         }
@@ -77,8 +83,15 @@ body {
         margin-bottom: 10px;
         position: relative;
         white-space: nowrap;
+        .transition();
         &.red {
             background: @red;
+        }
+        &:hover {
+            background: @orange;
+        }
+        &:active {
+            background: @orange;
         }
         &.small {
             font-size: 23px;
@@ -127,6 +140,10 @@ body {
             left: 15px;
             top: 4px;
         }
+    }
+    #register_p {
+        margin: 30px 0 0 0;
+        float: right;
     }
     .message {
         font-size: 20px;
@@ -206,6 +223,39 @@ body {
                 }
             }
         }
+        .thumbnail_upload {
+            width: 65px;
+            height: 65px;
+            position: relative;
+            margin: 0;
+            overflow: visible;
+            input[type="file"]{
+                width: 169px;
+                height: 100%;
+                opacity: 0;
+                z-index: 5;
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+            }
+            img {
+                position: absolute;
+                width: 100%;
+                z-index: 3;
+                height: 100%;
+                top: 0;
+                left: 0;
+            }
+            span {
+                position: absolute;
+                z-index: 4;
+                top: 23px;
+                font-size: 18px;
+                left: 75px;
+                white-space: nowrap;
+            }
+        }
         .tagsinput {
             font-size: 20px;
             overflow: hidden;
@@ -217,7 +267,7 @@ body {
             padding-right: 70px;
             cursor: text;
             .tag {
-                background: @grey;
+                background: @orange;
                 border: none;
                 color: @white;
                 &:last-child {
@@ -284,21 +334,29 @@ body {
             border-bottom: solid 1px @light_grey;
             display: block;
             margin-bottom: 10px;
+            span {
+                font-size: 18px;
+                display: inline;
+            }
         }
         .tags {
             > div {
-                background: @lighter_grey;
-                border: solid 1px @light_grey;
-                color: @light_grey;
+                background: @grey;
+                border: none;
+                color: @white;
                 padding: 15px 30px;
                 float: left;
                 margin-right: 10px;
                 margin-bottom: 10px;
                 font-size: 20px;
                 cursor: pointer;
+                width: 132px;
+                &:nth-child(4n) {
+                    margin-right: 0;
+                    width: 133px;
+                }
                 &.selected {
-                    border: solid 1px @grey;
-                    background: @grey;
+                    background: @orange;
                     color: @white;
                 }
             }
@@ -313,6 +371,10 @@ body {
             color: @white;
             padding: 20px;
             font-size: 20px;
+            .transition();
+            &:hover {
+                background: @orange;
+            }
             span {
                 font-size: 15px;
                 display: inline;
@@ -322,11 +384,12 @@ body {
         }
     }
     .research_trends {
-        overflow: visible;
+        padding-bottom: 40px;
         > div {
             overflow: visible;
-            width: 370px;
-            margin-right: 20px;
+            width: 380px;
+            margin-right: 10px;
+            margin-bottom: 10px;
             float: left;
             position: relative;
             &:hover {
@@ -339,22 +402,27 @@ body {
                 display: block;
                 background: @grey;
                 color: @white;
-                padding: 5px;
                 font-size: 20px;
-                span {
-                    padding: 10px;
-                    white-space: nowrap;
+                .image_container {
+                    background: url('images/logo_mini.png') @white no-repeat 50% 50%;
+                    img {
+                        width: 100%;
+                        float: left;
+                    }
                 }
-                img {
-                    width: 100%;
+                span {
+                    padding: 13px 13px 16px;
+                    white-space: nowrap;
                 }
             }
             .extra {
                 position: absolute;
                 left: 0;
-                bottom: -36px;
+                bottom: -37px;
                 .transition();
                 .opacity(0);
+                z-index: 10;
+                border-bottom: solid 1px @white;
                 visibility: hidden;
                 > a {
                     float: left;
@@ -363,11 +431,11 @@ body {
                     padding: 10px 0 10px 20px;
                     margin-bottom: 0;
                     margin-top: 1px;
-                    margin-right: 1px;
-                    width: 164px;
+                    border-right: solid 1px @white;
+                    width: 169px;
                     &:last-child {
-                        margin-right: 0;
-                        width: 165px;
+                        border-right: 0;
+                        width: 170px;
                     }
                 }
             }
@@ -397,7 +465,7 @@ body {
         &.home {
             background: @grey;
             border-bottom: none;
-            div#header_logo {
+            a#header_logo {
                 background-position: top;
             }
             .icon {
@@ -420,12 +488,13 @@ body {
             .opacity(0);
             visibility: hidden;
         }
-        div#header_logo {
+        a#header_logo {
             height: 37px;
             margin: 12px auto 11px;
             background: url('images/logo.png') bottom;
             background-size: 100%;
             width: 240px;
+            display: block;
         }
         div#header_title {
             display: none;
@@ -436,33 +505,33 @@ body {
             text-align: center;
             text-transform: uppercase;
         }
-        a.icon#menu_icon {
+        a.icon {
             position: absolute;
             left: 0;
             top: 0;
             width: 60px;
             height: 60px;
-            background: @grey @icons_png -53px 3px;
-        }
-        a.icon#back_icon {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 60px;
-            height: 60px;
-            background: @grey @icons_png -110px -53px;
-            display: none;
-            &.active {
-                display: block;
+            background: @grey @icons_png;
+            .transition();
+            &#back_icon {
+                background-position: -110px -53px;
+                display: none;
+                &.active {
+                    display: block;
+                }
             }
-        }
-        a.icon#new_icon {
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: 60px;
-            height: 60px;
-            background: @red @icons_png -52px -53px;
+            &#menu_icon {
+                background-position: -53px 3px;
+            }
+            &#new_icon {
+                left: auto;
+                right: 0;
+                background-position: -52px -53px;
+                background-color: @red;
+            }
+            &:hover {
+                background-color: @orange !important;
+            }
         }
     }
     section#home_image {
@@ -698,12 +767,12 @@ body {
                             &:after {
                                 border-left: 10px solid transparent;
                                 border-right: 10px solid transparent;
-                                border-top: 10px solid @red;
+                                border-top: 10px solid @orange;
                             }
                         }
                     }
                     &.active {
-                        background: @red;
+                        background: @orange;
                     }
                 }
                 div {
@@ -721,6 +790,13 @@ body {
                         float: left;
                         &:nth-child(3){
                             width: 115px;
+                        }
+                        &:first-child {
+                            li {
+                                a {
+                                    border-left: none;
+                                }
+                            }
                         }
                         li {
                             margin: 0;
@@ -784,7 +860,7 @@ body {
                             }
                         }
                         section {
-                            padding: 0 40px;
+                            padding: 0 45px;
                             header {
                                 overflow: visible;
                                 h1 {
@@ -797,13 +873,13 @@ body {
                                     white-space: nowrap;
                                     i {
                                         position: absolute;
-                                        top: -4px;
-                                        left: -40px;
+                                        top: -6px;
+                                        left: -45px;
                                         font-style: normal;
                                         background: @red;
-                                        padding: 6px 6px;
+                                        padding: 9px 8px 7px;
                                         color: #fff;
-                                        font-size: 15px;
+                                        font-size: 18px;
                                         float: left;
                                         display: block;
                                     }
@@ -826,29 +902,44 @@ body {
 
     .maxi_container {
         &.trend_single { // The page that shows the singular trend
+            h1 {
+                margin: 0;
+                margin-bottom: 15px;
+                padding: 13px 23px 11px;
+                font-size: 23px;
+                text-transform: uppercase;
+                background: #2e2e2e;
+                color: white;
+            }
             div {
-                .image_container {
+                .left_container {
                     float: left;
                     width: 400px;
-                    div {
-                        float: left;
-                        width: 100px;
-                        height: 56.25px;
-                        position: relative;
-                        &:first-child {
-                            width: 400px;
-                            height: 225px;
+                    .image_container {
+                        margin-bottom: 15px;
+                        div {
+                            float: left;
+                            width: 100px;
+                            height: 56.25px;
+                            position: relative;
+                            &:first-child {
+                                width: 400px;
+                                height: 225px;
+                                img {
+                                    cursor: default;
+                                }
+                            }
                             img {
-                                cursor: default;
+                                width: 100%;
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                cursor: pointer;
                             }
                         }
-                        img {
-                            width: 100%;
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            cursor: pointer;
-                        }
+                    }
+                    .video_container {
+
                     }
                 }
                 > section {
@@ -900,9 +991,14 @@ body {
                             color: @white;
                             padding: 5px 20px;
                             float: left;
+                            width: 81px;
                             margin-right: 5px;
                             margin-bottom: 5px;
                             font-size: 15px;
+                            &:nth-child(3n){
+                                width: 82px;
+                                margin-right: 0;
+                            }
                         }
                     }
                 }

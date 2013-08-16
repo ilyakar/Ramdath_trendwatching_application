@@ -18,7 +18,7 @@
 <header id="main_header">
 	<a href="#" class="icon" id="menu_icon"></a>
     <a href="#" data-rel="back" data-direction="reverse" data-transition="slide" class="icon" id="back_icon"></a>
-	<div id="header_logo"></div>
+	<a href="#about" data-transition="pop" id="header_logo"></a>
     <div id="header_title"></div>
 	<a href="#new_trend_1" data-transition="slide" class="icon" id="new_icon"></a>
 </header>
@@ -45,7 +45,7 @@
 	<section id="login">
 		<a href="#" id="login_with_facebook" data-transition="pop" class="button red no_image">login with facebook</a>
 		<a href="#" id="login_with_google" class="button red no_image">login with google</a>
-		<a href="#login_with_account" id="login_with_account_button" data-transition="pop" class="button no_image">login with account</a>
+		<a href="#login_with_account" id="login_with_account_button" data-transition="pop" class="button no_image">username & password</a>
 	</section>
 </footer>
 
@@ -60,6 +60,7 @@
 				<input type="password" id="login_password" placeholder="password" />
 				<a href="#" class="button no_image red" data-role="disable" id="submit_login">Login</a>
 			</form>
+            <p id="register_p">No account? <a href="#register_1" data-transition="pop">Register now</a></p>
 		</div>
 	</div>
 
@@ -82,8 +83,8 @@
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                 </select>
-                <input type="password" id="reg_password" placeholder="password" />
-                <input type="password" id="reg_conf_password" placeholder="confirm password" />
+                <input type="password" id="reg_password" data-role="pass" data-pass-id="new_account_pass" placeholder="password" />
+                <input type="password" id="reg_conf_password" data-role="conf-pass" data-pass-id="new_account_pass" placeholder="confirm password" />
                 <a class="button no_image red" id="register_2_button" data-role="disable" data-transition="slide" href="#register_2">Next</a>
             </form>
 		</div>
@@ -130,7 +131,14 @@
 
     <div data-role="content">
         <div class="mini_container">
-            <form>
+            <form id="edit_profile_form" method="post" enctype="multipart/form-data">
+
+                <label>Profile image</label>
+                <div class="thumbnail_upload">
+                    <input type="file" id="edit_profile_image" name="profile_image" />
+                    <img id="edit_profile_image_thumbnail" src="/style/images/default_profile_image.jpg" />
+                    <span>Click to edit</span>
+                </div>
 
                 <label>General information</label>
                 <input type="text" id="edit_username" placeholder="username" disabled />
@@ -188,7 +196,7 @@
 			<form action="/php/upload_images.php" class="dropzone" id="image-upload-dropzone"></form>
 			<input id="uploaded_images_field" type="hidden" />
 			<a href="#" class="button no_image two" data-rel="back">Back</a>
-			<a href="#new_trend_2" class="button no_image red two" data-transition="slide" data-role="disable" id="new_trend_2_button">Next</a>
+			<a href="#new_trend_2" class="button no_image red two" data-transition="slide" data-role="disable" id="new_trend_2_button">Step 2</a>
 
 		</div>
 	</div>
@@ -196,22 +204,45 @@
 
 <div data-role="page" id="new_trend_2" data-title="New trend | step 2">
 
-	<div data-role="content">
-		<div class="maxi_container margin">
-			<form class="margin">
-				<label>General information</label>
+    <div data-role="content">
+        <div class="maxi_container margin">
+            <form class="margin">
+                <label>Title</label>
                 <input type="text" placeholder="title" id="new_trend_title" />
-				<textarea id="new_trend_description" placeholder="description"></textarea>
-				<input id="new_trend_tagger" />
-				<label>Trend categories</label>
-				<div class="tags" id="new_trend_categories"></div>
-				<label>Trend location</label>
-			    <input type="text" id="new_trend_location" placeholder="trend location" />
-			</form>
-			<a href="#" class="button no_image two" data-rel="back">Back</a>
-			<a href="#" class="button no_image red two" data-role="disable" id="submit_new_trend">Submit trend</a>
-		</div>
-	</div>
+                <label>Description</label>
+                <textarea id="new_trend_description" placeholder="description"></textarea>
+                <label>Video link <span>Youtube or Vimeo</span></label>
+                <input type="text" placeholder="http://" id="new_trend_video" />
+                <label>Website link</label>
+                <input type="text" placeholder="http://" id="new_trend_website" />
+                <label>Trend location</label>
+                <input type="text" id="new_trend_location" placeholder="trend location" />
+            </form>
+            <a href="#" class="button no_image two" data-rel="back">Back</a>
+            <a href="#new_trend_3" class="button no_image red two" data-transition="slide" data-role="disable" id="new_trend_3_button">Step 3</a>
+        </div>
+    </div>
+
+</div>
+
+<div data-role="page" id="new_trend_3" data-title="New trend | step 3">
+
+    <div data-role="content">
+        <div class="maxi_container margin">
+            <form class="margin">
+                <label>Tags</label>
+                <input id="new_trend_tagger" />
+                <label>Categories</label>
+                <div class="tags" id="new_trend_categories"></div>
+                <label>Mentality trend</label>
+                <select class="custom_select" id="new_trend_ment_trends">
+                    <option value="" disabled="disabled" selected="selected">Trend</option>
+                </select>
+            </form>
+            <a href="#" class="button no_image two" data-rel="back">Back</a>
+            <a href="#" class="button no_image red two" data-role="disable" id="submit_new_trend">Submit trend</a>
+        </div>
+    </div>
 
 </div>
 
@@ -221,6 +252,11 @@
         <div class="maxi_container research_projects"></div>
     </div>
 
+</div>
+
+
+<div data-role="page" id="view_project" data-title="View project">
+    <!--Populated dynamically-->
 </div>
 <!--/Create stuff-->
 
@@ -302,7 +338,23 @@
 
 </div>
 
+<div data-role="page" id="view_trend" data-title="View trend">
+    <!--Populated dynamically-->
+</div>
+
 <!--/Explore stuff-->
+
+<!--About page-->
+
+<div data-role="page" id="about" data-title="ABOUT">
+    <div data-role="content">
+        <div class="maxi_container margin">
+            <p>About page...</p>
+        </div>
+    </div>
+</div>
+
+<!--/About page-->
 
 <!--Panel-->
 <div id="settings_panel">
@@ -347,7 +399,10 @@
 <script src="js/geolocation.js"></script>
 <script src="js/md5.js"></script>
 <script src="js/jquery_dropdown.js"></script>
+<script src="js/jquery_simpleUpload.js"></script>
 <script src="js/jquery_lazyload.js"></script>
-<!--<script src="https://maps.google.com/maps/api/js?sensor=false"></script>-->
+<script src="js/tinymce/tinymce.min.js"></script>
+<script src="js/masonry.js"></script>
+<script src="https://maps.google.com/maps/api/js?sensor=false"></script>
 </body>
 </html>

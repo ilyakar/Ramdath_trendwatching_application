@@ -2,78 +2,66 @@ $.fn.comments = function( options ) {
 
     // Settings
     var settings = $.extend({
-        get_comments_url:     '../php/get_comments.php',
-        post_comment_url:     '../php/post_comment.php',
-        delete_comment_url:   '../php/delete_comment.php',
-        label_text:         'Comments',
-        placeholder:        'Add a comment...',
-        author: {
+        get_comments_url    : '../php/get_comments.php',
+        post_comment_url    : '../php/post_comment.php',
+        delete_comment_url  : '../php/delete_comment.php',
+        label_text          : 'Comments',
+        placeholder         : 'Add a comment...',
+        trend_id            : 0,
+        author              : {
             id:             0,
             username:       null,
             image:          null
         },
-        onsubmit:           function () {},
-
-        // ---- Used for getting comments for a specific trend ----
-        get_comments:       false
-        // --------------------------------------------------------
+        onsubmit            : function () {}
 
     }, options );
 
     // Setup variables
     var $this = this;
 
-    // --- Get comments function ---
+    // --- Get comments ---
 
-        if(settings.get_comments == true){
+        $.post(settings.get_comments_url, {
+            trend_id: settings.trend_id
+        }, function(data){ // returns data.authors && data.comments
 
-            if($this.find('ul').html()) return; // Stops if we're getting the comments for the second time
-            if(!location.hash.split('#trend_')[1]) return; // Stops if we're not on the comment page
+            if(!data.comments) return;
 
-            var trend_id = location.hash.split('#trend_')[1].split('_')[0];
+            var num_comments = data.comments.length;
 
-            $.post(settings.get_comments_url, {
-                trend_id: trend_id
-            }, function(data){ // returns data.authors && data.comments
+            for(var i=0; i<num_comments; i++){
 
-                if(!data.comments) return;
+                var comment = data.comments[i];
 
-                var num_comments = data.comments.length;
+                // Gets the author of the current comment
+                var author = $.grep(data.authors, function(e){
+                    return e.id == comment.author_id;
+                });
+                author = author[0];
 
-                for(var i=0; i<num_comments; i++){
+                // Either create a delete comment link or not
+                if(author.id == settings.author.id) {
 
-                    var comment = data.comments[i];
-
-                    // Gets the author of the current comment
-                    var author = $.grep(data.authors, function(e){
-                        return e.id == comment.author_id;
-                    });
-                    author = author[0];
-
-                    // Either create a delete comment link or not
-                    if(author.id == settings.author.id) {
-
-                        // The comment is by the currently logged in account
-                        var del = 1;
-
-                    }
-                    else {
-                        var del = '';
-                    }
-
-                    insert_comment(author.username, author.profile_image, comment.date_time, decodeURIComponent(comment.comment), del);
+                    // The comment is by the currently logged in account
+                    var del = 1;
 
                 }
+                else {
+                    var del = '';
+                }
 
-                setup_delete();
+                insert_comment(author.username, author.profile_image, comment.date_time, decodeURIComponent(comment.comment), del);
 
-            }, 'JSON');
+            }
 
-        }
+            setup_delete();
+
+        }, 'JSON');
 
     // --- Setup plugin ---
 
-        else if(settings.author.id > 0) { // Setup comment post form if logged in
+        if(settings.author.id > 0) { // Setup comment post form if logged in
 
             // Starting HTML
             $this.html(
@@ -123,10 +111,8 @@ $.fn.comments = function( options ) {
 
                     var date_time = date+' at '+time;
 
-                var trend_id = location.hash.split('#trend_')[1].split('_')[0];
-
                 $.post(settings.post_comment_url, {
-                    trend_id: trend_id,
+                    trend_id: settings.trend_id,
                     author_id: settings.author.id,
                     date_time: date_time,
                     comment: comment // Encode for database
@@ -162,10 +148,17 @@ $.fn.comments = function( options ) {
                 var hidden = '';
             }
 
+            if(profile_image){
+                profile_image = '/images/'+ profile_image;
+            }
+            else {
+                profile_image = '/style/images/default_profile_image.jpg';
+            }
+
             $this.find('ul').prepend(
                 '<li'+hidden+'>' +
                     '<header>'+username +'<time>'+ date +'</time>'+ del +'</header>' +
-                    '<img src="/images/'+ profile_image +'" alt="profile picture">' +
+                    '<img src="'+profile_image+'" alt="profile picture">' +
                     '<section>'+ comment +'</section>' +
                 '</li>'
             );
@@ -206,7 +199,7 @@ $.fn.comments = function( options ) {
 
                     $.post(settings.delete_comment_url, {
                         comment:    comment,
-                        trend_id:   trend_id
+                        trend_id:   settings.trend_id
                     },function(){
 
                         // Kill the comment from the DOM

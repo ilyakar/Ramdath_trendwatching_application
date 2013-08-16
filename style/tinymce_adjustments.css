@@ -1,0 +1,5 @@
+NameError: .rounded is undefined in /Users/Ilyakar/Documents/Websites + projects/Ramdath/Trendwatching app/Website/style/tinymce_adjustments.less:15:8
+14         border: solid 1px @light_grey;
+15         .rounded(0);
+16         .mce-panel {
+

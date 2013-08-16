@@ -1,0 +1,56 @@
+@white                      : #f6f5f5;
+@grey                       : #2e2e2e;
+@slightly_light_grey        : #333333;
+@slightly_more_light_grey   : #393939;
+@a_bit_more_light_grey      : #cbcaca;
+@light_grey                 : #979696;
+@lighter_grey               : #dfdfdf;
+@red                        : #ac0a12;
+@light_red                  : #fbd8d8;
+@orange                     : #ff9900;
+
+body {
+    .mce-tinymce {
+        border: solid 1px @light_grey;
+        .rounded(0);
+        .mce-panel {
+            background: @light_grey;
+            .mce-flow-layout-item {
+                margin: 8px 0 8px 8px;
+            }
+            .mce-btn {
+                background: none;
+                border: none;
+                padding: 2px 0;
+                .box-shadow(none);
+                .rounded(0);
+                &:hover {
+                    background: none;
+                    .box-shadow(none);
+                }
+                &[aria-pressed="true"]{
+                    background: @orange;
+                }
+                i {
+                    color: @white;
+                    .text-shadow(0, 0, 0, 0);
+                }
+            }
+        }
+    }
+    .mce-tooltip {
+        font-family: latolight;
+        .opacity(1);
+        .mce-tooltip-inner {
+            font-family: latolight;
+            .rounded(0);
+            .box-shadow(none);
+            background: @grey;
+            color: @white;
+        }
+    }
+    .mce-tooltip-arrow {
+        font-family: latolight;
+        border-color: @grey;
+    }
+}
