@@ -261,19 +261,6 @@
 <!--/Create stuff-->
 
 <!--Workspace stuff-->
-<!--<div data-role="page" id="edit_trend_1" data-title="Edit trend | step 1">-->
-<!---->
-<!--    <div data-role="content">-->
-<!--        <div class="mini_container">-->
-<!---->
-<!--            <form action="/php/upload_images.php" class="dropzone" id="image-upload-dropzone"></form>-->
-<!--            <input id="uploaded_images_field" type="hidden" />-->
-<!--            <a href="#" class="button no_image two" data-rel="back">Back</a>-->
-<!--            <a href="#edit_trend_2" class="button no_image red two" data-transition="slide" data-role="disable" id="edit_trend_2_button">Next</a>-->
-<!---->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
 
 <div data-role="page" id="edit_trend" data-title="Edit trend">
 

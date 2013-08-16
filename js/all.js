@@ -886,7 +886,7 @@ function setup_research_project_click(data){
 
     var page_html =
         '<div data-role="content">' +
-            '<div class="maxi_container research_trends">' +
+            '<div class="mega_container research_trends">' +
                 trend_html +
             '</div>' +
         '</div>';
@@ -917,7 +917,8 @@ function setup_research_project_click(data){
         if(cnt == $container.find('img').length){
 
             $('.research_trends').masonry({
-                columnWidth: 200
+                columnWidth: 195,
+                isFitWidth: true
             });
 
             loaded = 1;
@@ -981,7 +982,7 @@ function setup_single_trend(id){
     if(!rating.votes) rating.votes = 0;
 
     // Video embedding stuff
-        var embed_video;
+        var embed_video = '';
         if(trend.video){
             console.log(trend.video);
             if(trend.video.indexOf('youtube') > -1){

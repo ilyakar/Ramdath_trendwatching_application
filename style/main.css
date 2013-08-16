@@ -90,6 +90,10 @@ body a {
   color: #ac0a12;
   text-decoration: none;
 }
+body b,
+body strong {
+  font-weight: bold;
+}
 body span {
   display: block;
 }
@@ -131,6 +135,9 @@ body .maxi_container .button {
 }
 body .maxi_container .button.two.no_image {
   width: 285px;
+}
+body .mega_container {
+  width: 95%;
 }
 body a.button,
 body input[type="submit"] {
@@ -1059,7 +1066,7 @@ body #explore div[data-role="content"] #image_list .scrollableArea > div section
   display: block;
 }
 body #explore div[data-role="content"] #image_list .scrollableArea > div section p {
-  margin: 0 0 15px;
+  margin: 0 0 5px;
   white-space: pre-wrap;
   line-height: 20px;
 }
@@ -1101,6 +1108,9 @@ body .maxi_container.trend_single div .left_container .image_container div img {
   top: 0;
   left: 0;
   cursor: pointer;
+}
+body .maxi_container.trend_single div .left_container .video_container {
+  margin-bottom: 15px;
 }
 body .maxi_container.trend_single div > section {
   width: 380px;
