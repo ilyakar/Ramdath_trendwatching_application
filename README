@@ -19,10 +19,8 @@ If a user chooses to login with facebook: The username is gotten from facebook, 
 
 }
 
-Bugs:
+----------------
 
-- Trend | single global_page_functions() is initiated 2x
+Privilages:
 
-
-To do:
-- Work on check_login, get as much info from facebook login as possible
+a:

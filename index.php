@@ -43,24 +43,30 @@
 	<a href="#create" class="button uppercase" id="create_button">create<span>start finding trends</span></a>
 	<a href="#explore" class="button uppercase" id="explore_button">explore<span>explore new trends</span></a>
 	<section id="login">
-		<a href="#" id="login_with_facebook" data-transition="pop" class="button red no_image">login with facebook</a>
-		<a href="#" id="login_with_google" class="button red no_image">login with google</a>
-		<a href="#login_with_account" id="login_with_account_button" data-transition="pop" class="button no_image">username & password</a>
-	</section>
+        <div class="container">
+            <div class="subcontainer">
+                <a href="#" id="login_with_facebook" data-transition="pop" class="button red no_image">login with facebook</a>
+                <a href="#" id="login_with_google" class="button red no_image">login with google</a>
+                <a href="#login_with_account" id="login_with_account_button" data-transition="pop" class="button no_image">username & password</a>
+	        </div>
+        </div>
+    </section>
 </footer>
 
 <!--Login with account-->
 <div data-role="page" id="login_with_account" data-title="Login with account">
 
 	<div data-role="content">
-		<div class="mini_container">
-			<form>
-                <div class="message red">Invalid username or password</div>
-				<input type="text" id="login_username" placeholder="username" />
-				<input type="password" id="login_password" placeholder="password" />
-				<a href="#" class="button no_image red" data-role="disable" id="submit_login">Login</a>
-			</form>
-            <p id="register_p">No account? <a href="#register_1" data-transition="pop">Register now</a></p>
+		<div class="container">
+            <div class="subcontainer">
+                <form>
+                    <div class="message red">Invalid username or password</div>
+                    <input type="text" id="login_username" placeholder="username" />
+                    <input type="password" id="login_password" placeholder="password" />
+                    <a href="#" class="button no_image red" data-role="disable" id="submit_login">Login</a>
+                </form>
+                <p id="register_p">No account? <a href="#register_1" data-transition="pop">Register now</a></p>
+            </div>
 		</div>
 	</div>
 
@@ -72,7 +78,7 @@
 <div data-role="page" id="register_1" data-title="Register your account | step 1">
 
 	<div data-role="content">
-		<div class="mini_container">
+		<div class="container">
 			<form>
                 <label>General information</label>
 				<input type="text" id="reg_first_name" placeholder="first name" />
@@ -96,7 +102,7 @@
 <div data-role="page" id="register_2" data-title="Register your account | step 2">
 
     <div data-role="content">
-        <div class="mini_container">
+        <div class="container">
             <form>
                 <label>Extra information</label>
                 <input type="text" id="reg_email" placeholder="email" />
@@ -111,7 +117,7 @@
 
 <div data-role="page" id="register_3" data-title="Register your account | step 3">
     <div data-role="content">
-        <div class="mini_container">
+        <div class="container">
             <form>
                 <label>Date of birth</label>
                 <fieldset class="date_of_birth">
@@ -130,46 +136,47 @@
 <div data-role="page" id="edit_account" data-title="Editing your account">
 
     <div data-role="content">
-        <div class="mini_container">
-            <form id="edit_profile_form" method="post" enctype="multipart/form-data">
+        <div class="container">
+            <div class="subcontainer">
+                <form id="edit_profile_form" method="post" enctype="multipart/form-data">
 
-                <label>Profile image</label>
-                <div class="thumbnail_upload">
-                    <input type="file" id="edit_profile_image" name="profile_image" />
-                    <img id="edit_profile_image_thumbnail" src="/style/images/default_profile_image.jpg" />
-                    <span>Click to edit</span>
-                </div>
+                    <label>Profile image</label>
+                    <div class="thumbnail_upload">
+                        <input type="file" id="edit_profile_image" name="profile_image" />
+                        <img id="edit_profile_image_thumbnail" src="/style/images/default_profile_image.jpg" />
+                        <span>Click to edit</span>
+                    </div>
 
-                <label>General information</label>
-                <input type="text" id="edit_username" placeholder="username" disabled />
-                <input type="text" id="edit_first_name" placeholder="first name" />
-                <input type="text" id="edit_last_name" placeholder="last name" />
-                <select class="custom_select" id="edit_gender">
-                    <option value="" selected="selected" disabled>Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                </select>
+                    <label>General information</label>
+                    <input type="text" id="edit_username" placeholder="username" disabled />
+                    <input type="text" id="edit_first_name" placeholder="first name" />
+                    <input type="text" id="edit_last_name" placeholder="last name" />
+                    <select class="custom_select" id="edit_gender">
+                        <option value="" selected="selected" disabled>Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
 
-                <label>Extra information</label>
-                <input type="text" id="edit_email" placeholder="email" />
-                <input type="text" id="edit_city" placeholder="city" />
-                <input type="text" id="edit_country" placeholder="country" />
+                    <label>Extra information</label>
+                    <input type="text" id="edit_email" placeholder="email" />
+                    <input type="text" id="edit_city" placeholder="city" />
+                    <input type="text" id="edit_country" placeholder="country" />
 
-                <label>Date of birth</label>
-                <fieldset class="date_of_birth">
-                    <input type="text" id="edit_date_of_birth_1" maxlength="2" placeholder="DD" />
-                    <input type="text" id="edit_date_of_birth_2" maxlength="2" placeholder="MM" />
-                    <input type="text" id="edit_date_of_birth_3" maxlength="4" placeholder="YYYY" />
-                </fieldset>
+                    <label>Date of birth</label>
+                    <fieldset class="date_of_birth">
+                        <input type="text" id="edit_date_of_birth_1" maxlength="2" placeholder="DD" />
+                        <input type="text" id="edit_date_of_birth_2" maxlength="2" placeholder="MM" />
+                        <input type="text" id="edit_date_of_birth_3" maxlength="4" placeholder="YYYY" />
+                    </fieldset>
 
-                <label>Change password</label>
-                <input type="password" id="edit_password_old" placeholder="old password" />
-                <input type="password" id="edit_password" data-role="pass" data-pass-id="edit_account_pass" placeholder="password" />
-                <input type="password" id="edit_conf_password" data-role="conf-pass" data-pass-id="edit_account_pass" placeholder="confirm password" />
+                    <label>Change password</label>
+                    <input type="password" id="edit_password" data-role="pass" data-pass-id="edit_account_pass" placeholder="password" />
+                    <input type="password" id="edit_conf_password" data-role="conf-pass" data-pass-id="edit_account_pass" placeholder="confirm password" />
 
-                <a class="button no_image red" id="submit_account_edit_button" data-role="disable" data-transition="slide" href="#">Submit edit</a>
+                    <a class="button no_image red" id="submit_account_edit_button" data-role="disable" data-transition="slide" href="#">Submit edit</a>
 
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -179,10 +186,12 @@
 <div data-role="page" id="create" data-title="CREATE">
 
 	<div data-role="content">
-		<div class="mini_container">
-			<a href="#new_trend_1" class="button red" data-transition="slide" id="new_trend_1_button">New trend</a>
-			<a href="#research_projects" data-transition="slide" class="button" id="my_research_projects_button">My research projects</a>
-			<a href="#" class="button small" id="need_some_help_button">Need some help?</a>
+		<div class="container">
+            <div class="subcontainer">
+                <a href="#new_trend_1" class="button red" data-transition="slide" id="new_trend_1_button">New trend</a>
+                <a href="#research_projects" data-transition="slide" class="button" id="my_research_projects_button">My research projects</a>
+                <a href="#" class="button small" id="need_some_help_button">Need some help?</a>
+            </div>
 		</div>
 	</div>
 
@@ -191,12 +200,14 @@
 <div data-role="page" id="new_trend_1" data-title="New trend | step 1">
 
 	<div data-role="content">
-		<div class="mini_container">
+		<div class="container">
 
-			<form action="/php/upload_images.php" class="dropzone" id="image-upload-dropzone"></form>
-			<input id="uploaded_images_field" type="hidden" />
-			<a href="#" class="button no_image two" data-rel="back">Back</a>
-			<a href="#new_trend_2" class="button no_image red two" data-transition="slide" data-role="disable" id="new_trend_2_button">Step 2</a>
+            <div class="subcontainer">
+                <form action="/php/upload_images.php" class="dropzone" id="image-upload-dropzone"></form>
+                <input id="uploaded_images_field" type="hidden" />
+                <a href="#" class="button no_image two" data-rel="back">Back</a>
+                <a href="#new_trend_2" class="button no_image red two" data-transition="slide" data-role="disable" id="new_trend_2_button">Step 2</a>
+            </div>
 
 		</div>
 	</div>
@@ -205,21 +216,23 @@
 <div data-role="page" id="new_trend_2" data-title="New trend | step 2">
 
     <div data-role="content">
-        <div class="maxi_container margin">
-            <form class="margin">
-                <label>Title</label>
-                <input type="text" placeholder="title" id="new_trend_title" />
-                <label>Description</label>
-                <textarea id="new_trend_description" placeholder="description"></textarea>
-                <label>Video link <span>Youtube or Vimeo</span></label>
-                <input type="text" placeholder="http://" id="new_trend_video" />
-                <label>Website link</label>
-                <input type="text" placeholder="http://" id="new_trend_website" />
-                <label>Trend location</label>
-                <input type="text" id="new_trend_location" placeholder="trend location" />
-            </form>
-            <a href="#" class="button no_image two" data-rel="back">Back</a>
-            <a href="#new_trend_3" class="button no_image red two" data-transition="slide" data-role="disable" id="new_trend_3_button">Step 3</a>
+        <div class="container margin">
+            <div class="subcontainer big">
+                <form class="margin">
+                    <label>Title</label>
+                    <input type="text" placeholder="title" id="new_trend_title" />
+                    <label>Description</label>
+                    <textarea id="new_trend_description" placeholder="description"></textarea>
+                    <label>Video link <span>Youtube or Vimeo</span></label>
+                    <input type="text" placeholder="http://" id="new_trend_video" />
+                    <label>Website link</label>
+                    <input type="text" placeholder="http://" id="new_trend_website" />
+                    <label>Trend location</label>
+                    <input type="text" id="new_trend_location" placeholder="trend location" />
+                </form>
+                <a href="#" class="button no_image two" data-rel="back">Back</a>
+                <a href="#new_trend_3" class="button no_image red two" data-transition="slide" data-role="disable" id="new_trend_3_button">Step 3</a>
+            </div>
         </div>
     </div>
 
@@ -228,19 +241,21 @@
 <div data-role="page" id="new_trend_3" data-title="New trend | step 3">
 
     <div data-role="content">
-        <div class="maxi_container margin">
-            <form class="margin">
-                <label>Tags</label>
-                <input id="new_trend_tagger" />
-                <label>Categories</label>
-                <div class="tags" id="new_trend_categories"></div>
-                <label>Mentality trend</label>
-                <select class="custom_select" id="new_trend_ment_trends">
-                    <option value="" disabled="disabled" selected="selected">Trend</option>
-                </select>
-            </form>
-            <a href="#" class="button no_image two" data-rel="back">Back</a>
-            <a href="#" class="button no_image red two" data-role="disable" id="submit_new_trend">Submit trend</a>
+        <div class="container margin">
+            <div class="subcontainer big">
+                <form class="margin">
+                    <label>Tags</label>
+                    <input id="new_trend_tagger" />
+                    <label>Categories</label>
+                    <div class="tags" id="new_trend_categories"></div>
+                    <label>Mentality trend</label>
+                    <select class="custom_select" id="new_trend_ment_trends">
+                        <option value="" disabled="disabled" selected="selected">Trend</option>
+                    </select>
+                </form>
+                <a href="#" class="button no_image two" data-rel="back">Back</a>
+                <a href="#" class="button no_image red two" data-role="disable" id="submit_new_trend">Submit trend</a>
+            </div>
         </div>
     </div>
 
@@ -249,73 +264,146 @@
 <div data-role="page" id="research_projects" data-title="My research projects">
 
     <div data-role="content">
-        <div class="maxi_container research_projects"></div>
-    </div>
-
-</div>
-
-
-<div data-role="page" id="view_project" data-title="View project">
-    <!--Populated dynamically-->
-</div>
-<!--/Create stuff-->
-
-<!--Workspace stuff-->
-
-<div data-role="page" id="edit_trend" data-title="Edit trend">
-
-    <div data-role="content">
-        <div class="maxi_container margin">
-            <form class="margin">
-                <label>General information</label>
-                <input type="text" placeholder="title" id="edit_trend_title" />
-                <textarea id="edit_trend_description" placeholder="description"></textarea>
-                <input id="edit_trend_tagger" />
-                <label>Trend categories</label>
-                <div class="tags" id="edit_trend_categories"></div>
-                <label>Trend location</label>
-                <input type="text" id="edit_trend_location" placeholder="trend location" />
-                <input type="hidden" id="edit_trend_id" value="" />
-            </form>
-            <a href="#" class="button no_image two" data-rel="back">Back</a>
-            <a href="#" class="button no_image red two" id="submit_edit_trend">Edit trend</a>
+        <div class="container">
+            <div class="subcontainer research_projects"></div>
         </div>
     </div>
 
 </div>
+
+
+
+<!--/Create stuff-->
+
+<!--Workspace stuff-->
+<div data-role="page" id="view_project" data-title="View project">
+
+    <div data-role="content">
+        <div class="container">
+            <div class="mini_dropdown_surrounder clearfix">
+                <div id="workspace_filter_by" class="mini_dropdown_container static">
+                    <section id="filter_by">
+                        <label>Filter posts by:</label>
+                        <a href="#" data-d-id="category">Category</a>
+                        <div data-d-id="category"></div>
+
+                        <a href="#" data-d-id="popularity">Popularity</a>
+                        <div data-d-id="popularity">
+                            <ul>
+                                <li><a href="#">Views</a></li>
+                            </ul>
+                            <ul>
+                                <li><a href="#">Rating</a></li>
+                            </ul>
+                            <ul>
+                                <li><a href="#">Discussions</a></li>
+                            </ul>
+                        </div>
+
+                        <a href="#" data-d-id="date">Date</a>
+                        <div data-d-id="date">
+                            <ul>
+                                <li><a href="#">Latest first</a></li>
+                            </ul>
+                            <ul>
+                                <li><a href="#">Oldest first</a></li>
+                            </ul>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <div id="trend_container"></div>
+            <div id="trend_container_copy"></div>
+
+        </div>
+    </div>
+
+</div>
+<div data-role="page" id="edit_trend_1" data-title="Edit trend | step 1">
+
+    <div data-role="content">
+        <div class="container margin">
+            <div class="subcontainer big">
+                <form class="margin">
+                    <label>Title</label>
+                    <input type="text" placeholder="title" id="edit_trend_title" />
+                    <label>Description</label>
+                    <textarea id="edit_trend_description" placeholder="description"></textarea>
+                    <label>Video link <span>Youtube or Vimeo</span></label>
+                    <input type="text" placeholder="http://" id="edit_trend_video" />
+                    <label>Website link</label>
+                    <input type="text" placeholder="http://" id="edit_trend_website" />
+                    <label>Trend location</label>
+                    <input type="text" id="edit_trend_location" placeholder="trend location" />
+                </form>
+                <a href="#" class="button no_image two" data-rel="back">Back</a>
+                <a href="#edit_trend_2" class="button no_image red two" data-transition="slide" data-role="disable" id="edit_trend_2_button">Step 2</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div data-role="page" id="edit_trend_2" data-title="Edit trend | step 2">
+
+    <div data-role="content">
+        <div class="container margin">
+            <div class="subcontainer big">
+                <form class="margin">
+                    <label>Tags</label>
+                    <input id="edit_trend_tagger" />
+                    <label>Categories</label>
+                    <div class="tags" id="edit_trend_categories"></div>
+                    <label>Mentality trend</label>
+                    <select class="custom_select" id="edit_trend_ment_trends">
+                        <option value="" disabled="disabled" selected="selected">Trend</option>
+                    </select>
+                    <input type="hidden" id="edit_trend_id" value="" />
+                </form>
+                <a href="#" class="button no_image two" data-rel="back">Back</a>
+                <a href="#" class="button no_image red two" data-role="disable" id="submit_edit_trend">Edit trend</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
 <!--/Workspace stuff-->
 
 <!--Explore stuff-->
 <div data-role="page" id="explore" data-title="EXPLORE">
 
     <div data-role="content">
-        <div id="filter_by">
-            <label>Filter posts by:</label>
-            <a href="#" data-d-id="category">Category</a>
-            <div data-d-id="category"></div>
+        <div id="explore_filter_by" class="mini_dropdown_container">
+            <section>
+                <label>Filter posts by:</label>
+                <a href="#" data-d-id="category">Category</a>
+                <div data-d-id="category"></div>
 
-            <a href="#" data-d-id="popularity">Popularity</a>
-            <div data-d-id="popularity">
-                <ul>
-                    <li><a href="#">Views</a></li>
-                </ul>
-                <ul>
-                    <li><a href="#">Rating</a></li>
-                </ul>
-                <ul>
-                    <li><a href="#">Discussions</a></li>
-                </ul>
-            </div>
+                <a href="#" data-d-id="popularity">Popularity</a>
+                <div data-d-id="popularity">
+                    <ul>
+                        <li><a href="#">Views</a></li>
+                    </ul>
+                    <ul>
+                        <li><a href="#">Rating</a></li>
+                    </ul>
+                    <ul>
+                        <li><a href="#">Discussions</a></li>
+                    </ul>
+                </div>
 
-            <a href="#" data-d-id="date">Date</a>
-            <div data-d-id="date">
-                <ul>
-                    <li><a href="#">Latest first</a></li>
-                </ul>
-                <ul>
-                    <li><a href="#">Oldest first</a></li>
-                </ul>
-            </div>
+                <a href="#" data-d-id="date">Date</a>
+                <div data-d-id="date">
+                    <ul>
+                        <li><a href="#">Latest first</a></li>
+                    </ul>
+                    <ul>
+                        <li><a href="#">Oldest first</a></li>
+                    </ul>
+                </div>
+            </section>
         </div>
         <div id="image_list">
             <!-- Dynamically created -->
@@ -335,7 +423,7 @@
 
 <div data-role="page" id="about" data-title="ABOUT">
     <div data-role="content">
-        <div class="maxi_container margin">
+        <div class="container margin">
             <p>About page...</p>
         </div>
     </div>

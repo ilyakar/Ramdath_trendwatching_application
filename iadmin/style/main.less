@@ -1,3 +1,4 @@
+@import '../../style/elements.less';
 @import '/style/main.css';
 
 @white                      : #ececec;
@@ -9,12 +10,96 @@
 @lighter_grey               : #dfdfdf;
 @red                        : #ac0a12;
 @light_red                  : #fbd8d8;
+@orange                     : #ff9900;
 
 @icons_png                  : url('/images/icons.png');
 
 body {
     &#admin {
+        .container {
+            position: relative;
+        }
+        .allow_overflow {
+            overflow: visible;
+        }
+        #main_header {
+            #menu_icon {
+                display: none;
+            }
+            #admin_area_title {
+                font-size: 21px;
+                font-weight: bold;
+                text-transform: uppercase;
+                position: absolute;
+                right: 15px;
+                top: 20px;
+            }
+        }
+        .mini_dropdown_container {
+            > section {
+                &#view_select {
+                    > a.active {
+                        cursor: default;
+                    }
+                }
+            }
+        }
+        #trend_container {
 
+        }
+        #trend_container_copy {
+            display: none;
+        }
+        #workspace_container {
+            display: none;
+        }
+        #manage_accounts {
+            ul#account_ul {
+                li {
+                    border-bottom: solid 1px @light_grey;
+                    padding: 8px 0;
+                    position: relative;
+                    &:hover {
+                        div.extra {
+                            .opacity(1);
+                            visibility: visible;
+                        }
+                    }
+                    &:last-child {
+                        border-bottom: none;
+                    }
+                    > span {
+                        float: left;
+                        border-left: solid 1px @light_grey;
+                        padding: 6px;
+                        margin-left: 3%;
+                        padding-left: 3%;
+                        width: 26%;
+                        white-space: nowrap;
+                        &:first-child {
+                            margin-left: 0;
+                            border-left: none;
+                            padding-left: 0;
+                        }
+                    }
+                    div.extra {
+                        position: absolute;
+                        top: 50%;
+                        right: 0;
+                        margin-top: -18px;
+                        .transition();
+                        .opacity(0);
+                        visibility: hidden;
+                        a {
+                            float: left;
+                            font-size: 15px;
+                            padding: 10px 20px 10px;
+                            border: none;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

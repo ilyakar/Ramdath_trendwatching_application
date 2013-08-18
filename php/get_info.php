@@ -2,7 +2,7 @@
 
 include 'php_includes.php';
 
-$sql = mysql_query("SELECT * FROM trends");
+$sql = mysql_query("SELECT * FROM trends ORDER BY id DESC");
 while($row = mysql_fetch_array($sql)) {
 
     // Decodes all the encoded info
@@ -13,6 +13,7 @@ while($row = mysql_fetch_array($sql)) {
     $row['location']    = urldecode($row['location']);
     $row['video']       = urldecode($row['video']);
     $row['website']     = urldecode($row['website']);
+    $row['ment_trend']  = urldecode($row['ment_trend']);
     // --
 
     $row['num_comments'] = 0;

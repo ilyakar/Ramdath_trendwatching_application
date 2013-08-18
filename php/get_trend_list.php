@@ -2,7 +2,7 @@
 
 include 'connect_to_mysql.php';
 
-$sql = mysql_query("SELECT * FROM trends");
+$sql = mysql_query("SELECT * FROM trends ORDER BY id DESC");
 while($row = mysql_fetch_array($sql)) {
 
     // Decodes all the encoded info
@@ -85,9 +85,9 @@ for($i=0; $i<$num; $i++){
     $t_num = $i+1 < 10 ? '0'.($i+1) : $i+1;
 
     print
-        '<div data-categories="'. $trend['categories'] .'" data-num-comments="'. $trend['num_comments'] .'" data-rating="'. $rating .'" data-views="'. ($trend['views'] ? $trend['views'] : 0) .'">
+        '<div data-id="'. $trend['id'] .'" data-categories="'. $trend['categories'] .'" data-num-comments="'. $trend['num_comments'] .'" data-rating="'. $rating .'" data-views="'. ($trend['views'] ? $trend['views'] : 0) .'">
             <div class="image_container">
-                <a href="#'. $trend['link_title'] .'" data-transition="slide">View trend</a>
+                <a href="#'. $trend['link_title'] .'" class="trend_link" data-transition="slide">View trend</a>
                 <img '. $img_extra .' width="'. $new_width .'" height="'. $new_height .'" alt="trend pic" />
             </div>
             <section>

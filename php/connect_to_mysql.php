@@ -7,6 +7,11 @@ $db_user = 'root';
 $db_pass = '';
 $db_name = 'SOTT';
 
+//$db_host = 'localhost';
+//$db_user = 'sott_user';
+//$db_pass = 'sott123';
+//$db_name = 'sott';
+
 //$db_host = '10.0.29.34:3306';
 //$db_user = 'ucbKt1hE89PwA';
 //$db_pass = 'prWK3KN82zf2p';
