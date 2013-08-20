@@ -14,7 +14,8 @@ $country        = $_POST['country'];
 
 $password       = $_POST['password'];
 
-$data = [];
+$privilage      = $_POST['privilage'];
+$workspaces     = $_POST['workspaces'];
 
 mysql_query("UPDATE accounts SET
 first_name='$first_name',
@@ -25,27 +26,31 @@ email='$email',
 city='$city',
 country='$country'
 
-WHERE
-
-id='$account_id'
-
-") or die(mysql_error());
+WHERE id='$account_id'") or die(mysql_error());
 
 if($password) {
     $password = md5($password);
 
-    mysql_query("UPDATE accounts SET
-    password='$password'
-
-    WHERE
-
-    id='$account_id'
-
-    ") or die(mysql_error());
+    mysql_query("UPDATE accounts SET password='$password' WHERE id='$account_id'") or die(mysql_error());
 
     $data['password'] = $password;
 
 }
+
+// Edit by admin
+    if($privilage){
+
+        mysql_query("UPDATE accounts SET privilage='$privilage' WHERE id='$account_id'") or die(mysql_error());
+
+    }
+
+    if($workspaces){
+
+        mysql_query("UPDATE accounts SET project_ids='$workspaces' WHERE id='$account_id'") or die(mysql_error());
+
+    }
+
+
 
 // Upload profile image if it's there
 $output_dir = "../uploads/";

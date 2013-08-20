@@ -40,18 +40,24 @@ for($i=0; $i<$num; $i++){
     // ---
     $trend = $trends[$i];
 
-    $rating = $trend['rating']['value'] / $trend['rating']['votes'];
-
-    if(!$rating){
+    if($trend['rating']['votes']){
+        $rating = $trend['rating']['value'] / $trend['rating']['votes'];
+    }
+    else {
         $rating = 0;
     }
     // ---
 
+    $trend['first_image']   = explode(',', $trend['images']);
+    $trend['first_image']   = $trend['first_image'][0];
+
     // --- image size stuff ---
     $container_width    = 400;
     $container_height   = 275;
-    $width              = getimagesize('../images/'. explode(',', $trend['images'])[0] )[0];
-    $height             = getimagesize('../images/'. explode(',', $trend['images'])[0] )[1];
+
+    $info               = getimagesize('../images/'. $trend['first_image'] );
+    $width              = $info[0];
+    $height             = $info[1];
 
     $new_height = $container_width / $width * $height;
 
@@ -69,10 +75,10 @@ for($i=0; $i<$num; $i++){
     // ---
 
     if($i<6){ // No lazyload
-        $img_extra = 'src="/images/'. explode(',', $trend['images'])[0] .'"';
+        $img_extra = 'src="/images/'. $trend['first_image'] .'"';
     }
     else { // Lazyload for the rest
-        $img_extra = 'class="lazyload" src="/style/images/transparent.png" data-original="/images/'. explode(',', $trend['images'])[0] .'"';
+        $img_extra = 'class="lazyload" src="/style/images/transparent.png" data-original="/images/'. $trend['first_image'] .'"';
     }
 
     $trend['link_title'] = preg_replace('!\s+!', ' ', $trend['title']);
@@ -86,10 +92,10 @@ for($i=0; $i<$num; $i++){
 
     print
         '<div data-id="'. $trend['id'] .'" data-categories="'. $trend['categories'] .'" data-num-comments="'. $trend['num_comments'] .'" data-rating="'. $rating .'" data-views="'. ($trend['views'] ? $trend['views'] : 0) .'">
-            <div class="image_container">
-                <a href="#'. $trend['link_title'] .'" class="trend_link" data-transition="slide">View trend</a>
+            <a href="#'. $trend['link_title'] .'" class="trend_link image_container" data-transition="slide">
+                <span>View trend</span>
                 <img '. $img_extra .' width="'. $new_width .'" height="'. $new_height .'" alt="trend pic" />
-            </div>
+            </a>
             <section>
                 <header><h1><i>'. $t_num .'</i>'. truncate($trend['title'], 25) .'</h1></header>
                 '. truncate($trend['description'], 400) .'

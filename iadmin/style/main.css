@@ -25,6 +25,10 @@ body#admin #main_header #admin_area_title {
 body#admin .mini_dropdown_container > section#view_select > a.active {
   cursor: default;
 }
+body#admin #trend_container_workspace {
+  font-size: 30px;
+  margin-bottom: 50px;
+}
 body#admin #trend_container_copy {
   display: none;
 }
@@ -84,4 +88,10 @@ body#admin #manage_accounts ul#account_ul li div.extra a {
   font-size: 15px;
   padding: 10px 20px 10px;
   border: none;
+}
+body#admin #manage_info textarea {
+  height: 250px;
+}
+body#admin #settings_panel > div:nth-child(1) a:hover {
+  background: #2e2e2e;
 }

@@ -79,9 +79,8 @@ $.fn.comments = function( options ) {
 
                 if($(this).attr('data-role') == 'disable') return; // If the button is disabled, stop
 
-                var comment     = $this.find('textarea:visible').val();
-
-                comment = nl2br(comment);
+                var comment = $this.find('textarea:visible').val();
+                    comment = nl2br(comment);
 
                 // Create date
 
@@ -117,7 +116,6 @@ $.fn.comments = function( options ) {
                     date_time: date_time,
                     comment: comment // Encode for database
                 }, function(data){
-                    console.log(data);
                     insert_comment(settings.author.username, settings.author.image, date_time, comment, 1, 1);
                     settings.onsubmit();
 
@@ -142,10 +140,10 @@ $.fn.comments = function( options ) {
                 del = '<a href="#" class="delete">delete</a>';
             }
             if(new_comment){
-                var hidden = ' class="hidden"';
+                var hide = ' class="hide"';
             }
             else {
-                var hidden = '';
+                var hide = '';
             }
 
             if(profile_image){
@@ -156,7 +154,7 @@ $.fn.comments = function( options ) {
             }
 
             $this.find('ul').prepend(
-                '<li'+hidden+'>' +
+                '<li'+hide+'>' +
                     '<header>'+username +'<time>'+ date +'</time>'+ del +'</header>' +
                     '<img src="'+profile_image+'" alt="profile picture">' +
                     '<section>'+ comment +'</section>' +
@@ -165,24 +163,24 @@ $.fn.comments = function( options ) {
 
             if(new_comment){
 
-                // Removes form
-                $this.find('form').fadeOut(200);
+                // Adds the thank you message
+                $this.find('.message').slideDown(200).addClass('show');
+                $this.find('form').slideUp(200);
                 setTimeout(function(){
                     // Kill the form
                     $this.find('form').remove();
 
-                    // Adds the thank you message
                     $this.find('.message').addClass('show');
 
                     // Hide message
                     setTimeout(function(){
-                        $this.find('.message').removeClass('show');
+                        $this.find('.message').slideUp(200).removeClass('show');
                     }, 3000);
 
                 },200);
 
                 // Adds the comment
-                $this.find('ul').find('li.hidden').fadeIn(200);
+                $this.find('ul').find('li.hide').slideDown(200);
 
             }
 

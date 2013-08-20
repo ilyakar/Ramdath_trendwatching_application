@@ -37,12 +37,12 @@ while($row = mysql_fetch_array($sql)) {
     $rows['trends'][] = $row;
 }
 
-$sql = mysql_query("SELECT * FROM categories");
+$sql = mysql_query("SELECT * FROM categories ORDER BY order_id");
 while($row = mysql_fetch_array($sql)) {
     $rows['categories'][] = $row;
 }
 
-$sql = mysql_query("SELECT * FROM mentality_trends");
+$sql = mysql_query("SELECT * FROM mentality_trends ORDER BY order_id");
 while($row = mysql_fetch_array($sql)) {
     $rows['mentality_trends'][] = $row;
 }

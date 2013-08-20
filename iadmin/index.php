@@ -6,12 +6,20 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style/main.css">
+
+    <!-- Fancybox stuff -->
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/fancybox/helpers/jquery.fancybox-thumbs.css?v=1.0.7" type="text/css" media="screen" />
+    <!-- /Fancybox stuff -->
 </head>
 <body id="admin">
 
 <div id="page_loading">
     <span>No internet connection<br>Please try again...</span>
 </div>
+
+<div id="site_message">This is a site message</div>
 
 <header id="main_header">
     <a href="#" class="icon" id="menu_icon"></a>
@@ -45,6 +53,7 @@
     <div data-role="content">
         <div class="container">
             <div class="mini_dropdown_surrounder clearfix">
+                <div id="trend_container_workspace">Viewing workspace: <b>All</b></div>
                 <div class="mini_dropdown_container static" id="view_buttons">
                     <section id="view_select">
                         <label>View:</label>
@@ -82,7 +91,6 @@
                 </div>
             </div>
             <div id="trend_container" class="research_trends"><!-- dynamically populated --></div>
-            <div id="trend_container_copy" class="research_trends"><!-- dynamically populated --></div>
             <div id="workspace_container" class="research_projects"></div>
         </div>
     </div>
@@ -151,6 +159,27 @@
         </div>
     </div>
 </div>
+
+<!--Manage info-->
+<div data-role="page" id="manage_info" data-title="Manage info">
+    <div data-role="content">
+        <div class="container">
+            <div class="subcontainer">
+                <form>
+                    <label>Workspaces</label>
+                    <textarea id="edit_info_workspaces" placeholder="workspaces"></textarea>
+                    <label>Categories</label>
+                    <textarea id="edit_info_categories" placeholder="categories"></textarea>
+                    <label>Mentality trends</label>
+                    <textarea id="edit_info_ment_trends" placeholder="mentality trends"></textarea>
+                    <a href="#" class="button no_image red two" data-role="disable" id="submit_info_edit">Edit info</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/Manage info-->
+
 <!--/Admin pages-->
 
 
@@ -163,6 +192,14 @@
                 <form id="edit_profile_form" method="post" enctype="multipart/form-data">
 
                     <input type="hidden" id="edit_account_id" />
+
+                    <label>Privilage</label>
+                    <select class="custom_select" id="edit_account_privilage">
+                        <option value="" disabled>Privilage</option>
+                    </select>
+
+                    <label>Workspaces</label>
+                    <div class="tags small" id="edit_account_workspaces"></div>
 
                     <label>Profile image</label>
                     <div class="thumbnail_upload">
@@ -245,5 +282,13 @@
 <script src="/js/jquery_comments.js"></script>
 <script src="/js/jquery_raty.js"></script>
 <script src="js/all.js"></script>
+
+<!-- Fancybox stuff -->
+<script type="text/javascript" src="/fancybox/jquery.fancybox.pack.js?v=2.1.5"></script>
+<script type="text/javascript" src="/fancybox/helpers/jquery.fancybox-buttons.js?v=1.0.5"></script>
+<script type="text/javascript" src="/fancybox/helpers/jquery.fancybox-media.js?v=1.0.6"></script>
+<script type="text/javascript" src="/fancybox/helpers/jquery.fancybox-thumbs.js?v=1.0.7"></script>
+<!-- /Fancybox stuff -->
+
 </body>
 </html>

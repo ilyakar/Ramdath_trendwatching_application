@@ -463,7 +463,7 @@ console.log('ajax started');
 
 function on_page_change() {
 
-    global_page_functions();
+    global_page_functions(1);
 
     // Runs on page change
     $(document).delegate('.ui-page', 'pagebeforeshow', function () {
@@ -474,8 +474,6 @@ function on_page_change() {
 }
 
 function global_click_functions() {
-
-    console.log('global click');
 
     $footer.find('#create_button').click(function(){
 
@@ -506,19 +504,19 @@ function global_click_functions() {
 
     $('#explore_filter_by').find('li').children('a').click(function(){
 ;
-        click_filter_by_button(this, 'explore');
+        click_explore_filter_by_button(this);
 
     });
 
     $('#workspace_filter_by').find('li').children('a').click(function(){
 
-        click_filter_by_button(this, 'workspace');
+        click_workspace_filter_by_button(this);
 
     });
 
 
     $('body').on('click', 'a.trend_link', function(data){
-        console.log(data);
+
         var hash = data.currentTarget.hash;
         var id = $.textParam('id', hash);
         setup_single_trend(id);
@@ -645,6 +643,9 @@ function setup_other_plugins(type){
     // Workspace filter by
         $('#workspace_filter_by').dropdown();
 
+    // Fancybox
+        $('.fancybox').fancybox();
+
     if(type == 'masonry_workspace'){
 
         var $container = $('#trend_container');
@@ -736,7 +737,7 @@ function form_stuff(refresh) {
     // Select stuff
     $('select').change(function(){
 
-        $(this).parents('.select').removeClass('cross').removeClass('tick').addClass('tick');
+        $(this).parents('.select').removeClass('cross').addClass('tick');
 
         setup_form_buttons();
 
@@ -802,30 +803,97 @@ function show_app(){
 
 // ---------------- Other functions (called by other functions) -----------------
 
-function click_filter_by_button(that, type_filter){
+function check_if_allowed_logged_in_page(){
 
-    if(type_filter == 'explore'){
-        var container           = '#image_list .scrollableArea';
-        var container_copy      = '#image_list_copy'; 
+    var privilage = stored_data.user_info.privilage;
+
+    // Subscriber
+    if(privilage == 'a'){
+
+        if(location.hash == '#create' || location.hash == '#research_projects'){
+            $.mobile.changePage('#insufficient_privilages', 'pop');
+            site_message('You do not have sufficient privilages to access this page. Please login in as an Author / Editor or more.');
+        }
+
     }
-    else if(type_filter == 'workspace'){
-        var container           = '#trend_container';
-        var container_copy      = '#trend_container_copy';
+
+    // Subscriber premium
+    else if(privilage == 'b'){
+
     }
+
+    // Author
+    else if(privilage == 'c'){
+
+    }
+
+    // Editor
+    else if(privilage == 'd'){
+
+    }
+
+    // Admin
+    else if(privilage == 'e'){
+
+    }
+
+    // Super admin
+    else if(privilage == 'f'){
+
+    }
+
+}
+
+function site_message(text, permanent){
+
+    var $container = $('#site_message');
+
+    if(text == 'hide'){
+        $container.removeClass('show');
+        return;
+    }
+
+    $container.text(text).addClass('show')
+
+    if(!permanent){
+        setTimeout(function(){
+
+            $container.removeClass('show')
+
+        }, 5000);
+    }
+
+}
+
+function if_not_home_page(){
+
+    if(location.hash && location.hash !== '#about' && location.hash !== '#insufficient_privilages' && location.hash !== '#create' && location.hash !== '#research_projects' && location.hash !== '#explore' && location.hash !== '#edit_account'){
+
+        return true;
+
+    }
+    else {
+
+        return false;
+
+    }
+
+}
+
+function click_explore_filter_by_button(that){
+
+    var container           = '#image_list .scrollableArea';
+    var container_copy      = '#image_list_copy';
 
     var type                    = $(that).parents('div').attr('data-d-id');
     var $container              = $(container);
     var $container_untouched    = $(container_copy);
 
-    if(type_filter == 'workspace'){
-        $container.masonry('destroy');
-    }
-
     // Adds HTML to the untouched container on first click
     if(!$container_untouched.html()){
         $container_untouched.html($container.html());
     }
-    
+
     // refresh container HTML with full data
     $container.html($container_untouched.html());
 
@@ -864,7 +932,6 @@ function click_filter_by_button(that, type_filter){
 
         if(attributes){
             $container.find('div[data-categories]:not('+ attributes +')').remove();
-            console.log($container.find('div[data-categories]:not('+ attributes +')'));
         }
 
     }
@@ -883,13 +950,11 @@ function click_filter_by_button(that, type_filter){
         }
 
         if($(that).hasClass('active')){
-            var els = $container.find('['+ attr +']');
-            els.sort(function(a, b) {
+            var $els = $container.find('['+ attr +']');
+            $els.sort(function(a, b) {
                 return parseInt($(b).attr(attr)) - parseInt($(a).attr(attr));
             });
-
-            $container.find(attr).remove();
-            $container.find('.scrollableArea').html(els);
+            $container.html($els);
         }
 
     }
@@ -907,23 +972,141 @@ function click_filter_by_button(that, type_filter){
                 });
 
                 $container.find('[data-num-comments]').remove();
-                $container.find('.scrollableArea').html(els);
+                $container.html(els);
             }
         }
 
     }
 
-    if(type_filter == 'explore'){
-        $('#image_list').smoothDivScroll("recalculateScrollableArea");
-    }
-    else if(type_filter == 'workspace'){
-        setup_other_plugins('masonry_workspace');
-    }
-    
+    $('#image_list').smoothDivScroll("recalculateScrollableArea");
+
     $("img.lazyload").lazyload({
         effect      : 'fadeIn',
         container   : $('.scrollWrapper')
     });
+}
+
+function click_workspace_filter_by_button(that){
+
+    var type                    = $(that).parents('div').attr('data-d-id');
+    var $container              = $('#trend_container');
+
+    if(type == 'category'){
+        $container.find('[data-id]').show(0);
+        $container.masonry('layout');
+    }
+    else {
+        $container.masonry('destroy');
+    }
+
+    // Resets the active class
+    $('a[data-d-id]:not([data-d-id="'+ type +'"])').removeClass('active');
+    $('div[data-d-id]:not([data-d-id="'+ type +'"])').find('a.active').removeClass('active'); // Removes ".active" from elements outside current type
+
+    var $actives = $(that).parents('div[data-d-id]').find('a.active');
+    if(type !== 'category' && $actives.length){
+        $actives.not(that).removeClass('active');
+    }
+
+    if(!$(that).hasClass('active')){ // Adds the .active class if it didn't yet exist
+        $(that).addClass('active');
+    }
+    else { // Removes the .active class if it exists
+        $(that).removeClass('active');
+    }
+
+    if($(that).parents('div[data-d-id]').find('a.active').length){ // Adds .active class to the main button
+        $('#filter_by_select').children('a[data-d-id="'+ type +'"]').addClass('active');
+    }
+    else { // Removes .active class from the main button
+        $('#filter_by_select').children('a[data-d-id="'+ type +'"]').removeClass('active');
+    }
+
+    // Specific filter functions
+    if(type == 'category'){
+
+        var attributes = '';
+        var els = $(that).parents('div[data-d-id]').find('a.active');
+        for(var i=0; i<els.length; i++){
+            var el = els.eq(i);
+            attributes += '[data-categories*='+ el.text() +']';
+        }
+        if(attributes){
+            var $els = $container.find('div[data-categories]:not('+ attributes +')');
+        }
+
+        if($els){
+            $els.hide(0);
+        }
+        $container.masonry('layout');
+
+    }
+    else if(type == 'popularity'){
+
+        var value = $(that).text().toLocaleLowerCase();
+
+        if($(that).hasClass('active')){
+            if(value == 'views'){
+                var attr= 'data-views';
+            }
+            else if(value == 'rating'){
+                var attr = 'data-rating';
+            }
+            else if(value == 'discussions'){
+                var attr = 'data-num-comments';
+            }
+        }
+
+        // This is if a popularity has been deselected
+        else {
+            var attr = 'data-id';
+        }
+
+        var $els = $container.find('['+ attr +']');
+
+        $els.sort(function(a, b) {
+            return parseInt($(b).attr(attr)) - parseInt($(a).attr(attr));
+        });
+
+        $container.html($els);
+
+    }
+    else if(type == 'date'){
+
+        var value = $(that).text().toLocaleLowerCase();
+
+        var attr = 'data-id';
+
+        var $els = $container.find('['+ attr +']');
+
+        if(value == 'oldest first'){
+
+            $els.sort(function(a, b) {
+                return parseInt($(a).attr(attr)) - parseInt($(b).attr(attr));
+            });
+
+
+        }
+
+        if(value !== 'oldest first' || !$(that).hasClass('active')) {
+
+            $els.sort(function(a, b) {
+                return parseInt($(b).attr(attr)) - parseInt($(a).attr(attr));
+            });
+
+        }
+
+        $container.html($els);
+
+    }
+
+    if(type !== 'category'){
+        $container.masonry({
+            columnWidth: 75.5,
+            isFitWidth: false
+        });
+    }
+
 }
 
 function submit_edit_trend(){
@@ -954,8 +1137,9 @@ function submit_edit_trend(){
         ment_trend      : ment_trend
     },function(data){
 
-        console.log(data);
-        alert('submitted edit'); // todo continue here
+        $.mobile.changePage('#research_projects', 'pop');
+        go_home(1);
+        site_message('You have edited the trend "'+ title +'"');
 
     });
 }
@@ -977,10 +1161,17 @@ function setup_research_project_click(data){
 
             var project_trend = project_trends[i];
 
+            if(project_trend.rating.votes){
+                var rating = project_trend.rating.value / project_trend.rating.votes;
+            }
+            else {
+                var rating = 0;
+            }
+
             project_trend.link_title = 'view_trend?id='+ project_trend.id +'&title='+ project_trend.title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-')
 
             trend_html +=
-                '<div data-id="'+ project_trend.id +'" data-categories="'+ project_trend.categories +'" data-num-comments="'+ project_trend.num_comments +'" data-rating="'+ (project_trend.rating.value / project_trend.rating.votes) +'" data-views="'+ (project_trend.views ? project_trend.views : 0) +'">' +
+                '<div data-id="'+ project_trend.id +'" data-categories="'+ project_trend.categories +'" data-num-comments="'+ project_trend.num_comments +'" data-rating="'+ rating +'" data-views="'+ (project_trend.views ? project_trend.views : 0) +'">' +
                     '<a href="#'+ project_trend.link_title +'" class="trend_link">' +
                         '<div class="image_container">' +
                         '   <img src="/images/'+ project_trend.images.split(',')[0] +'" alt="research project image">' +
@@ -1030,7 +1221,6 @@ function setup_research_project_click(data){
     });
 
     function check_loaded(){
-        console.log(cnt);
         if(cnt == $container.find('img').length){
 
             $('#trend_container').masonry({
@@ -1061,7 +1251,7 @@ function setup_single_trend(id){
     for(var b=0; b<trend_images_array.length; b++){
         var image = trend_images_array[b];
 
-        trend_images += '<div class="resize_relative_this"><img src="/images/'+ image +'" alt="trend image"></div>';
+        trend_images += '<a href="/images/'+ image +'" rel="image_group" class="resize_relative_this fancybox"><img src="/images/'+ image +'" alt="trend image"></a>';
 
     }
 
@@ -1092,16 +1282,13 @@ function setup_single_trend(id){
     // Video embedding stuff
         var embed_video = '';
         if(trend.video){
-            console.log(trend.video);
             if(trend.video.indexOf('youtube') > -1){
-                console.log('youtube');
                 var video_id = trend.video.split('v=')[1];
                 if(video_id){
                     embed_video = '<iframe width="100%" height="250" src="//www.youtube.com/embed/'+ video_id+ '" frameborder="0" allowfullscreen></iframe>';
                 }
             }
             else if(trend.video.indexOf('vimeo')) {
-                console.log('vimeo');
                 var video_id = trend.video.split('.com/')[1];
                 if(video_id){
                     embed_video = '<iframe src="http://player.vimeo.com/video/'+ video_id +'" width="100%" height="250" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
@@ -1159,7 +1346,7 @@ function setup_single_trend(id){
 
             setTimeout(function(){
                 setup();
-            },200);
+            },400);
 
             $(window).resize(function(){
                 setup();
@@ -1169,7 +1356,6 @@ function setup_single_trend(id){
                 var $relative = $('.resize_relative_this');
 
                 var width = $relative.width();
-                console.log(width);
                 var height = width * 0.6875;
 
                 $relative.height(height);
@@ -1252,7 +1438,6 @@ function setup_explore(){
         display: 'block',
         visibility: 'hidden'
     });
-
     // Smooth div scrolling (for the explore list)
     $("#image_list").smoothDivScroll({
         mousewheelScrolling: "allDirections",
@@ -1275,26 +1460,6 @@ function setup_explore(){
     $('#explore').removeAttr('style');
 
 //    $('#image_list').find('.scrollableArea').children('div').height('');
-
-}
-
-function single_trend_viewed(){ // initiated twice!!
-console.log('single_trend');
-    if(first_load == 3){
-        first_load = 2;
-    }
-    else if(!first_load || first_load == 2){
-        first_load = 1;
-    }
-console.log('a: '+first_load);
-    if(first_load == 1){
-        console.log('update');
-        var trend_id = location.hash.split('#trend_')[1].split('_')[0];
-        $.post('../php/add_trend_view_count.php', {
-            trend_id: trend_id
-        });
-        first_load = 3;
-    }
 
 }
 
@@ -1363,21 +1528,23 @@ function setup_account_edit_page(){
 
     var info = stored_data.user_info;
 
-    $('#edit_username')     .val(info.username).addClass('tick');
-    $('#edit_first_name')   .val(info.first_name).addClass('tick');
-    $('#edit_last_name')    .val(info.last_name).addClass('tick');
-    $('#edit_gender')       .val(info.gender).parent().removeClass('cross').addClass('tick').children('span').text(info.gender.charAt(0).toUpperCase() + info.gender.slice(1));
+    $('#edit_username')     .val(info.username);
+    $('#edit_first_name')   .val(info.first_name);
+    $('#edit_last_name')    .val(info.last_name);
+    $('#edit_gender')       .val(info.gender).change().parent().removeClass('cross').addClass('tick');
 
-    $('#edit_email')        .val(info.email).addClass('tick');
-    $('#edit_city')         .val(info.city).addClass('tick');
-    $('#edit_country')      .val(info.country).addClass('tick');
+    $('#edit_email')        .val(info.email);
+    $('#edit_city')         .val(info.city);
+    $('#edit_country')      .val(info.country);
 
-    $('#edit_date_of_birth_1').val(info.date_of_birth.split('-')[2]).addClass('tick');
-    $('#edit_date_of_birth_2').val(info.date_of_birth.split('-')[1]).addClass('tick');
-    $('#edit_date_of_birth_3').val(info.date_of_birth.split('-')[0]).addClass('tick');
+    $('#edit_date_of_birth_1').val(info.date_of_birth.split('-')[2]);
+    $('#edit_date_of_birth_2').val(info.date_of_birth.split('-')[1]);
+    $('#edit_date_of_birth_3').val(info.date_of_birth.split('-')[0]);
 
     $('#edit_password_old').attr('data-pass', info.password);
 
+    disable_given_links();
+    form_stuff(1);
     setup_form_buttons();
 
     // Setup password stuff
@@ -1520,7 +1687,7 @@ function submit_register(){
 
         check_login(); // Does the AJAX for a logged in account
 
-        $.mobile.changePage('#create', 'pop');
+        $.mobile.changePage('#explore', 'pop');
 
     });
 }
@@ -1565,8 +1732,9 @@ function check_if_allowed_page(){
 
     if(
         !location.hash                              || // Home page
-        $.cookie('view_type')    == 'explore'            || // Trend page
+        $.cookie('view_type')    == 'explore'       || // Trend page
         location.hash       == '#explore'           || // Explore page
+        location.hash       == '#about'             || // About page
         location.hash       == '#login_with_account'|| // Login page
         location.hash       == '#register_1'        || // Register page
         location.hash       == '#register_2'        || // Register page
@@ -1590,11 +1758,13 @@ function check_if_allowed_page(){
 function reset_new_trend_form(){
 
     $('#new_trend_title')       .val('').removeClass('tick').addClass('cross');
-    $('#new_trend_description') .val('').removeClass('tick').addClass('cross');
-    $('#new_trend_location')    .val('').removeClass('tick').addClass('cross');
+    tinyMCE.activeEditor .setContent('');
+    $('#new_trend_video')       .val('').removeClass('tick').addClass('cross');
+    $('#new_trend_website')     .val('').removeClass('tick').addClass('cross');
 
     $('#new_trend_categories')  .find('div').removeClass('selected');
     $('#new_trend_tagger')      .importTags('');
+    $('#new_trend_ment_trends') .val('').change().parent().removeClass('tick').addClass('cross');
 
 }
 
@@ -1602,11 +1772,13 @@ function reset_new_trend_form(){
 function reset_edit_trend_form(){
 
     $('#edit_trend_title')      .val('').removeClass('tick').addClass('cross');
-    $('#edit_trend_description').val('').removeClass('tick').addClass('cross');
-    $('#edit_trend_location')   .val('').removeClass('tick').addClass('cross');
+    tinyMCE.activeEditor.setContent('');
+    $('#edit_trend_video')      .val('').removeClass('tick').addClass('cross');
+    $('#edit_trend_website')    .val('').removeClass('tick').addClass('cross');
 
     $('#edit_trend_categories') .find('div').removeClass('selected');
     $('#edit_trend_tagger')     .importTags('');
+    $('#edit_trend_ment_trends') .val('').change().removeClass('tick').addClass('cross');
 
 }
 
@@ -1719,7 +1891,17 @@ function load_logged_in_ajax(new_login){
 
 }
 
-function global_page_functions(){
+function global_page_functions(first_load){
+console.log('global page functions');
+    if(first_load){
+
+        if(if_not_home_page()){
+
+            jQuery.mobile.changePage( $.cookie('view_type') ? $( '#'+ $.cookie('view_type') ) : $('#create') );
+
+        }
+
+    }
 
     disable_given_links();
 
@@ -1729,6 +1911,10 @@ function global_page_functions(){
     }
     else {
         setup_slideshow(1); // 1 removes the slideshow as a whole
+    }
+
+    if(logged_in){
+        check_if_allowed_logged_in_page();
     }
 
     // HOME
@@ -1839,6 +2025,11 @@ function global_page_functions(){
         $('#menu_icon').hide(0);
         $('#back_icon').show(0);
 
+        if(location.hash == '#insufficient_privilages'){
+            $('#menu_icon').show(0);
+            $('#back_icon').hide(0);
+        }
+
 
         if(view == 'explore') { // EXPLORE - Single trend page
 
@@ -1911,6 +2102,8 @@ function submit_trend(){
 
             $.mobile.changePage('#view_trend', 'pop');
 
+            site_message('You have successfully submitted your trend.');
+
             $.cookie('view_type', 'explore'); // Makes sure that the back button will take the user to the explore page by changing the cookie
 
             // The back button will take the user HOME
@@ -1968,7 +2161,7 @@ function submit_trend(){
     }
 
 function setup_form_buttons() {
-
+console.log('setting up form buttons');
     // ----- forms -----
 
     if(
@@ -2241,6 +2434,7 @@ $.textParam = function(param, string){
 
 // Disable links
 function disable_given_links() {
+    console.log('disabling given links');
     var num = $('a[data-role="disable"]').length;
     for(var i=0;i<num;i++){
 

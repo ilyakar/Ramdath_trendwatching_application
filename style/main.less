@@ -62,6 +62,9 @@ body {
             &.big {
                 max-width: 800px;
             }
+            &.margin {
+                margin-top: 30px;
+            }
         }
     }
     a.button, input[type="submit"] {
@@ -143,11 +146,12 @@ body {
     }
     .message {
         font-size: 20px;
-        padding-top: 21px;
-        padding-bottom: 21px;
         margin-bottom: 15px;
         padding: 22px 70px 23px 30px;
         margin: 0 auto 10px;
+        background: @light_red;
+        border-color: @light_red;
+        color: @red;
         .opacity(0);
         .transition();
         &.no_float {
@@ -157,10 +161,24 @@ body {
         &.show {
             .opacity(1);
         }
-        &.red {
-            background: @light_red;
-            border-color: @light_red;
-            color: @red;
+    }
+    #site_message {
+        .opacity(0);
+        .transition();
+        visibility: hidden;
+        position: absolute;
+        top: 65px;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        text-align: center;
+        font-size: 20px;
+        padding: 14px 40px 17px;
+        background: @light_red;
+        color: @red;
+        &.show {
+            visibility: visible;
+            .opacity(0.90);
         }
     }
     form {
@@ -180,7 +198,7 @@ body {
             display: block;
             overflow: visible;
             font-family: latolight;
-            background: @lighter_grey right center no-repeat;
+            background: @lighter_grey 100% 15px no-repeat;
             width: 100%;
             &:focus, &.focus {
                 border: solid 1px @grey;
@@ -334,20 +352,24 @@ body {
             }
         }
         .tags {
+            &.small {
+                > div {
+                    font-size: 15px;
+                }
+            }
             > div {
                 background: @grey;
                 border: none;
                 color: @white;
-                padding: 15px 30px;
+                padding: 15px 4%;
                 float: left;
-                margin-right: 10px;
+                margin-right: 2%;
                 margin-bottom: 10px;
                 font-size: 20px;
                 cursor: pointer;
-                width: 132px;
-                &:nth-child(4n) {
+                width: 41%;
+                &:nth-child(2n) {
                     margin-right: 0;
-                    width: 133px;
                 }
                 &.selected {
                     background: @orange;
@@ -379,6 +401,7 @@ body {
     }
     #trend_container {
         padding-bottom: 40px;
+        min-height: 900px;
         > div {
             overflow: visible;
             width: 292px;
@@ -488,10 +511,14 @@ body {
         a#header_logo {
             height: 37px;
             margin: 12px auto 11px;
-            background: url('images/logo.png') bottom;
+            background: url('images/logo.png') center;
             background-size: 100%;
             width: 240px;
             display: block;
+            .transition();
+            &:hover {
+                background-position: bottom;
+            }
         }
         div#header_title {
             display: none;
@@ -619,6 +646,7 @@ body {
     div[data-role="content"]{
         margin-top: 120px;
         margin-bottom: 40px;
+        min-height: 500px;
         overflow: visible;
         .transition();
         // Buttons
@@ -688,6 +716,16 @@ body {
                     }
                 }
             }
+            > a {
+                .transition();
+                &:hover {
+                    background: @orange;
+                }
+                &.selected {
+                    background: @orange;
+                    cursor: default;
+                }
+            }
         }
     }
     div[data-role="page"]{
@@ -695,8 +733,8 @@ body {
         width: 100%;
         overflow-y: auto !important;
         .transition();
-        transition-delay: .05s;
-        -webkit-transition-delay: .001s; /* Safari */
+        transition-delay: .01s;
+        -webkit-transition-delay: .01s; /* Safari */
     }
     &.open_panel { // class added to the body
         #main_header {
@@ -711,6 +749,9 @@ body {
         div#settings_panel {
             left: 0;
         }
+        div#site_message {
+            left: 400px;
+        }
         header#main_header {
             a.icon#menu_icon {
                 background-color: @red;
@@ -720,6 +761,7 @@ body {
     }
     .mini_dropdown_surrounder {
         overflow: visible;
+        position: relative;
     }
     .mini_dropdown_container {
         position: absolute;
@@ -778,7 +820,16 @@ body {
                 background: @grey;
                 position: relative;
                 overflow: visible;
+                .transition();
+                &:hover {
+                    background-color: @orange;
+                }
                 &.selected {
+                    &:hover {
+                        &:after {
+                            border-top: 10px solid @orange;
+                        }
+                    }
                     &:after {
                         content: '';
                         position: absolute;
@@ -788,6 +839,7 @@ body {
                         border-left: 10px solid transparent;
                         border-right: 10px solid transparent;
                         border-top: 10px solid @grey;
+                        .transition();
                     }
                     &.active {
                         &:after {
@@ -847,13 +899,12 @@ body {
             #image_list {
                 .scrollableArea {
                     > div {
-                        height: 1000px;
                         float: left;
                         width: 400px;
                         &:hover {
 //                            background: @lighter_grey;
-                            .image_container {
-                                a {
+                            a.image_container {
+                                span {
                                     display: block;
                                 }
                             }
@@ -864,12 +915,13 @@ body {
                         &.hide {
                             display: none;
                         }
-                        .image_container {
+                        a.image_container {
+                            display: block;
                             height: 270px;
                             border-bottom: solid 5px @grey;
                             position: relative;
                             background: url('images/logo_mini.png') no-repeat 50% 50%;
-                            a {
+                            span {
                                 position: absolute;
                                 width: 200px;
                                 display: block;
@@ -881,6 +933,10 @@ body {
                                 right: 0;
                                 z-index: 5;
                                 display: none;
+                                .transition();
+                                &:hover {
+                                    background: @orange;
+                                }
                             }
                             img {
                                 position: absolute;
@@ -946,7 +1002,7 @@ body {
         }
         .image_container {
             margin-bottom: 30px;
-            div {
+            a {
                 width: 50%;
                 float: left;
                 position: relative;
@@ -1029,6 +1085,7 @@ body {
             .message {
                 display: none;
                 width: auto;
+                height: 20px;
                 margin-top: 40px;
                 margin-bottom: 40px;
                 &.show {
@@ -1057,7 +1114,7 @@ body {
                         border-bottom: 0;
                         margin-bottom: 0;
                     }
-                    &.hidden {
+                    &.hide {
                         display: none;
                     }
                     header {
@@ -1183,5 +1240,15 @@ body {
     }
 
     // --------------
+    // Fancybox stuff
+    // --------------
 
+    .fancybox-opened {
+        .fancybox-skin {
+            .box-shadow(none);
+            .rounded(0);
+            background: @white;
+            overflow: visible;
+        }
+    }
 }

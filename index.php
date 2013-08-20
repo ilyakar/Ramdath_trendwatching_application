@@ -6,6 +6,12 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="style/main.css">
+
+    <!-- Fancybox stuff -->
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/fancybox/helpers/jquery.fancybox-thumbs.css?v=1.0.7" type="text/css" media="screen" />
+    <!-- /Fancybox stuff -->
 </head>
 <body>
 
@@ -14,6 +20,8 @@
 <div id="page_loading">
     <span>No internet connection<br>Please try again...</span>
 </div>
+
+<div id="site_message">This is a site message</div>
 
 <header id="main_header">
 	<a href="#" class="icon" id="menu_icon"></a>
@@ -60,7 +68,7 @@
 		<div class="container">
             <div class="subcontainer">
                 <form>
-                    <div class="message red">Invalid username or password</div>
+                    <div class="message">Invalid username or password</div>
                     <input type="text" id="login_username" placeholder="username" />
                     <input type="password" id="login_password" placeholder="password" />
                     <a href="#" class="button no_image red" data-role="disable" id="submit_login">Login</a>
@@ -79,20 +87,22 @@
 
 	<div data-role="content">
 		<div class="container">
-			<form>
-                <label>General information</label>
-				<input type="text" id="reg_first_name" placeholder="first name" />
-				<input type="text" id="reg_last_name" placeholder="last name" />
-				<input type="text" id="reg_username" placeholder="username" />
-                <select class="custom_select" id="reg_gender">
-                    <option value="" disabled="disabled" selected="selected">Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                </select>
-                <input type="password" id="reg_password" data-role="pass" data-pass-id="new_account_pass" placeholder="password" />
-                <input type="password" id="reg_conf_password" data-role="conf-pass" data-pass-id="new_account_pass" placeholder="confirm password" />
-                <a class="button no_image red" id="register_2_button" data-role="disable" data-transition="slide" href="#register_2">Next</a>
-            </form>
+            <div class="subcontainer">
+                <form>
+                    <label>General information</label>
+                    <input type="text" id="reg_first_name" placeholder="first name" />
+                    <input type="text" id="reg_last_name" placeholder="last name" />
+                    <input type="text" id="reg_username" placeholder="username" />
+                    <select class="custom_select" id="reg_gender">
+                        <option value="" disabled="disabled" selected="selected">Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                    <input type="password" id="reg_password" data-role="pass" data-pass-id="new_account_pass" placeholder="password" />
+                    <input type="password" id="reg_conf_password" data-role="conf-pass" data-pass-id="new_account_pass" placeholder="confirm password" />
+                    <a class="button no_image red" id="register_2_button" data-role="disable" data-transition="slide" href="#register_2">Next</a>
+                </form>
+            </div>
 		</div>
 	</div>
 
@@ -103,13 +113,15 @@
 
     <div data-role="content">
         <div class="container">
-            <form>
-                <label>Extra information</label>
-                <input type="text" id="reg_email" placeholder="email" />
-                <input type="text" id="reg_city" placeholder="city" />
-                <input type="text" id="reg_country" placeholder="country" />
-                <a class="button no_image red" id="register_3_button" data-role="disable" data-transition="slide" href="#register_3">Next</a>
-            </form>
+            <div class="subcontainer">
+                <form>
+                    <label>Extra information</label>
+                    <input type="text" id="reg_email" placeholder="email" />
+                    <input type="text" id="reg_city" placeholder="city" />
+                    <input type="text" id="reg_country" placeholder="country" />
+                    <a class="button no_image red" id="register_3_button" data-role="disable" data-transition="slide" href="#register_3">Next</a>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -118,15 +130,17 @@
 <div data-role="page" id="register_3" data-title="Register your account | step 3">
     <div data-role="content">
         <div class="container">
-            <form>
-                <label>Date of birth</label>
-                <fieldset class="date_of_birth">
-                    <input type="text" id="reg_date_of_birth_1" maxlength="2" placeholder="DD" />
-                    <input type="text" id="reg_date_of_birth_2" maxlength="2" placeholder="MM" />
-                    <input type="text" id="reg_date_of_birth_3" maxlength="4" placeholder="YYYY" />
-                </fieldset>
-                <a class="button no_image red" id="submit_registration_button" data-role="disable" data-transition="slide" href="#">Complete registration</a>
-            </form>
+            <div class="subcontainer">
+                <form>
+                    <label>Date of birth</label>
+                    <fieldset class="date_of_birth">
+                        <input type="text" id="reg_date_of_birth_1" maxlength="2" placeholder="DD" />
+                        <input type="text" id="reg_date_of_birth_2" maxlength="2" placeholder="MM" />
+                        <input type="text" id="reg_date_of_birth_3" maxlength="4" placeholder="YYYY" />
+                    </fieldset>
+                    <a class="button no_image red" id="submit_registration_button" data-role="disable" data-transition="slide" href="#">Complete registration</a>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -170,6 +184,7 @@
                     </fieldset>
 
                     <label>Change password</label>
+                    <input type="password" id="edit_password_old" placeholder="current password" />
                     <input type="password" id="edit_password" data-role="pass" data-pass-id="edit_account_pass" placeholder="password" />
                     <input type="password" id="edit_conf_password" data-role="conf-pass" data-pass-id="edit_account_pass" placeholder="confirm password" />
 
@@ -420,7 +435,6 @@
 <!--/Explore stuff-->
 
 <!--About page-->
-
 <div data-role="page" id="about" data-title="ABOUT">
     <div data-role="content">
         <div class="container margin">
@@ -428,8 +442,19 @@
         </div>
     </div>
 </div>
-
 <!--/About page-->
+
+<!--Insufficient privilages-->
+<div data-role="page" id="insufficient_privilages" data-title="Insufficient privilages">
+    <div data-role="content">
+        <div class="container">
+            <div class="subcontainer margin">
+                <a href="#explore" class="button red no_image">Explore trends</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/Insufficient privilages-->
 
 <!--Panel-->
 <div id="settings_panel">
@@ -442,7 +467,7 @@
 <!--        <a href="#">Settings</a>-->
 <!--    </div>-->
     <div>
-        <div></div>
+        <div><img src="/style/images/settings_panel/logout_icon.png" /></div>
         <a href="#" id="logout_button">Logout</a>
     </div>
 </div>
@@ -479,5 +504,13 @@
 <script src="js/tinymce/tinymce.min.js"></script>
 <script src="js/masonry.js"></script>
 <script src="https://maps.google.com/maps/api/js?sensor=false"></script>
+
+<!-- Fancybox stuff -->
+<script type="text/javascript" src="/fancybox/jquery.fancybox.pack.js?v=2.1.5"></script>
+<script type="text/javascript" src="/fancybox/helpers/jquery.fancybox-buttons.js?v=1.0.5"></script>
+<script type="text/javascript" src="/fancybox/helpers/jquery.fancybox-media.js?v=1.0.6"></script>
+<script type="text/javascript" src="/fancybox/helpers/jquery.fancybox-thumbs.js?v=1.0.7"></script>
+<!-- /Fancybox stuff -->
+
 </body>
 </html>

@@ -23,7 +23,8 @@ gender,
 password,
 email,
 city,
-country
+country,
+privilage
 ) VALUES (
 '$first_name',
 '$last_name',
@@ -33,7 +34,8 @@ country
 '$password',
 '$email',
 '$city',
-'$country'
+'$country',
+'a'
 )") or die(mysql_error());
 
 print $password;

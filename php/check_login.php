@@ -24,6 +24,14 @@ $rows = '';
 $sql = mysql_query("SELECT * FROM accounts WHERE username='$username' AND password='$password'");
 while($row = mysql_fetch_array($sql)) {
     $rows['user_info'] = $row;
+
+
+    $privilage_letter = $rows['user_info']['privilage'];
+    $sql = mysql_query("SELECT * FROM privilages WHERE letter='$privilage_letter'");
+    while($row = mysql_fetch_array($sql)){
+        $rows['user_info']['privilage_name'] = $row['name'];
+    }
+
 }
 
 if($type == 'facebook'){
@@ -38,8 +46,11 @@ if($type == 'facebook'){
         $gender         = $extra_info['gender'];
     //  $password
         $email          = '';
-        $city           = explode(', ', $extra_info['hometown']['name'])[0];
-        $country        = explode(', ', $extra_info['hometown']['name'])[1];
+
+        $location_info  = explode(', ', $extra_info['hometown']['name']);
+        $city           = $location_info[0];
+        $country        = $location_info[1];
+
         $profile_image  = '';
         $project_ids    = '';
 
