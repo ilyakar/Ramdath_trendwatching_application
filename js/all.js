@@ -83,6 +83,9 @@ function setup_critical_plugins(){
         uploadMultiple: true,
         dictDefaultMessage: 'Drop files here to upload <i>(or click)</i>',
         dictRemoveFile: 'Remove image',
+        error: function (par1, par2){
+          console.log(par1, par2);
+        },
         init: function () {
 
             var total_files = 0,
@@ -181,7 +184,7 @@ function setup_critical_plugins(){
 }
 
 function setup_social_APIs(){
-
+console.log('Setup social apis');
     window.fbAsyncInit = function() {
         console.log('setting up facebook API');
         FB.init({
@@ -528,7 +531,7 @@ function global_click_functions() {
     })
 
     // On menu icon click
-    $('#menu_icon').click(function(){
+    $('body').on('click', '#menu_icon', function(){
 
         // Open panel
         if(!$('body').hasClass('open_panel')){
@@ -646,6 +649,9 @@ function setup_other_plugins(type){
     // Fancybox
         $('.fancybox').fancybox();
 
+    // Setup explore trend container heights
+        setup_explore_container_height();
+
     if(type == 'masonry_workspace'){
 
         var $container = $('#trend_container');
@@ -680,10 +686,25 @@ function setup_other_plugins(type){
         }
     }
 
-    // Lazyload
-//        $("img.lazyload").lazyload({
-//            effect      : 'fadeIn'
-//        });
+    function setup_explore_container_height(){
+
+        var height;
+
+        set_height();
+        $(window).resize(function(){
+
+            set_height();
+
+        });
+
+        function set_height(){
+
+            height = $(window).height() - $header.height() - $footer.height();
+            $('#image_list').height(height);
+
+        }
+
+    }
 
 }
 
@@ -1120,6 +1141,7 @@ function submit_edit_trend(){
 
     var tags        = get_tags('#edit_trend_tagger_tagsinput');
     var categories  = get_categories('#edit_trend_categories');
+    var workspace   = $('#edit_trend_workspaces')               .val();
     var ment_trend  = $('#edit_trend_ment_trends')              .val();
 
     // Submit info
@@ -1134,6 +1156,7 @@ function submit_edit_trend(){
 
         tags            : tags,
         categories      : categories,
+        workspace       : workspace,
         ment_trend      : ment_trend
     },function(data){
 
@@ -1184,7 +1207,7 @@ function setup_research_project_click(data){
         }
         if(!project_trends.length){
 
-            trend_html += '<div class="message show no_float red">No trends...</div>';
+            trend_html += '<div class="message show no_float red">No signs...</div>';
 
         }
 
@@ -1646,11 +1669,12 @@ function edit_trend(clicked){
     }
 
     // Sets location
-    $('#edit_trend_location').val(trend.location); // Calls keyup to enable the SUBMIT button
+    $('#edit_trend_location')   .val(trend.location); // Calls keyup to enable the SUBMIT button
 
     // Sets trend_id
-    $('#edit_trend_id').val(trend.id);
+    $('#edit_trend_id')         .val(trend.id);
 
+    $('#edit_trend_workspaces') .val(trend.research_project).change();
     $('#edit_trend_ment_trends').val(trend.ment_trend).change();
 
     form_stuff(1);
@@ -1687,6 +1711,7 @@ function submit_register(){
 
         check_login(); // Does the AJAX for a logged in account
 
+        $('#menu_icon').show(0);
         $.mobile.changePage('#explore', 'pop');
 
     });
@@ -1840,7 +1865,8 @@ function go_home(on_back){
 
 function load_logged_in_ajax(new_login){
 
-    var $container = $('#research_projects').find('.research_projects');
+    var $container  = $('#research_projects').find('.research_projects');
+    var $container2 = $('#new_trend_workspaces, #edit_trend_workspaces');
 
     if(stored_data.user_info.project_ids){
 
@@ -1866,6 +1892,9 @@ function load_logged_in_ajax(new_login){
                         '<span>'+ (i+1) +'.</span> '+ project.name +
                     '</a>'
                 );
+
+                $container2.append('<option value="'+ project.id +'">'+ project.name +'</option>');
+
 
             }
 
@@ -2064,7 +2093,7 @@ function loader(type){
 
 function submit_trend(){
 
-    // Title
+    // Info
         var title       = $('#new_trend_title')         .val();
         var description = tinyMCE.activeEditor          .getContent();
         var video       = $('#new_trend_video')         .val();
@@ -2073,11 +2102,10 @@ function submit_trend(){
 
         var tags        = get_tags('#new_trend_tagger_tagsinput');
         var categories  = get_categories('#new_trend_categories');
-        var ment_trend = $('#new_trend_ment_trends')   .val();
+        var workspace   = $('#new_trend_workspaces')    .val();
+        var ment_trend  = $('#new_trend_ment_trends')   .val();
 
-    // Location
-
-    var uploaded_images = $('#uploaded_images_field').val();
+        var uploaded_images = $('#uploaded_images_field').val();
 
     // Submit info
         $.post('../php/submit_trend.php', {
@@ -2092,8 +2120,9 @@ function submit_trend(){
 
             tags            : tags,
             categories      : categories,
-            ment_trend     : ment_trend
-        },function(data){
+            workspace       : workspace,
+            ment_trend      : ment_trend
+        }, function(data){
             // Insert HTML
 
             stored_data.trends.push(data.trend);
@@ -2110,7 +2139,7 @@ function submit_trend(){
             go_home(1);
 
             // Reset new trend form (in case the user wants to add another new trend)
-            reset_new_trend_form(); // todo continue here
+            reset_new_trend_form();
 
         }, 'JSON');
 
@@ -2216,6 +2245,7 @@ console.log('setting up form buttons');
     if(
         $('#new_trend_tagger_tagsinput')                .hasClass('tick')         &&
         $('#new_trend_categories')                      .find('.selected').length &&
+        $('#new_trend_workspaces').parents('.select')  .hasClass('tick')          &&
         $('#new_trend_ment_trends').parents('.select')  .hasClass('tick')
     ){
         enable_link('#submit_new_trend');
@@ -2240,6 +2270,7 @@ console.log('setting up form buttons');
     if(
         $('#edit_trend_tagger_tagsinput')                .hasClass('tick')         &&
         $('#edit_trend_categories')                      .find('.selected').length &&
+        $('#edit_trend_workspaces') .parents('.select')  .hasClass('tick')         &&
         $('#edit_trend_ment_trends').parents('.select')  .hasClass('tick')
     ){
         enable_link('#submit_edit_trend');

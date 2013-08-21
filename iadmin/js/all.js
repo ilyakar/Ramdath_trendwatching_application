@@ -223,7 +223,7 @@ function global_click_functions(){
     // Trend view
     $('#view_select').children('a').click(function(){
 
-        if($(this).hasClass('active') && $(this).text() == 'All trends') return false;
+        if($(this).hasClass('active') && $(this).text() == 'All signs') return false;
 
         click_view_button(this);
 
@@ -317,7 +317,7 @@ function setup_other_plugins(type){
 
                 $container.masonry({
                     columnWidth: 75.5,
-                    isFitWidth: false
+                    isFitWidth: true
                 });
 
                 loaded = 1;
@@ -519,7 +519,7 @@ function view_workspace(that){
         .masonry('hide', el_array)
         .masonry('layout');
 
-    $('#view_select').find('a:contains(All trends)').click(function(){
+    $('#view_select').find('a:contains(All signs)').click(function(){
 
         $els.show(0);
         $('#trend_container').masonry('layout');
@@ -868,7 +868,7 @@ console.log(data);
 
             $.mobile.changePage('#manage_accounts', 'pop');
 
-            site_message('You have successfully edited '+ first_name +'\'s account information."');
+            site_message('You have successfully edited '+ first_name +'\'s account information.');
 
             // If new profile image
             if(data.hasOwnProperty('profile_image')){
@@ -902,10 +902,12 @@ function setup_account_edit(that){
     var $container = $('#edit_account_workspaces');
     $container.find('.selected').removeClass('selected');
 
-    var workspaces = info.project_ids.split(',');
-    for(var i=0; i<workspaces.length; i++){
-        var workspace = workspaces[i];
-        $container.find('div[data-id='+ workspace +']').addClass('selected');
+    if(info.project_ids){
+        var workspaces = info.project_ids.split(',');
+        for(var i=0; i<workspaces.length; i++){
+            var workspace = workspaces[i];
+            $container.find('div[data-id='+ workspace +']').addClass('selected');
+        }
     }
 
     $('#edit_username')     .val(info.username);
@@ -1318,7 +1320,7 @@ function click_filter_by_button(that){
     if(type !== 'category'){
         $container.masonry({
             columnWidth: 75.5,
-            isFitWidth: false
+            isFitWidth: true
         });
     }
 
@@ -1328,7 +1330,7 @@ function click_view_button(that){
 
     var value = $(that).text().toLowerCase();
 
-    if(value == 'all trends'){
+    if(value == 'all signs'){
 
         $('#workspace_container')   .fadeOut(200);
         $('#trend_container')       .fadeIn(200);
@@ -1657,7 +1659,7 @@ function global_page_functions(first_load){
                     .masonry('destroy')
                     .masonry({
                     columnWidth: 75.5,
-                    isFitWidth: false
+                    isFitWidth: true
                 });
             }, 200);
 

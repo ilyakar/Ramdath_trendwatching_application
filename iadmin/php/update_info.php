@@ -6,7 +6,6 @@ $workspaces     = $_POST['workspaces'];
 $categories     = $_POST['categories'];
 $ment_trends    = $_POST['ment_trends'];
 
-
 // Categories
 
 $workspaces = explode(',', $workspaces);
@@ -24,7 +23,7 @@ foreach($to_add as $workspace){
 }
 
 // Delete categories
-foreach($to_del as $category){
+foreach($to_del as $workspace){
     mysql_query("DELETE FROM research_projects WHERE name='$workspace'") or die(mysql_error());
 }
 
@@ -36,7 +35,7 @@ if(json_encode($to_add)){
         $workspace = $workspaces[$i];
         $order = $i+1;
 
-        print 'order: '.$order.', category: '.$category.'<br>';
+//        print 'order: '.$order.', category: '.$category.'<br>';
 
         mysql_query("UPDATE research_projects SET order_id='$order' WHERE name='$workspace'") or die(mysql_error());
 
@@ -72,7 +71,7 @@ if(json_encode($to_add)){
             $category = $categories[$i];
             $order = $i+1;
 
-            print 'order: '.$order.', category: '.$category.'<br>';
+//            print 'order: '.$order.', category: '.$category.'<br>';
 
             mysql_query("UPDATE categories SET order_id='$order' WHERE name='$category'") or die(mysql_error());
 
@@ -108,7 +107,7 @@ if(json_encode($to_add)){
             $ment_trend = $ment_trends[$i];
             $order = $i+1;
 
-            print 'order: '.$order.', category: '.$category.'<br>';
+//            print 'order: '.$order.', category: '.$category.'<br>';
 
             mysql_query("UPDATE mentality_trends SET order_id='$order' WHERE name='$ment_trend'") or die(mysql_error());
 

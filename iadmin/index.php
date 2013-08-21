@@ -57,7 +57,7 @@
                 <div class="mini_dropdown_container static" id="view_buttons">
                     <section id="view_select">
                         <label>View:</label>
-                        <a href="#" class="active">All trends</a>
+                        <a href="#" class="active">All signs</a>
                         <a href="#">Workspaces</a>
                     </section>
                     <section id="filter_by_select">
@@ -90,9 +90,9 @@
                     </section>
                 </div>
             </div>
-            <div id="trend_container" class="research_trends"><!-- dynamically populated --></div>
             <div id="workspace_container" class="research_projects"></div>
         </div>
+        <div id="trend_container" class="research_trends"><!-- dynamically populated --></div>
     </div>
 
 </div>

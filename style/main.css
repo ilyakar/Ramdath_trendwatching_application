@@ -109,7 +109,7 @@ body .inline_block {
   display: inline-block;
 }
 body .container {
-  min-height: 500px;
+  overflow: visible;
   padding: 0 10px;
   text-align: center;
 }
@@ -829,6 +829,9 @@ body footer#main_footer {
 body footer#main_footer.home > a#create_button {
   background: #ac0a12;
 }
+body footer#main_footer.home > a#create_button:hover {
+  background: #ff9900;
+}
 body footer#main_footer.home.reveal {
   height: 400px;
 }
@@ -1114,9 +1117,16 @@ body #explore div[data-role="content"] {
   overflow-x: auto;
   position: relative;
 }
+body #explore div[data-role="content"] #image_list .scrollableArea {
+  float: left;
+}
 body #explore div[data-role="content"] #image_list .scrollableArea > div {
   float: left;
   width: 400px;
+  height: 100%;
+}
+body #explore div[data-role="content"] #image_list .scrollableArea > div:hover {
+  background: #eeeeee;
 }
 body #explore div[data-role="content"] #image_list .scrollableArea > div:hover a.image_container span {
   display: block;
@@ -1134,6 +1144,9 @@ body #explore div[data-role="content"] #image_list .scrollableArea > div a.image
   position: relative;
   background: url('images/logo_mini.png') no-repeat 50% 50%;
 }
+body #explore div[data-role="content"] #image_list .scrollableArea > div a.image_container:hover span {
+  background: #ff9900;
+}
 body #explore div[data-role="content"] #image_list .scrollableArea > div a.image_container span {
   position: absolute;
   width: 200px;
@@ -1150,9 +1163,6 @@ body #explore div[data-role="content"] #image_list .scrollableArea > div a.image
   -moz-transition: all 0.2s ease-in-out;
   -o-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
-}
-body #explore div[data-role="content"] #image_list .scrollableArea > div a.image_container span:hover {
-  background: #ff9900;
 }
 body #explore div[data-role="content"] #image_list .scrollableArea > div a.image_container img {
   position: absolute;
@@ -1258,15 +1268,18 @@ body .trend_single .trend_rating .message.show {
   display: block;
 }
 body .trend_single .tags > div {
-  border: solid 1px #2e2e2e;
-  background: #2e2e2e;
+  border: solid 1px #979696;
+  background: #979696;
   color: #f6f5f5;
-  padding: 5px 20px;
+  padding: 5px 3%;
   float: left;
-  width: 81px;
-  margin-right: 5px;
+  width: 26%;
+  margin-right: 1%;
   margin-bottom: 5px;
   font-size: 15px;
+}
+body .trend_single .tags > div:nth-child(3n) {
+  margin-right: 0;
 }
 body .trend_single label {
   font-size: 24px;
@@ -1390,6 +1403,7 @@ body .dropzone .dz-default.dz-message span i {
 body .dropzone .dz-preview {
   background: #2e2e2e;
   border: none;
+  padding: 0;
 }
 body .dropzone .dz-preview .dz-error-mark {
   display: none !important;
@@ -1398,13 +1412,14 @@ body .dropzone .dz-preview .dz-success-mark {
   display: none !important;
 }
 body .dropzone .dz-preview .dz-details {
-  margin-bottom: 6px;
+  margin-bottom: 3px;
 }
 body .dropzone .dz-preview .dz-remove {
   background: #2e2e2e;
   cursor: pointer;
   color: #f6f5f5;
   margin-top: 0;
+  padding: 6px 6px 9px;
 }
 body .fancybox-opened .fancybox-skin {
   -webkit-box-shadow: none;

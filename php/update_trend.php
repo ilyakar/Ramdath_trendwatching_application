@@ -12,6 +12,7 @@ $location           = urlencode($_POST['location']);
 
 $tags               = urlencode($_POST['tags']);
 $categories         = urlencode($_POST['categories']);
+$workspace          =           $_POST['workspace'];
 $ment_trend         = urlencode($_POST['ment_trend']);
 
 // Update trend info
@@ -25,6 +26,7 @@ location='$location',
 
 tags='$tags',
 categories='$categories',
+research_project='$workspace',
 ment_trend='$ment_trend'
 
 WHERE id='$trend_id'") or die(mysql_error());

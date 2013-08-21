@@ -13,6 +13,7 @@ $location           = urlencode($_POST['location']);
 
 $tags               = urlencode($_POST['tags']);
 $categories         = urlencode($_POST['categories']);
+$workspace          =           $_POST['workspace'];
 $ment_trend         = urlencode($_POST['ment_trend']);
 
 // Moves and removes the uploaded images
@@ -55,6 +56,7 @@ location,
 
 tags,
 categories,
+research_project,
 ment_trend
 ) VALUES (
 '$user_id',
@@ -68,6 +70,7 @@ ment_trend
 
 '$tags',
 '$categories',
+'$workspace',
 '$ment_trend'
 )") or die(mysql_error());
 $trend_id = mysql_insert_id();

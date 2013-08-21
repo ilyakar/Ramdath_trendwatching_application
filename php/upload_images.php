@@ -1,5 +1,7 @@
 <?php
 
+include 'connect_to_mysql.php';
+
 if (!empty($_FILES)) {
 
     $cnt = 0;
@@ -21,5 +23,3 @@ if (!empty($_FILES)) {
     }
 
 }
-
-?>

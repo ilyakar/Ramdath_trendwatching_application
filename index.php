@@ -48,8 +48,8 @@
 </div>
 
 <footer id="main_footer">
-	<a href="#create" class="button uppercase" id="create_button">create<span>start finding trends</span></a>
-	<a href="#explore" class="button uppercase" id="explore_button">explore<span>explore new trends</span></a>
+	<a href="#create" class="button uppercase" id="create_button">create<span>start finding signs</span></a>
+	<a href="#explore" class="button uppercase" id="explore_button">explore<span>explore new signs</span></a>
 	<section id="login">
         <div class="container">
             <div class="subcontainer">
@@ -203,7 +203,7 @@
 	<div data-role="content">
 		<div class="container">
             <div class="subcontainer">
-                <a href="#new_trend_1" class="button red" data-transition="slide" id="new_trend_1_button">New trend</a>
+                <a href="#new_trend_1" class="button red" data-transition="slide" id="new_trend_1_button">New sign</a>
                 <a href="#research_projects" data-transition="slide" class="button" id="my_research_projects_button">My research projects</a>
                 <a href="#" class="button small" id="need_some_help_button">Need some help?</a>
             </div>
@@ -212,7 +212,7 @@
 
 </div>
 
-<div data-role="page" id="new_trend_1" data-title="New trend | step 1">
+<div data-role="page" id="new_trend_1" data-title="New sign | step 1">
 
 	<div data-role="content">
 		<div class="container">
@@ -228,7 +228,7 @@
 	</div>
 </div>
 
-<div data-role="page" id="new_trend_2" data-title="New trend | step 2">
+<div data-role="page" id="new_trend_2" data-title="New sign | step 2">
 
     <div data-role="content">
         <div class="container margin">
@@ -253,7 +253,7 @@
 
 </div>
 
-<div data-role="page" id="new_trend_3" data-title="New trend | step 3">
+<div data-role="page" id="new_trend_3" data-title="New sign | step 3">
 
     <div data-role="content">
         <div class="container margin">
@@ -263,13 +263,17 @@
                     <input id="new_trend_tagger" />
                     <label>Categories</label>
                     <div class="tags" id="new_trend_categories"></div>
+                    <label>Workspace</label>
+                    <select class="custom_select" id="new_trend_workspaces">
+                        <option value="" disabled="disabled" selected="selected">Workspace</option>
+                    </select>
                     <label>Mentality trend</label>
                     <select class="custom_select" id="new_trend_ment_trends">
                         <option value="" disabled="disabled" selected="selected">Trend</option>
                     </select>
                 </form>
                 <a href="#" class="button no_image two" data-rel="back">Back</a>
-                <a href="#" class="button no_image red two" data-role="disable" id="submit_new_trend">Submit trend</a>
+                <a href="#" class="button no_image red two" data-role="disable" id="submit_new_trend">Submit sign</a>
             </div>
         </div>
     </div>
@@ -370,6 +374,10 @@
                     <input id="edit_trend_tagger" />
                     <label>Categories</label>
                     <div class="tags" id="edit_trend_categories"></div>
+                    <label>Workspace</label>
+                    <select class="custom_select" id="edit_trend_workspaces">
+                        <option value="" disabled="disabled" selected="selected">Workspace</option>
+                    </select>
                     <label>Mentality trend</label>
                     <select class="custom_select" id="edit_trend_ment_trends">
                         <option value="" disabled="disabled" selected="selected">Trend</option>

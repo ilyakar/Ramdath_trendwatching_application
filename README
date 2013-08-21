@@ -24,3 +24,9 @@ If a user chooses to login with facebook: The username is gotten from facebook, 
 Privilages:
 
 a:
+
+----------------
+
+To do:
+
+- Dropzone doens't enable next button on image upload cancel
