@@ -7,7 +7,7 @@ $uploaded_images    = $_POST['uploaded_images'];
 
 $title              = urlencode($_POST['title']);
 $description        = urlencode($_POST['description']);
-$video              = urlencode($_POST['video']);
+$videos             = urlencode($_POST['videos']);
 $website            = urlencode($_POST['website']);
 $location           = urlencode($_POST['location']);
 
@@ -24,21 +24,26 @@ $ment_trend         = urlencode($_POST['ment_trend']);
 
     for($i=0; $i<$num; $i++){
 
-        // Orig filepath
         $file       = $uploaded_images[$i];
-        $filepath   = '../uploads/' . $file;
-        $extension  = pathinfo($filepath, PATHINFO_EXTENSION);
+
+        // Get orig filepath
+        $file_path  = '../uploads/' . $file;
+
+        mysql_log($file_path);
+
+        // Get extension
+        $extension  = pathinfo($file_path, PATHINFO_EXTENSION);
 
         // New filepath
         $rand_name = substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 25)), 0, 25);
-        $newfile        = $rand_name .'.'. $extension;
-        $newfile_path   = '../images/' . $newfile;
+        $new_file        = $rand_name .'.'. $extension;
+        $new_file_path   = '../images/' . $new_file;
 
-        if (copy($filepath, $newfile_path)) {
-            unlink($filepath);
+        if (copy($file_path, $new_file_path)) {
+//            unlink($file_path);
         }
 
-        $files .= $newfile.',';
+        $files .= $new_file.',';
 
     }
     $files = substr_replace($files, '', -1);
@@ -50,7 +55,7 @@ images,
 
 title,
 description,
-video,
+videos,
 website,
 location,
 
@@ -64,7 +69,7 @@ ment_trend
 
 '$title',
 '$description',
-'$video',
+'$videos',
 '$website',
 '$location',
 
@@ -74,8 +79,6 @@ ment_trend
 '$ment_trend'
 )") or die(mysql_error());
 $trend_id = mysql_insert_id();
-
-mysql_query("INSERT INTO rater (trend_id) VALUES ('$trend_id')");
 
 // ------------ Get values to return ------------
     $sql = mysql_query("SELECT * FROM trends WHERE id='$trend_id'");
@@ -101,5 +104,3 @@ mysql_query("INSERT INTO rater (trend_id) VALUES ('$trend_id')");
 // -----------------------------------------------
 
 print json_encode($rows);
-
-?>

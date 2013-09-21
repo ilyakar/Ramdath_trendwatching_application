@@ -48,8 +48,41 @@ body {
             font-size: 30px;
             margin-bottom: 50px;
         }
-        #trend_container {
 
+        #trend_container {
+            > div {
+                a.trend_link {
+                    span {
+                        p {
+                            display: block;
+                            width: 36px;
+                            height: 20px;
+                            position: absolute;
+                            top: 8px;
+                            right: 0;
+                            padding: 0;
+                            margin: 0;
+                            padding-right: 76px;
+                            background: url('/style/images/icons/star_white.png') no-repeat @grey center center;
+                            background-size: 15px;
+                        }
+                        b {
+                            display: block;
+                            width: 36px;
+                            height: 20px;
+                            position: absolute;
+                            top: 8px;
+                            right: 0;
+                            padding-right: 10px;
+                            background: url('/style/images/icons/folder_icon.png') no-repeat @grey center center;
+                            background-size: 32px;
+                        }
+                    }
+                }
+                .extra {
+                    bottom: -73px;
+                }
+            }
         }
         #trend_container_copy {
             display: none;
@@ -59,6 +92,16 @@ body {
         }
         #manage_accounts {
             ul#account_ul {
+                header {
+                    li {
+                        background: @grey;
+                        color: @white;
+                        border-bottom: none;
+                        span {
+                            border: none;
+                        }
+                    }
+                }
                 li {
                     border-bottom: solid 1px @light_grey;
                     padding: 8px 0;
@@ -83,7 +126,6 @@ body {
                         &:first-child {
                             margin-left: 0;
                             border-left: none;
-                            padding-left: 0;
                         }
                     }
                     div.extra {
@@ -99,6 +141,7 @@ body {
                             font-size: 15px;
                             padding: 10px 20px 10px;
                             border: none;
+                            width: auto;
                         }
                     }
                 }
@@ -114,12 +157,25 @@ body {
                 &:nth-child(1) {
                     a {
                         &:hover {
-                            background: @grey;
+                            background: @slightly_light_grey;
                         }
                     }
+                }
+                &#settings_manage_info {
+                    display: none;
                 }
             }
         }
     }
 }
-
+@media (max-width: 768px) {
+    body {
+        &#admin {
+            header#main_header {
+                #admin_area_title {
+                    display: none;
+                }
+            }
+        }
+    }
+}

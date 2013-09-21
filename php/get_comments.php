@@ -4,7 +4,7 @@ include 'php_includes.php';
 
 $trend_id = $_POST['trend_id'];
 
-$rows = [];
+$rows = '';
 
 $sql = mysql_query("SELECT * FROM comments WHERE trend_id='$trend_id'");
 while($row = mysql_fetch_array($sql)) {

@@ -58,10 +58,23 @@ $output_dir = "../uploads/";
 if(isset($_FILES["profile_image"]))
 {
 
-    $img = WideImage::load('profile_image'); // gets from the upload field
+    $img    = $_FILES["profile_image"]['tmp_name'];
+    $size   = getimagesize($img);
+
+    $width  = $size[0];
+    $height = $size[1];
+
+    // Get image
+    $img = new SimpleImage($img); // gets from the upload field
 
     // -- Manipulate image --
-    $img = $img->resize(65)->resizeCanvas(65, 65, 0, 0);
+    if($height > $width){ // If image is too heigh
+        $img->fit_to_width(65);
+    }
+    else { // If image is too wide
+        $img->fit_to_height(65);
+    }
+    $img->crop(0, 0, 65, 65);
     // ----------------------
 
     list($width, $height, $type, $attr) = getimagesize($img);
@@ -73,7 +86,7 @@ if(isset($_FILES["profile_image"]))
     $img_name = $rand_name .'.jpg';
     $img_path = '../images/'. $img_name;
 
-    $img->saveToFile($img_path, 80); // quality 80%
+    $img->save($img_path, 80); // quality 80%
 
     mysql_query("UPDATE accounts SET profile_image='$img_name' WHERE id='$account_id'") or die(mysql_error());
 

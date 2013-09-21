@@ -1,5 +1,9 @@
 <?php
 
+function mysql_log($log){
+    mysql_query("INSERT INTO logs (log) VALUES ('$log')");
+}
+
 function nl2p($string, $line_breaks = true, $xml = true)
 {
     // Remove existing HTML formatting to avoid double-wrapping things

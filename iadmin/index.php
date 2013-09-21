@@ -61,7 +61,7 @@
                         <a href="#">Workspaces</a>
                     </section>
                     <section id="filter_by_select">
-                        <label>Filter posts by:</label>
+                        <label>Filter by:</label>
                         <a href="#" data-d-id="category">Category</a>
                         <div data-d-id="category"></div>
 
@@ -87,12 +87,15 @@
                                 <li><a href="#">Oldest first</a></li>
                             </ul>
                         </div>
+
+                        <a href="#" data-d-id="ment_trends">Mentality trend</a>
+                        <div data-d-id="ment_trends"></div>
                     </section>
                 </div>
             </div>
             <div id="workspace_container" class="research_projects"></div>
         </div>
-        <div id="trend_container" class="research_trends"><!-- dynamically populated --></div>
+        <div id="trend_container" class="container research_trends"><!-- dynamically populated --></div>
     </div>
 
 </div>
@@ -108,12 +111,21 @@
         <div class="container margin">
             <div class="subcontainer big">
                 <form class="margin">
+                    <label>Content type</label>
+                    <select id="edit_trend_premium">
+                        <option value="" selected="selected">Public</option>
+                        <option value="1">Premium</option>
+                    </select>
                     <label>Title</label>
                     <input type="text" placeholder="title" id="edit_trend_title" />
                     <label>Description</label>
                     <textarea id="edit_trend_description" placeholder="description"></textarea>
                     <label>Video link <span>Youtube or Vimeo</span></label>
-                    <input type="text" placeholder="http://" id="edit_trend_video" />
+                    <span id="edit_trend_videos">
+                        <input type="text" placeholder="http://" class="edit_trend_video multiple_on_input" data-type="edit_trend_video" />
+                    </span>
+                    <label>Sliderocket ID</label>
+                    <input type="text" placeholder="e.g. 7980690D-B518-4D5A-A41D-330819A1A6BB" id="edit_trend_sliderocket_id" />
                     <label>Website link</label>
                     <input type="text" placeholder="http://" id="edit_trend_website" />
                     <label>Trend location</label>
@@ -137,6 +149,10 @@
                     <input id="edit_trend_tagger" />
                     <label>Categories</label>
                     <div class="tags" id="edit_trend_categories"></div>
+                    <label>Workspace</label>
+                    <select class="custom_select" id="edit_trend_workspaces">
+                        <option value="" disabled="disabled" selected="selected">Workspace</option>
+                    </select>
                     <label>Mentality trend</label>
                     <select class="custom_select" id="edit_trend_ment_trends">
                         <option value="" disabled="disabled" selected="selected">Trend</option>
@@ -155,7 +171,22 @@
 <div data-role="page" id="manage_accounts" data-title="Manage accounts">
     <div data-role="content">
         <div class="container">
-            <ul id="account_ul"></ul>
+            <div>
+                <form class="search_field" id="account_search">
+                    <input type="search" placeholder="Search user..." />
+                    <input type="submit" value="" />
+                </form>
+            </div>
+            <ul id="account_ul">
+                <header>
+                    <li>
+                        <span>Full name</span>
+                        <span>Privilage</span>
+                        <span>Email</span>
+                    </li>
+                </header>
+                <div data-role="dynamic-data"></div>
+            </ul>
         </div>
     </div>
 </div>
@@ -167,12 +198,31 @@
             <div class="subcontainer">
                 <form>
                     <label>Workspaces</label>
-                    <textarea id="edit_info_workspaces" placeholder="workspaces"></textarea>
+                    <textarea id="edit_info_workspaces" placeholder="workspaces" data-form="no-enter"></textarea>
+                    <label>Workspace settings <span>(click to open)</span></label>
+                    <div class="tags small" id="workspace_settings_links"></div>
                     <label>Categories</label>
-                    <textarea id="edit_info_categories" placeholder="categories"></textarea>
+                    <textarea id="edit_info_categories" placeholder="categories" data-form="no-enter"></textarea>
                     <label>Mentality trends</label>
-                    <textarea id="edit_info_ment_trends" placeholder="mentality trends"></textarea>
-                    <a href="#" class="button no_image red two" data-role="disable" id="submit_info_edit">Edit info</a>
+                    <textarea id="edit_info_ment_trends" placeholder="mentality trends" data-form="no-enter"></textarea>
+                    <p>&nbsp;</p>
+                    <a href="#" class="button no_image red" data-role="disable" id="submit_info_edit">Edit info</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div data-role="page" id="workspace_settings" data-title="Manage info">
+    <div data-role="content">
+        <div class="container">
+            <div class="subcontainer">
+                <form>
+                    <input type="hidden" id="edit_workspace_id">
+                    <label>More info page</label>
+                    <textarea id="edit_workspace_more_info"></textarea>
+                    <label>Mentality trends</label>
+                    <textarea id="edit_workspace_ment_trends" placeholder="mentality trends" data-form="no-enter"></textarea>
+                    <a href="#" class="button no_image red" id="submit_workspace_settings">Submit info</a>
                 </form>
             </div>
         </div>
@@ -204,7 +254,9 @@
                     <label>Profile image</label>
                     <div class="thumbnail_upload">
                         <input type="file" id="edit_profile_image" name="profile_image" />
-                        <img id="edit_profile_image_thumbnail" src="/style/images/default_profile_image.jpg" />
+                        <div>
+                            <img id="edit_profile_image_thumbnail" src="/style/images/default_profile_image.jpg" />
+                        </div>
                         <span>Click to edit</span>
                     </div>
 
@@ -219,15 +271,17 @@
                     </select>
 
                     <label>Extra information</label>
-                    <input type="text" id="edit_email" placeholder="email" />
+                    <input type="text" id="edit_email" placeholder="email" data-form="no-tick" />
                     <input type="text" id="edit_city" placeholder="city" />
-                    <input type="text" id="edit_country" placeholder="country" />
+                    <select id="edit_country" />
+                        <option value="" disabled="disabled" selected="selected">country</option>
+                    </select>
 
                     <label>Date of birth</label>
                     <fieldset class="date_of_birth">
-                        <input type="text" id="edit_date_of_birth_1" maxlength="2" placeholder="DD" />
-                        <input type="text" id="edit_date_of_birth_2" maxlength="2" placeholder="MM" />
-                        <input type="text" id="edit_date_of_birth_3" maxlength="4" placeholder="YYYY" />
+                        <input type="text" id="edit_date_of_birth_1" maxlength="2" placeholder="DD" data-form="no-tick" />
+                        <input type="text" id="edit_date_of_birth_2" maxlength="2" placeholder="MM" data-form="no-tick" />
+                        <input type="text" id="edit_date_of_birth_3" maxlength="4" placeholder="YYYY" data-form="no-tick" />
                     </fieldset>
 
                     <label>Change password</label>
@@ -257,7 +311,7 @@
         <div><img src="/style/images/settings_panel/accounts_icon.png"></div>
         <a href="#manage_accounts">Manage accounts</a>
     </div>
-    <div>
+    <div id>
         <div><img src="/style/images/settings_panel/info_icon.png"></div>
         <a href="#manage_info">Manage info</a>
     </div>

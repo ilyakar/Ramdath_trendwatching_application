@@ -16,7 +16,7 @@ $(function(){
 });
 
 // ----- Secondary setup -----
-function load_rest(){
+function load_rest(new_login){
 
     // Init global_page_functions on start AND page change
     on_page_change();
@@ -28,10 +28,12 @@ function load_rest(){
     setup_other_plugins('all');
 
     // Form stuff
-    form_stuff();
+    form_stuff(new_login);
 
     // Show app
-    loader('hide');
+    show_app();
+
+    finished_loading = 1;
 
 }
 
@@ -40,9 +42,16 @@ function load_rest(){
 function setup_definitions(){
 
     logged_in                       = '';
-    not_first_page_load                 = '';
+    not_first_page_load             = '';
+
+
+    site_message_timeout            = '';
+    type_timeout                    = '';
+
+    finished_loading                = '';
 
     $header                         = $('#main_header');
+    $footer                         = $('#main_footer');
 
     stored_data                     = [];
     stored_data.categories          = [];
@@ -64,14 +73,13 @@ function check_internet_connection(){
 
 function setup_critical_plugins(){
 
-
     tinymce.init({
-        selector: "textarea#new_trend_description, textarea#edit_trend_description",
+        selector: "textarea#new_trend_description, textarea#edit_trend_description, textarea#edit_workspace_more_info",
         plugins: [
-            "link"
+            "link, code"
         ],
 
-        toolbar1: "bold italic underline strikethrough | link unlink | undo redo",
+        toolbar1: "bold italic underline strikethrough | link unlink | undo redo | code",
 
         menubar: false,
         statusbar: false,
@@ -103,19 +111,16 @@ function check_login(new_login){
             username    : username,
             password    : password
         }, function(data){
-console.log(data);
-            if(data.user_info){
-console.log('logged in');
+            if(data.user_info && ( data.user_info.privilage == 'e' || data.user_info.privilage == 'f' )){
                 $.extend(stored_data, data);
 
                 logged_in = 1;
 
-                load_ajax(); // Calls load_rest after
+                load_ajax('', new_login); // Calls load_rest after
                 setup_account_stuff();
 
             }
             else {
-                console.log('not logged in');
                 $.removeCookie('admin_username_cookie');
                 $.removeCookie('admin_password_cookie');
 
@@ -127,7 +132,7 @@ console.log('logged in');
                     $.mobile.changePage('#manage_trends', 'pop');
                 }
                 else {
-                    $('#login_with_account').find('.message').addClass('show');
+                    site_message('Invalid username or password.');
                 }
             }
 
@@ -155,13 +160,46 @@ function on_page_change(){
 
 function global_click_functions(){
 
-    $('#workspace_container').find('a').click(function(){
+    if(finished_loading) return;
+
+    $('body').on('click', '#submit_workspace_settings', function(){
+
+        submit_workspace_settings();
+
+    });
+
+    $('body').on('click', '#workspace_settings_links a', function(){
+
+        workspace_settings_link_click(this);
+
+    });
+
+    $('body').on('keyup', 'fieldset.date_of_birth input', function(){
+
+        check_date_of_birth(this);
+
+    });
+
+    $('body').on('keyup', '#reg_email, #edit_email', function(){
+
+        check_register_email(this);
+
+    });
+
+    $('body').on('click', '#account_search input[type="submit"]', function(){
+
+        var keywords = $(this).parents('form').find('[type="search"]').val();
+        setup_accounts(keywords);
+
+    });
+
+    $('body').on('click', '#workspace_container a', function(){
 
         view_workspace(this);
 
     });
 
-    $('#submit_info_edit').click(function(){
+    $('body').on('click', '#submit_info_edit', function(){
 
         if($(this).attr('data-role') == 'disable') return;
 
@@ -169,7 +207,7 @@ function global_click_functions(){
 
     });
 
-    $('#submit_edit_trend').click(function(){
+    $('body').on('click', '#submit_edit_trend', function(){
 
         if($(this).attr('data-role') == 'disable') return;
 
@@ -180,6 +218,14 @@ function global_click_functions(){
     $('body').on('click', '#manage_trends a:contains(Edit)', function(){
 
         setup_edit_trend(this);
+
+    });
+
+    $('body').on('click', '#manage_trends a:contains(Send to main)', function(){
+
+        if($(this).attr('data-role') == 'disable') return false;
+
+        send_trend(this);
 
     });
 
@@ -315,10 +361,13 @@ function setup_other_plugins(type){
         function check_loaded(){
             if(cnt == $container.find('img').length){
 
-                $container.masonry({
-                    columnWidth: 75.5,
-                    isFitWidth: true
-                });
+                setTimeout(function(){ // SetTimeout fixes a bug...
+
+                    $container.masonry({
+                        columnWidth: 75.5
+                    });
+
+                }, 200);
 
                 loaded = 1;
 
@@ -328,7 +377,10 @@ function setup_other_plugins(type){
 
 }
 
-function form_stuff(refresh){
+
+function form_stuff(refresh) {
+
+    var $body = $('body');
 
     // Adds the .cross class to all input fields
     var $inputs = $('input[type="text"], input[type="password"], textarea, .tagsinput');
@@ -342,7 +394,9 @@ function form_stuff(refresh){
     if(refresh) return;
 
     // Changes form class to either .tick or .cross
-    $('input[type="text"], input[type="password"], textarea').keyup(function(){
+    $body.on('keyup', 'input[type="text"], input[type="password"], textarea', function(){
+
+        if($(this).attr('data-form') == 'no-tick') return;
 
         var num = $(this).val().length;
         if(num > 0){
@@ -357,7 +411,26 @@ function form_stuff(refresh){
     });
 
     // Password stuff
-    $('input[data-role="conf-pass"]').keyup(function(){
+    $body.on('keyup', 'input[data-role="pass"]', function(){
+
+        var id = $(this).attr('data-pass-id');
+
+        var $conf_input = $('input[data-role="conf-pass"][data-pass-id="'+ id +'"]');
+
+        var val_pass = $(this).val();
+        var val_conf = $conf_input.val();
+
+        if(val_conf == val_pass && val_conf !== ''){
+            $conf_input.removeClass('cross').addClass('tick');
+        }
+        else {
+            $conf_input.removeClass('tick').addClass('cross');
+        }
+
+        setup_form_buttons();
+
+    });
+    $body.on('keyup', 'input[data-role="conf-pass"]', function(){
 
         var id = $(this).attr('data-pass-id');
 
@@ -376,27 +449,27 @@ function form_stuff(refresh){
     });
 
     // Select stuff
-    $('select').change(function(){
+    $body.on('change', 'select', function(){
 
-        $(this).parents('.select').removeClass('cross').removeClass('tick').addClass('tick');
+        $(this).parents('.select').removeClass('cross').addClass('tick');
 
         setup_form_buttons();
 
     });
 
     // Tag stuff
-    $('.tagsinput').find('input').focus(function(){
+    $body.on('focus', '.tagsinput input', function(){
 
         $(this).parents('.tagsinput').addClass('focus');
 
     });
-    $('.tagsinput').find('input').focusout(function(){
+    $body.on('focusout', '.tagsinput input', function(){
 
         $(this).parents('.tagsinput').removeClass('focus');
 
     });
 
-    $('.thumbnail_upload').find('[type="file"]').change(function(){
+    $body.on('change', '.thumbnail_upload [type="file"]', function(){
 
         if (this.files && this.files[0]) {
 
@@ -413,14 +486,8 @@ function form_stuff(refresh){
 
     });
 
-    $('.tags').find('div').click(function(){
-
-        setup_form_buttons();
-
-    });
-
     // On tag click
-    $('.tags').find('div').click(function(){
+    $body.on('click', '.tags div', function(){
 
         $(this).hasClass('selected') ? $(this).removeClass('selected') : $(this).addClass('selected');
 
@@ -428,9 +495,269 @@ function form_stuff(refresh){
 
     });
 
+    $('body').on('click', 'form.search_field [type="submit"]', function(){
+
+        return false;
+
+    });
+
+    // Form submit on ENTER
+    $body.on('keyup', 'input[type="text"], input[type="password"], textarea', function(){
+
+        var key = event.keyCode || event.which;
+
+        if (key === 13) {
+
+            if($(this).attr('data-form') == 'no-enter') return;
+
+            $(this).parents('form').find('a').click();
+
+        }
+
+    });
+
+    // Multiple input fields on insert
+    $body.on('keyup', 'input.multiple_on_input', function(){
+
+        var key = event.keyCode || event.which;
+
+        var $this = $(this);
+        var type = $this.attr('data-type'); // Defines which group of elements this will be
+
+        var $group = $('input.multiple_on_input[data-type="'+ type +'"]');
+
+        // On character type
+        if($this.val().length > 0){
+            if($this.index() == $group.last().index()){ // If last element of group
+
+                $group.last().after( // Previous element
+                    $this.clone().val('').removeClass('tick').addClass('cross').css('display', 'none') // New element
+                ).next().fadeIn(200);
+            }
+        }
+
+
+        // On backspace
+        else if($this.index() !== $group.last().index()) {
+
+            if(key === 9) return; // Don't remove anything on tab
+
+            if($this.index() == $group.last().index() -1){ // On pre-last element in group
+
+                // Hide and remove
+                $this.next().fadeOut(200);
+                setTimeout(function(){
+                    $this.next().remove();
+                }, 200);
+
+            }
+            else { // On any element except last or pre-last in group
+
+                $this.fadeOut(200);
+                setTimeout(function(){
+                    $this.remove();
+                }, 200);
+
+            }
+        }
+
+    });
+
 }
 
 // ---------------- Other functions (called by other functions) -----------------
+
+function submit_workspace_settings(){
+
+    var workspace_id        = $('#edit_workspace_id').val();
+    var more_info_html = tinyMCE.activeEditor.getContent();
+    var ment_trends         = $('#edit_workspace_ment_trends').val();
+
+        ment_trends         = ment_trends.replace(/\n/g, '-,-');
+        ment_trends         = trim_whitespace(ment_trends);
+
+    $.post('php/update_info.php', {
+
+        workspace_id    : workspace_id,
+        more_info_html  : more_info_html,
+        ment_trends     : ment_trends
+
+    }, function(data){
+
+        load_ajax(1);
+        site_message('You have updated the workspace');
+        jQuery.mobile.changePage($('#manage_info'));
+
+    });
+
+}
+
+function workspace_settings_link_click(that){
+
+    var id = $(that).attr('data-id');
+
+    // Get workspace that we just clicked
+    var workspace = $.grep(stored_data.research_projects, function(e){
+        return e.id == id;
+    });
+    workspace = workspace[0];
+
+    // Get mentality trends
+    var ment_trends = $.grep(stored_data.mentality_trends, function(e){
+        return e.workspace_id == id;
+    });
+
+    // Setup mentality trends
+    var ment_trend_html = '';
+    for(var i=0; i<ment_trends.length; i++){
+
+        var ment_trend = ment_trends[i].name;
+
+        ment_trend_html += ment_trend +'\n';
+
+    }
+    ment_trend_html = ment_trend_html.substring(0, ment_trend_html.length - 1);
+
+    $('#edit_workspace_id')                 .val(id);
+    $('#edit_workspace_ment_trends')        .val(ment_trend_html);
+
+    if(workspace.more_info_html){
+        tinyMCE.get('edit_workspace_more_info') .setContent(workspace.more_info_html);
+    }
+
+    form_stuff(1);
+
+    jQuery.mobile.changePage($('#workspace_settings'));
+
+}
+
+function setup_countries(){
+
+    var countries = stored_data.countries;
+
+    for(var i=0; i<countries.length; i++){
+
+        var country = countries[i];
+        $('#edit_country').append('<option value="'+ country.country +'">'+ country.country +'</option>');
+
+    }
+
+}
+
+function check_date_of_birth(that){
+
+    var $el = $(that);
+
+    var id = $el.attr('id');
+
+    if(!$el.val() || typeof(parseInt($el.val())) !== 'number') return;
+
+    // DD
+    if(id == 'reg_date_of_birth_1' || id == 'edit_date_of_birth_1'){
+
+        if($el.val() > 0 && $el.val() < 32 && $el.val().length == 2){
+            $el.removeClass('cross').addClass('tick')
+        }
+        else {
+            $el.removeClass('tick').addClass('cross')
+        }
+
+    }
+
+    // MM
+    else if(id == 'reg_date_of_birth_2' || id == 'edit_date_of_birth_2'){
+
+        if($el.val() > 0 && $el.val() < 13 && $el.val().length == 2){
+            $el.removeClass('cross').addClass('tick')
+        }
+        else {
+            $el.removeClass('tick').addClass('cross')
+        }
+
+    }
+
+    // YYY
+    else if(id == 'reg_date_of_birth_3' || id == 'edit_date_of_birth_3'){
+
+        if($el.val() > 1900 && $el.val() < 2015 && $el.val().length == 4){
+            $el.removeClass('cross').addClass('tick')
+        }
+        else {
+            $el.removeClass('tick').addClass('cross')
+        }
+
+    }
+
+    setup_form_buttons();
+
+}
+
+function check_register_email(that){
+
+    var $el = $(that);
+    var val = $el.val();
+
+    $el.removeClass('tick').addClass('cross');
+
+    if(validateEmail(val)){
+        check_register_info(that, 'email');
+    }
+
+    function validateEmail(email) {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    }
+
+}
+
+function check_register_info(that, type){
+
+    $(that).removeClass('cross').addClass('loading');
+
+    clearTimeout(type_timeout);
+
+    type_timeout = setTimeout(function(){
+
+        var val     = $(that).val();
+
+        $.post('/php/check_register_info.php', {
+            type: type,
+            val: val
+        }, function(found){
+
+            if(found > 0){
+                $(that).removeClass('loading').removeClass('tick').addClass('cross');
+                site_message('The given '+ type +' is taken.');
+                setup_form_buttons();
+            }
+            else {
+                $(that).removeClass('loading').removeClass('cross').addClass('tick');
+                site_message('hide');
+                setup_form_buttons();
+            }
+
+        });
+
+    }, 600);
+
+}
+
+function show_app(){
+
+    // Opened any page other than "trend"
+    if(!(location.hash && $('#home_page').hasClass('ui-page-active'))){
+        loader('hide');
+    }
+
+    // Opened trend which is not loaded at first second
+    else {
+        jQuery.mobile.changePage( $(location.hash) );
+        setTimeout(function(){
+            loader('hide');
+        }, 200);
+    }
+
+}
 
 function if_not_home_page(){
 
@@ -451,6 +778,7 @@ function setup_workspaces(){
 
     var workspaces = stored_data.research_projects;
     var $container = $('#edit_account_workspaces');
+    var $container2 = $('#edit_trend_workspaces');
 
     if($container.html()) return; // Cancels if not setting up for the first time
 
@@ -460,6 +788,10 @@ function setup_workspaces(){
 
         $container.append(
             '<div data-id="'+ workspace.id +'">' + workspace.name + '</div>'
+        );
+
+        $container2.append(
+            '<option value="'+ workspace.id +'">'+ workspace.name +'</option>'
         );
 
     }
@@ -529,17 +861,27 @@ function view_workspace(that){
 
 }
 
-function site_message(text){
+function site_message(text, permanent){
 
     var $container = $('#site_message');
 
+    if(text == 'hide'){
+        $container.removeClass('show');
+        return;
+    }
+
     $container.text(text).addClass('show')
 
-    setTimeout(function(){
+    if(!permanent){
 
-        $container.removeClass('show')
+        clearTimeout(site_message_timeout);
+        site_message_timeout =
+            setTimeout(function(){
 
-    }, 5000);
+                $container.removeClass('show')
+
+            }, 5000);
+    }
 
 }
 
@@ -549,13 +891,13 @@ function submit_edit_info(){
     var categories  = $('#edit_info_categories')    .val();
     var ment_trends = $('#edit_info_ment_trends')   .val();
 
-    workspaces = workspaces.replace(/\n/g, ',');
+    workspaces = workspaces.replace(/\n/g, '-,-');
     workspaces = trim_whitespace(workspaces);
 
-    categories = categories.replace(/\n/g, ',');
+    categories = categories.replace(/\n/g, '-,-');
     categories = trim_whitespace(categories);
 
-    ment_trends = ment_trends.replace(/\n/g, ',');
+    ment_trends = ment_trends.replace(/\n/g, '-,-');
     ment_trends = trim_whitespace(ment_trends);
 
     $.post('php/update_info.php', {
@@ -565,7 +907,10 @@ function submit_edit_info(){
         ment_trends : ment_trends
 
     }, function(data){
-        console.log(data);
+
+        // Reload everything
+        load_ajax(1);
+
         site_message('You have updated some site extra info');
 
     });
@@ -604,9 +949,11 @@ function setup_edit_info(){
     var ment_trend_html = '';
     for(var i=0; i<ment_trends.length; i++){
 
-        var ment_trend = ment_trends[i].name;
+        var ment_trend = ment_trends[i];
 
-        ment_trend_html += ment_trend +'\n';
+        if(!ment_trend.workspace_id){
+                ment_trend_html += ment_trend.name +'\n';
+        }
 
     }
     ment_trend_html = ment_trend_html.substring(0, ment_trend_html.length - 1);
@@ -614,6 +961,15 @@ function setup_edit_info(){
     $('#edit_info_workspaces')  .val(workspace_html);
     $('#edit_info_categories')  .val(category_html);
     $('#edit_info_ment_trends') .val(ment_trend_html);
+
+    $('#workspace_settings_links').html('');
+    var workspaces = stored_data.research_projects;
+    for(var i=0; i<workspaces.length; i++){
+        var workspace = workspaces[i];
+        $('#workspace_settings_links').append(
+            '<a href="#" data-id="'+ workspace.id +'">'+ workspace.name +'</a>'
+        );
+    }
 
     form_stuff(1);
 
@@ -638,86 +994,117 @@ function delete_trend(that){
 
 }
 
-function get_tags(container) {
+// --- Get stuff ---
+    function get_multiple_inputs(els) {
 
-    var tags = '';
-    var $tags = $(container).children('span.tag');
-    var num     = $tags.length;
-    for(var i=0;i<num;i++){
+        var vals = '';
 
-        var tag = '';
-        tag = $tags.eq(i).children('span').text();
-        tag = trim_whitespace(tag);
-        tag = encodeURIComponent(tag);
-        tag = tag+',';
+        var $els = $(els);
 
-        tags += tag;
+        for(var i=0; i<$els.length; i++){
+
+            var $el = $els.eq(i);
+
+            if($el.val()){
+                vals += $el.val() +',';
+            }
+
+        }
+        vals = vals.substring(0, vals.length - 1);
+
+        return vals;
 
     }
-    tags = tags.substring(0, tags.length - 1);
 
-    return tags;
+    function get_tags(container) {
 
-}
+        var tags = '';
+        var $tags = $(container).children('span.tag');
+        var num     = $tags.length;
+        for(var i=0;i<num;i++){
 
-function get_categories(container, id) {
+            var tag = '';
+            tag = $tags.eq(i).children('span').text();
+            tag = trim_whitespace(tag);
+            tag = encodeURIComponent(tag);
+            tag = tag+',';
 
-    var categories = '';
-    var $categories = $.mobile.activePage.find(container).children('div.selected');
-    var num = $categories.length;
+            tags += tag;
 
-    for(var i=0; i<num; i++){
-
-        var $category = $categories.eq(i);
-
-        if(!id){
-            var category = $category.text();
         }
-        else {
-            var category = $category.attr('data-id');
-        }
+        tags = tags.substring(0, tags.length - 1);
 
-        category = encodeURIComponent(category);
-
-        categories += category+',';
+        return tags;
 
     }
-    categories = categories.substring(0, categories.length - 1);
 
-    return categories;
+    function get_categories(container, id) {
 
-}
+        var categories = '';
+        var $categories = $.mobile.activePage.find(container).children('div.selected');
+        var num = $categories.length;
+
+        for(var i=0; i<num; i++){
+
+            var $category = $categories.eq(i);
+
+            if(!id){
+                var category = $category.text();
+            }
+            else {
+                var category = $category.attr('data-id');
+            }
+
+            category = encodeURIComponent(category);
+
+            categories += category+',';
+
+        }
+        categories = categories.substring(0, categories.length - 1);
+
+        return categories;
+
+    }
 
 function submit_edit_trend(){
 
-    var trend_id    = $('#edit_trend_id')                       .val();
 
-    var title       = $('#edit_trend_title')                    .val();
-    var description = tinyMCE.activeEditor                      .getContent();
-    var video       = $('#edit_trend_video')                    .val();
-    var website     = $('#edit_trend_website')                  .val();
-    var location    = $('#edit_trend_location')                 .val();
+    var trend_id        = $('#edit_trend_id')                       .val();
 
-    var tags        = get_tags('#edit_trend_tagger_tagsinput');
-    var categories  = get_categories('#edit_trend_categories');
-    var ment_trend  = $('#edit_trend_ment_trends')              .val();
+    var premium         = $('#edit_trend_premium')                  .val();
+    var title           = $('#edit_trend_title')                    .val();
+    var description     = tinyMCE.activeEditor                      .getContent();
+
+    var videos          = get_multiple_inputs('.edit_trend_video');
+    var sliderocket_id  = $('#edit_trend_sliderocket_id')           .val();
+
+    var website         = $('#edit_trend_website')                  .val();
+    var location        = $('#edit_trend_location')                 .val();
+
+    var tags            = get_tags('#edit_trend_tagger_tagsinput');
+    var categories      = get_categories('#edit_trend_categories');
+    var workspace       = $('#edit_trend_workspaces')               .val();
+    var ment_trend      = $('#edit_trend_ment_trends')              .val();
 
     // Submit info
     $.post('/php/update_trend.php', {
         trend_id        : trend_id,
 
+        premium         : premium,
         title           : title,
         description     : description,
-        video           : video,
+        videos          : videos,
+        sliderocket_id  : sliderocket_id,
         website         : website,
         location        : location,
 
         tags            : tags,
         categories      : categories,
+        workspace       : workspace,
         ment_trend      : ment_trend
     },function(data){
 
-        load_ajax(); // Reloads all the ajax incl. trends
+        load_ajax(1); // Reloads all the ajax incl. trends
         $.mobile.changePage('#manage_trends', 'pop');
 
         site_message('You have edited the trend "'+ title +'"');
@@ -730,11 +1117,45 @@ function setup_mentality_trends(){
 
     var ment_trends = stored_data.mentality_trends;
     var $container1 = $('#edit_trend_ment_trends');
+    var $container2 = $('div[data-d-id="ment_trends"]');
 
     for(var i=0; i<ment_trends.length; i++){
         var ment_trend = ment_trends[i];
-        $container1.append('<option value="'+ ment_trend.name.toLowerCase() +'">'+ ment_trend.name +'</option>');
+        $container1.append('<option value="'+ ment_trend.id +'">'+ ment_trend.name +'</option>');
+
+        $container2.append(
+            '<li><a href="#" data-id="'+ ment_trend.id +'">' +
+                truncate(ment_trend.name, 20) +
+            '</a></li>'
+        );
     }
+
+    // Wraps categories in columns
+    var categories = $container2.children('li');
+    var num = categories.length;
+    var ceil = Math.ceil(num/3);
+
+    for(var i=0; i<num; i+=ceil){
+
+        categories.slice(i, i+ceil).wrapAll('<ul></ul>');
+
+    }
+
+}
+
+function send_trend(that){
+
+    $(that).attr('data-role', 'disable');
+
+    var id = $(that).parents('div[data-id]').attr('data-id');
+
+    site_message('Sending trend to wordpress environment...', 1);
+
+    $.post('php/send_to_main.php', {trend_id: id}, function(data){
+
+        site_message('Trend sent to wordpress.');
+
+    });
 
 }
 
@@ -751,13 +1172,34 @@ function setup_edit_trend(that){
     });
     trend = trend[0];
 
+    // Sets premium or public
+    $('#edit_trend_premium').val(trend.premium).change();
+
     // Sets up title & description
     $('#edit_trend_title')  .val(trend.title);
     tinyMCE.activeEditor    .setContent(trend.description);
 
-    // Sets video and website link
-    $('#edit_trend_video')  .val(trend.video);
-    $('#edit_trend_website').val(trend.website);
+    // Sets videos
+        var $container          = $('#edit_trend_videos');
+        var $container_input    = $container.children();
+        var videos              = trend.videos.split(',');
+
+        if(trend.videos){
+            for(var i=0; i<videos.length; i++){
+
+                var video = videos[i];
+                $container.append(
+                    $container_input.clone().val(video).removeClass('cross').addClass('tick')
+                );
+            }
+            $container.append($container_input); // Adds the input to the bottom of the list instead of staying up top
+        }
+
+    // Sets sliderocket id
+        $('#sliderocket_id').val(trend.sliderocket_id);
+
+    // Sets website link
+        $('#edit_trend_website').val(trend.website);
 
     // Sets tags
     var tags = trend.tags.split(',');
@@ -779,6 +1221,7 @@ function setup_edit_trend(that){
     // Sets trend_id
     $('#edit_trend_id').val(trend.id);
 
+    $('#edit_trend_workspaces').val(trend.research_project).change();
     $('#edit_trend_ment_trends').val(trend.ment_trend).change();
 
     form_stuff(1); // Refreshes form stuff
@@ -790,12 +1233,21 @@ function setup_edit_trend(that){
 
 function reset_edit_trend_form(){
 
-    $('#edit_trend_title')      .val('').removeClass('tick').addClass('cross');
-    $('#edit_trend_description').val('').removeClass('tick').addClass('cross');
-    $('#edit_trend_location')   .val('').removeClass('tick').addClass('cross');
+    $('#edit_trend_premium')                    .val('').removeClass('tick').addClass('cross');
 
-    $('#edit_trend_categories') .find('div').removeClass('selected');
-    $('#edit_trend_tagger')     .importTags('');
+    $('#edit_trend_title')                      .val('').removeClass('tick').addClass('cross');
+    tinyMCE.get('edit_trend_description')       .setContent('');
+    $('#edit_trend_location')                   .val('').removeClass('tick').addClass('cross');
+
+    $('.edit_trend_video').not(':first-child')  .remove();
+    $('.edit_trend_video')                      .val('');
+
+    $('#edit_trend_website')                    .val('').removeClass('tick').addClass('cross');
+
+    $('#edit_trend_categories')                 .find('div').removeClass('selected');
+    $('#edit_trend_tagger')                     .importTags('');
+    $('#edit_trend_workspaces')                 .val('').removeClass('tick').addClass('cross');
+    $('#edit_trend_ment_trends')                .val('').change().removeClass('tick').addClass('cross');
 
 }
 
@@ -856,7 +1308,7 @@ function submit_account_edit(){
             password        : password
         },
         success: function(data){
-console.log(data);
+
             // Reset some stuff
 
             $('#edit_password')     .val('').keyup();
@@ -895,11 +1347,11 @@ function setup_account_edit(that){
     }
 
     $('#edit_account_id')       .val(info.id);
-
-    $('#edit_account_privilage').val(info.privilage).change();
+    $('#edit_account_privilage').val(info.privilage.letter).change();
 
     // Sets workspaces
     var $container = $('#edit_account_workspaces');
+
     $container.find('.selected').removeClass('selected');
 
     if(info.project_ids){
@@ -917,7 +1369,7 @@ function setup_account_edit(that){
 
     $('#edit_email')        .val(info.email);
     $('#edit_city')         .val(info.city);
-    $('#edit_country')      .val(info.country);
+    $('#edit_country')      .val(info.country).change();
 
     $('#edit_date_of_birth_1').val(info.date_of_birth.split('-')[2]);
     $('#edit_date_of_birth_2').val(info.date_of_birth.split('-')[1]);
@@ -930,24 +1382,52 @@ function setup_account_edit(that){
 
 }
 
-function setup_accounts(){
+function setup_accounts(search_keyword){
 
     var accounts    = stored_data.accounts;
-    var $container  = $('#account_ul');
+    var $container  = $('#account_ul').find('[data-role="dynamic-data"]');
     var html        = '';
+
+    if(search_keyword){
+        search_keyword = search_keyword.toLowerCase();
+
+        accounts = $.grep(accounts, function(e){
+
+            if(!e.username) return;
+            return  e.username                          .toLowerCase().indexOf(search_keyword) > -1 ||
+                    e.first_name                        .toLowerCase().indexOf(search_keyword) > -1 ||
+                    e.last_name                         .toLowerCase().indexOf(search_keyword) > -1 ||
+                    e.email                             .toLowerCase().indexOf(search_keyword) > -1 ||
+                    e.city                              .toLowerCase().indexOf(search_keyword) > -1 ||
+                    e.country                           .toLowerCase().indexOf(search_keyword) > -1 ||
+                    e.privilage.name                    .toLowerCase().indexOf(search_keyword) > -1 ||
+                    (e.first_name +' '+ e.last_name)    .toLowerCase().indexOf(search_keyword) > -1;
+        });
+    }
 
     for(var i=0; i<accounts.length; i++){
 
         var account = accounts[i];
 
+        if(typeof(account.privilage) !== 'object'){
+            account.privilage = $.grep(stored_data.privilages, function(e){
+                return e.letter == account.privilage;
+            });
+            account.privilage = account.privilage[0];
+        }
+
         html +=
             '<li data-id="'+ account.id +'">' +
-                '<span><b>'+ ( account.username ? account.username : 'N.A.' )  + '</b></span>' +
-                '<span>'+ ( account.country ? account.country : 'N.A.' )    + '</span>' +
-                '<span>'+ ( account.email ? account.email : 'N.A.' )        + '</span>' +
+                '<span><b>'+ account.first_name +' '+ account.last_name +'</b> ('+ account.username +')</span>' +
+                '<span>'+ ( account.privilage.name ? account.privilage.name : 'N.A.' )    + '</span>' +
+                '<span>'+ account.email + '</span>' +
                 add_extra_html() +
             '</li>';
 
+    }
+
+    if(!html){
+        html = '<div class="message show">No accounts found</div>';
     }
 
     $container.html(html);
@@ -1007,28 +1487,53 @@ function setup_single_trend(id){
     // Searches the "rater" array to get the array of the current trend
     var rating = trend.rating;
 
-    if(!rating.value) rating.value = 0;
-    if(!rating.votes) rating.votes = 0;
+    if(!rating){
+        rating                  = [];
+        rating.score_cool       = 0;
+        rating.score_potential  = 0;
+        rating.votes            = 0;
+    }
 
     // Video embedding stuff
-    var embed_video = '';
-    if(trend.video){
-        console.log(trend.video);
-        if(trend.video.indexOf('youtube') > -1){
-            console.log('youtube');
-            var video_id = trend.video.split('v=')[1];
-            if(video_id){
-                embed_video = '<iframe width="100%" height="250" src="//www.youtube.com/embed/'+ video_id+ '" frameborder="0" allowfullscreen></iframe>';
+    var embed_videos = '';
+    if(trend.videos){
+
+        var videos = decodeURIComponent(trend.videos);
+        videos = videos.split(',');
+
+        for(var i=0; i<videos.length; i++){
+
+            var video = videos[i];
+
+            if(video.indexOf('youtube') > -1){
+                var video_id = video.split('v=')[1];
+                if(video_id){
+                    embed_videos += '<div><iframe width="100%" height="250" src="//www.youtube.com/embed/'+ video_id+ '" frameborder="0" allowfullscreen></iframe></div>';
+                }
             }
-        }
-        else if(trend.video.indexOf('vimeo')) {
-            console.log('vimeo');
-            var video_id = trend.video.split('.com/')[1];
-            if(video_id){
-                embed_video = '<iframe src="http://player.vimeo.com/video/'+ video_id +'" width="100%" height="250" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+            else if(video.indexOf('vimeo')) {
+                var video_id = video.split('.com/')[1];
+                if(video_id){
+                    embed_videos += '<div><iframe src="http://player.vimeo.com/video/'+ video_id +'" width="100%" height="250" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe></div>';
+                }
             }
+
         }
     }
+
+    // Sliderocket
+    var embed_sliderocket = '';
+    if(trend.sliderocket_id){
+
+        embed_sliderocket = '<iframe frameborder="0" scrolling="no" src="http://app.sliderocket.com:80/app/fullplayer.aspx?id='+ trend.sliderocket_id +'" width="100%" height="250"></iframe>';
+
+    }
+
+    // Mentality trend get
+    var ment_trend = $.grep(stored_data.mentality_trends, function(e){
+        return e.id == trend.ment_trend;
+    });
+    ment_trend = ment_trend[0];
 
     var trend_single =
         '<div data-role="content">' +
@@ -1040,17 +1545,28 @@ function setup_single_trend(id){
             '<div class="row-fluid">' +
             '<div class="span6">' +
             '<div class="image_container">' + trend_images + '</div>' +
-            '<div class="video_container">' + embed_video + '</div> ' +
+            '<div class="video_container">' + embed_videos + '</div>' +
+            '<div class="sliderocket">' + embed_sliderocket + '</div>' +
             '</div>' +
 
-            '<div class="span6">' +
+            '<div class="span6" id="trend_description">' +
 
             trend.description +
 
             '<div class="trend_rating">' +
             '<label>Rating <span><i>'+ rating.votes +'</i> votes</span></label>' +
-            '<div class="raty" data-score="'+ (rating.value / rating.votes) +'" data-votes="'+ rating.votes +'" data-users="'+ rating.user_ids +'"></div>' +
+            '<div>' +
+            '<section>' +
+            '<label>How cool is this trend?</label>' +
+            '<div class="raty" data-score="'+ (rating.score_cool / rating.votes) +'" data-votes="'+ rating.votes +'" data-users="'+ rating.user_ids +'"></div>' +
+            '</section>' +
+            '<section>' +
+            '<label>Future growth potential?</label>' +
+            '<div class="raty" data-score="'+ (rating.score_potential / rating.votes) +'" data-votes="'+ rating.votes +'" data-users="'+ rating.user_ids +'"></div>' +
+            '</section>' +
+            '</div>' +
             '<div class="message red">Thanks for rating.</div>' +
+            '<a href="#" class="button" id="raty_submit" data-role="disable">Submit rating</a>' +
             '</div>' +
 
             '<label>Tags</label>' +
@@ -1058,6 +1574,17 @@ function setup_single_trend(id){
 
             '<label>Categories</label>' +
             '<div class="tags">' + categories_html + '</div>' +
+
+            '<label>Mentality trend</label>' +
+            '<div class="tags"><div>' + ment_trend.name + '</div></div>' +
+
+            '<label>Author</label>' +
+            '<div class="trend_author_info">' +
+            '<img src="/style/images/default_profile_image.jpg" alt="Profile" id="trend_author_image" />' +
+            '<div id="trend_author_name"><span class="label">Name:</span> <span class="info">John Doe</span></div>' +
+            '<div id="trend_author_location"><span class="label">Location:</span> <span class="info">Jamaicanana</span></div>' +
+            '<div id="trend_author_num_articles"><span class="label"># articles:</span> <span class="info">56</span></div>' +
+            '</div>' +
 
             '</div>' +
             '</div>' +
@@ -1069,6 +1596,30 @@ function setup_single_trend(id){
             '</div>';
 
     $('#view_trend').html(trend_single);
+
+    // Make links in description open in new window
+    $('#trend_description').find('a').attr('target', '_blank');
+
+    // Load trend author info
+    $.post('../php/get_account_info.php', {
+        user_id: trend.user_id
+    }, function(data){
+
+        var author = data;
+
+        var trends_by_author = $.grep(stored_data.trends, function(e){
+            return e.user_id == author.id;
+        });
+
+        if(author.profile_image){
+            $('#trend_author_image')        .attr('src', '/images/'+ author.profile_image);
+        }
+
+        $('#trend_author_name')         .find('.info').text(author.first_name +' '+ author.last_name);
+        $('#trend_author_location')     .find('.info').text(author.city +', '+ author.country);
+        $('#trend_author_num_articles') .find('.info').text(trends_by_author.length);
+
+    }, 'JSON');
 
     // Setup plugins
     setup_comments();
@@ -1103,24 +1654,43 @@ function setup_single_trend(id){
                 id:             stored_data.user_info.id, // Gotten from global object of "user_info", created when logged in
                 username:       stored_data.user_info.username,
                 image:          stored_data.user_info.profile_image
+            },
+            onsubmit: function(){
+                load_ajax('reload'); // Reloads the ajax, so that if the same trend will be opened without refresh that it gets the new comment
             }
         });
     }
     function setup_raty() {
         $('.raty').raty({
-            path        : '/style/images/',
-            starOn      : 'raty_star_on.png',
-            starOff     : 'raty_star_off.png',
-            starHalf    : 'raty_star_half.png',
+            path        : '/style/images/icons/',
+            starOn      : 'star_red.png',
+            starOff     : 'star_grey.png',
+            starHalf    : 'star_half.png',
+            number      : 10,
             halfShow    : true,
-            size        : 22,
+            size        : 17,
             hints       : ['bad', 'poor', 'regular', 'good', 'amazing'],
+            click       : function() {
+
+                var $container = $('.trend_rating');
+                var $raty_cool      = $container.find('.raty').eq(0);
+                var $raty_potential = $container.find('.raty').eq(1);
+
+                var score_cool      = $raty_cool.find('input[name="score"]').val();
+                var score_potential = $raty_potential.find('input[name="score"]').val();
+
+                if(score_cool && score_potential){
+                    enable_link('#raty_submit');
+                }
+
+            },
             readOnly    : function() {
                 var user_ids = $(this).attr('data-users');
                 user_ids = user_ids.split(',');
 
                 if(user_ids.indexOf(stored_data.user_info.id) != -1) { // Check if the currently logged in user id is contained in the "rated" people section
-                    $(this).parent().find('.message').text('You have already rated.').addClass('show');
+                    $(this).parents('.trend_rating').find('.message').text('You have already rated.').addClass('show');
+                    $(this).parents('.trend_rating').find('a.button').hide(0);
                     return true;
                 }
                 else {
@@ -1129,35 +1699,48 @@ function setup_single_trend(id){
             },
             score       : function() {
                 return $(this).attr('data-score');
-            },
-            click       : function(num) {
-
-                $.post('../php/submit_rating.php', {
-                    trend_id    : id,
-                    user_id     : stored_data.user_info.id,
-                    rating      : num
-                }, function(){
-
-                    // Rating complete
-                    var $raty_container = $('.ui-page-active').find('.trend_rating');
-                    var $raty           = $raty_container.find('.raty')
-
-                    var score           = $raty.attr('data-score') !== 'NaN' ? $raty.attr('data-score') : 0;
-                    var votes           = $raty.attr('data-votes');
-
-                    var new_votes       = parseInt(votes) + 1;
-                    var new_score       = ( score * votes + num ) / new_votes;
-
-                    $raty // Update score and make readonly
-                        .raty('score', new_score)
-                        .raty('readOnly', true);
-
-                    $raty_container.find('label').find('i').text(new_votes); // Change the number of votes dynamically
-                    $raty_container.find('.message').addClass('show'); // Show message
-
-                });
             }
         });
+
+        var $container = $('.trend_rating');
+        $container.find('a.button').click(function(){
+
+            var $raty_cool      = $container.find('.raty').eq(0);
+            var $raty_potential = $container.find('.raty').eq(1);
+
+            var score_cool      = $raty_cool.find('input[name="score"]').val();
+            var score_potential = $raty_potential.find('input[name="score"]').val();
+
+            if(!score_cool || !score_potential){
+                site_message('You must give both ratings to submit.');
+                return;
+            }
+
+            $.post('../php/submit_rating.php', {
+                trend_id        : id,
+                user_id         : stored_data.user_info.id,
+                score_cool      : score_cool,
+                score_potential : score_potential
+            }, function(data){
+
+                $raty_cool
+                    .raty('score', data.score_cool)
+                    .raty('readOnly', true);
+
+                $raty_potential
+                    .raty('score', data.score_potential)
+                    .raty('readOnly', true);
+
+                $container.children('label').find('i').text(data.votes); // Change the number of votes dynamically
+                $container.find('a.button').hide(0);
+                $container.find('.message').addClass('show'); // Show message
+
+                load_ajax('reload');
+
+            }, 'JSON');
+
+        });
+
     }
 
     // ----------------------------------
@@ -1205,10 +1788,17 @@ function setup_categories(){
 
 function click_filter_by_button(that){
 
+    if($(window).width() > 769){
+        var window_type = 'desktop';
+    }
+    else {
+        var window_type = 'mobile';
+    }
+
     var type                    = $(that).parents('div').attr('data-d-id');
     var $container              = $('#trend_container');
 
-    if(type == 'category'){
+    if(type == 'category' || type == 'ment_trends'){
         $container.find('[data-id]').show(0);
         $container.masonry('layout');
     }
@@ -1316,12 +1906,34 @@ function click_filter_by_button(that){
         $container.html($els);
 
     }
+    else if(type == 'ment_trends'){
+
+        var attr = '';
+
+        var ment_trend_id = $(that).parents('div[data-d-id]').find('a.active').attr('data-id');
+
+        if(ment_trend_id){
+            var attr = '[data-ment-trend='+ ment_trend_id +']';
+            var $els = $container.find('div[data-ment-trend]:not('+ attr +')');
+            if($els){
+                $els.hide(0);
+            }
+        }
+
+        $container.masonry('layout');
+
+    }
 
     if(type !== 'category'){
         $container.masonry({
-            columnWidth: 75.5,
-            isFitWidth: true
+            columnWidth: 75.5
         });
+    }
+
+    // Mobile - Hide filters on click
+    if(window_type == 'mobile') {
+        $('a[data-d-id="'+ type +'"]').removeClass('selected')
+        $('div[data-d-id="'+ type +'"]').removeClass('selected');
     }
 
 }
@@ -1388,7 +2000,7 @@ function submit_login(){
     check_login(1);
 }
 
-function load_ajax(not_first_time){
+function load_ajax(not_first_time, new_login){
 
     $.post('/php/get_info.php', function(data){
 
@@ -1400,7 +2012,7 @@ function load_ajax(not_first_time){
             // Store the data in a constant
             $.extend(stored_data, data);
 
-            add_ajax(not_first_time); // Calls load_rest after
+            add_ajax(not_first_time, new_login); // Calls load_rest after
 
         }, 'JSON');
 
@@ -1408,19 +2020,24 @@ function load_ajax(not_first_time){
 
 }
 
-function add_ajax(not_first_time){
+function add_ajax(not_first_time, new_login){
 
+    // Sets up every time
     setup_trend_view();
     setup_workspace_view();
-    setup_categories();
     setup_accounts();
-    setup_mentality_trends();
-    setup_workspaces();
     setup_edit_info();
-    setup_privilages();
 
+    // Sets up only once
     if(!not_first_time){
-        load_rest();
+        setup_categories();
+        setup_mentality_trends();
+        setup_workspaces();
+        setup_edit_info();
+        setup_privilages();
+        setup_countries();
+
+        load_rest(new_login);
     }
 
 }
@@ -1431,6 +2048,14 @@ function setup_account_stuff(){
 
     // Setup username (settings panel)
     $('#account_username').text(stored_data.user_info.username);
+
+    // Adds extra button if Super Admin
+        if(stored_data.user_info.privilage == 'f'){
+            $('#settings_manage_info').show(0);
+        }
+        else {
+            $('#settings_manage_info').remove();
+        }
 
     // Setup profile picture (settings panel)
     var img_src = '/images/'+stored_data.user_info.profile_image;
@@ -1448,13 +2073,18 @@ function setup_workspace_view(){
     var html = '';
 
     // Append workspaces
+    html +=
+        '<a href="#" data-id="0"  data-transition="slide" class="button no_image">' +
+            '<span>1.</span> Open projects'
+        '</a>';
+
     for(var i=0; i<workspaces.length; i++){
 
         var workspace = workspaces[i];
 
         html +=
-            '<a href="#" data-id="'+ workspace.id +'"  data-transition="slide" class="tag">' +
-                '<span>'+ (i+1) +'.</span> '+ workspace.name +
+            '<a href="#" data-id="'+ workspace.id +'"  data-transition="slide" class="button no_image">' +
+                '<span>'+ (i+2) +'.</span> '+ workspace.name +
             '</a>';
 
     }
@@ -1486,25 +2116,27 @@ function setup_trend_view(){
 
         var trend = trends[i];
 
-        trend.link_title = '/#view_trend?id='+ trend.id +'&title='+ trend.title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-')
+        if(trend.title){
+            trend.link_title = '/#view_trend?id='+ trend.id +'&title='+ trend.title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-')
 
-        if(trend.rating.votes){
-            var rating = trend.rating.value / trend.rating.votes;
-        }
-        else {
-            var rating = 0;
-        }
+            if(trend.rating){
+                var rating = (trend.rating.score_cool + trend.rating.score_potential) / 2 / trend.rating.votes;
+            }
+            else {
+                var rating = 0;
+            }
 
-        trend_html +=
-            '<div data-id="'+ trend.id +'" data-categories="'+ trend.categories +'" data-workspace="'+ trend.research_project +'" data-num-comments="'+ trend.num_comments +'" data-rating="'+ rating +'" data-views="'+ (trend.views ? trend.views : 0) +'">' +
-                '<a href="'+ trend.link_title +'" class="trend_link">' +
-                    '<div class="image_container">' +
-                    '   <img src="/images/'+ trend.images.split(',')[0] +'" alt="research project image">' +
-                    '</div>' +
-                    '<span>'+ truncate(trend.title, 30) + '</span>' +
-                '</a>' +
-                add_extra_html() +
-            '</div>';
+            trend_html +=
+                '<div data-id="'+ trend.id +'" data-categories="'+ trend.categories +'" data-workspace="'+ trend.research_project +'" data-num-comments="'+ trend.num_comments +'" data-rating="'+ rating +'" data-views="'+ (trend.views ? trend.views : 0) +'" data-ment-trend="'+ trend.ment_trend +'">' +
+                    '<a href="'+ trend.link_title +'" class="trend_link">' +
+                        '<div class="image_container">' +
+                        '   <img src="/images/'+ trend.images.split(',')[0] +'" alt="research project image">' +
+                        '</div>' +
+                        '<span>'+ (trend.premium > 0 ? '<p></p>' : '') + truncate(trend.title, 25) + (trend.on_main > 0 ? '<b></b>' : '') +'</span>' +
+                    '</a>' +
+                    add_extra_html(trend.on_main) +
+                '</div>';
+        }
 
     }
     if(!trends.length){
@@ -1520,11 +2152,12 @@ function setup_trend_view(){
     // -----------------------------
 
     // Adds the delete & remove button
-    function add_extra_html() {
+    function add_extra_html(on_main) {
 
         var html =
             '<div class="extra">' +
                 '<a href="#" class="button no_image edit">Edit</a>' +
+                '<a href="#" class="button no_image" '+ (on_main > 0 ? ' data-role="disable"' : '') +'>Send to main</a>' +
                 '<a href="#" class="button red no_image delete">Delete</a>' +
             '</div>';
 
@@ -1552,7 +2185,7 @@ function setup_form_buttons(){
 
         $('#edit_email')            .hasClass('tick') &&
         $('#edit_city')             .hasClass('tick') &&
-        $('#edit_country')          .hasClass('tick') &&
+        $('#edit_country').parent() .hasClass('tick') &&
 
         $('#edit_date_of_birth_1')  .hasClass('tick') &&
         $('#edit_date_of_birth_2')  .hasClass('tick') &&
@@ -1580,8 +2213,6 @@ function setup_form_buttons(){
     if(
         $('#edit_trend_title')           .hasClass('tick') &&
         tinyMCE.activeEditor             .getContent()     &&
-        $('#edit_trend_video')           .hasClass('tick') &&
-        $('#edit_trend_website')         .hasClass('tick') &&
         $('#edit_trend_location')        .hasClass('tick')
     ){
         enable_link('#edit_trend_2_button');
@@ -1602,7 +2233,7 @@ function setup_form_buttons(){
     }
 
     if(
-        $('#edit_info_workspaces').hasClass('tick') &&
+        $('#edit_info_workspaces')  .hasClass('tick') &&
         $('#edit_info_categories')  .hasClass('tick') &&
         $('#edit_info_ment_trends') .hasClass('tick')
     ){
@@ -1616,7 +2247,19 @@ function setup_form_buttons(){
 
 function loader(type){
 
-    type == 'hide' ? $('#page_loading').fadeOut(200) : $('#page_loading').fadeIn(200);
+    if(type == 'hide'){
+        $header                      .fadeIn(200);
+        $footer                      .fadeIn(200);
+
+        $('#page_loading')           .fadeOut(200);
+    }
+
+    if(type == 'show') {
+        $header                      .fadeOut(200);
+        $footer                      .fadeOut(200);
+
+        $('#page_loading')           .fadeIn(200);
+    }
 
 }
 
@@ -1647,6 +2290,9 @@ function global_page_functions(first_load){
         if(!logged_in){
             $.mobile.changePage('/iadmin/', 'pop');
         }
+        else if(stored_data.user_info.privilage !== 'e' && stored_data.user_info.privilage !== 'f'){
+            $.mobile.changePage('/iadmin/', 'pop');
+        }
 
     }
 
@@ -1654,12 +2300,13 @@ function global_page_functions(first_load){
 
         if(not_first_page_load){
 
+            if($('#trend_container').attr('style')){
+                $('#trend_container').masonry('destroy');
+            }
+
             setTimeout(function(){
-                $('#trend_container')
-                    .masonry('destroy')
-                    .masonry({
-                    columnWidth: 75.5,
-                    isFitWidth: true
+                $('#trend_container').masonry({
+                    columnWidth: 75.5
                 });
             }, 200);
 
@@ -1668,12 +2315,17 @@ function global_page_functions(first_load){
     }
 
     if(if_not_home_page()){
+        console.log('not home page');
         $('#back_icon').show(0);
         $('#menu_icon').hide(0);
     }
     else {
+        console.log('home page');
         $('#back_icon').hide(0);
-        $('#menu_icon').show(0);
+
+        if(logged_in){
+            $('#menu_icon').show(0);
+        }
     }
 
     if(!not_first_page_load) not_first_page_load = 1;

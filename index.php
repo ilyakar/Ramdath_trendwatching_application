@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <title></title>
     <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
 	<link rel="stylesheet" href="style/main.css">
 
     <!-- Fancybox stuff -->
@@ -22,6 +23,8 @@
 </div>
 
 <div id="site_message">This is a site message</div>
+
+<div id="add_to_homescreen">Add to homescreen</div>
 
 <header id="main_header">
 	<a href="#" class="icon" id="menu_icon"></a>
@@ -68,7 +71,6 @@
 		<div class="container">
             <div class="subcontainer">
                 <form>
-                    <div class="message">Invalid username or password</div>
                     <input type="text" id="login_username" placeholder="username" />
                     <input type="password" id="login_password" placeholder="password" />
                     <a href="#" class="button no_image red" data-role="disable" id="submit_login">Login</a>
@@ -92,7 +94,7 @@
                     <label>General information</label>
                     <input type="text" id="reg_first_name" placeholder="first name" />
                     <input type="text" id="reg_last_name" placeholder="last name" />
-                    <input type="text" id="reg_username" placeholder="username" />
+                    <input type="text" id="reg_username" placeholder="username" data-form="no-tick" />
                     <select class="custom_select" id="reg_gender">
                         <option value="" disabled="disabled" selected="selected">Gender</option>
                         <option value="male">Male</option>
@@ -116,9 +118,11 @@
             <div class="subcontainer">
                 <form>
                     <label>Extra information</label>
-                    <input type="text" id="reg_email" placeholder="email" />
+                    <input type="text" id="reg_email" placeholder="email" data-form="no-tick" />
                     <input type="text" id="reg_city" placeholder="city" />
-                    <input type="text" id="reg_country" placeholder="country" />
+                    <select id="reg_country" />
+                        <option value="" disabled="disabled" selected="selected">country</option>
+                    </select>
                     <a class="button no_image red" id="register_3_button" data-role="disable" data-transition="slide" href="#register_3">Next</a>
                 </form>
             </div>
@@ -134,9 +138,12 @@
                 <form>
                     <label>Date of birth</label>
                     <fieldset class="date_of_birth">
-                        <input type="text" id="reg_date_of_birth_1" maxlength="2" placeholder="DD" />
-                        <input type="text" id="reg_date_of_birth_2" maxlength="2" placeholder="MM" />
-                        <input type="text" id="reg_date_of_birth_3" maxlength="4" placeholder="YYYY" />
+                        <input type="text" id="reg_date_of_birth_1" maxlength="2" placeholder="DD" data-form="no-tick" />
+                        <input type="text" id="reg_date_of_birth_2" maxlength="2" placeholder="MM" data-form="no-tick" />
+                        <input type="text" id="reg_date_of_birth_3" maxlength="4" placeholder="YYYY" data-form="no-tick" />
+                    </fieldset>
+                    <fieldset class="checkbox">
+                        <input type="checkbox" id="reg_terms_of_service"><span>I agree and accept the </span><a href="#terms_of_service" data-transition="slide">Terms of Service</a>.
                     </fieldset>
                     <a class="button no_image red" id="submit_registration_button" data-role="disable" data-transition="slide" href="#">Complete registration</a>
                 </form>
@@ -145,6 +152,28 @@
     </div>
 </div>
 <!--/Register-->
+
+<!--Terms of Service -->
+<div data-role="page" id="terms_of_service" data-title="Terms of service">
+
+    <div data-role="content">
+        <div class="container">
+            <b>Legal Notices</b>
+
+            <p>We, the Operators of this Website, provide it as a public service to our users.</p>
+
+            <p>Please carefully review the following basic rules that govern your use of the Website. Please note that your use of the Website constitutes your unconditional agreement to follow and be bound by these Terms and Conditions of Use. If you (the "User") do not agree to them, do not use the Website, provide any materials to the Website or download any materials from them.</p>
+
+            <p>The Operators reserve the right to update or modify these Terms and Conditions at any time without prior notice to User. Your use of the Website following any such change constitutes your unconditional agreement to follow and be bound by these Terms and Conditions as changed. For this reason, we encourage you to review these Terms and Conditions of Use whenever you use the Website.</p>
+
+            <p>These Terms and Conditions of Use apply to the use of the Website and do not extend to any linked third party sites. These Terms and Conditions and our Privacy Policy, which are hereby incorporated by reference, contain the entire agreement (the “Agreement”) between you and the Operators with respect to the Website. Any rights not expressly granted herein are reserved.</p>
+        </div>
+    </div>
+
+</div>
+<!--/Terms of Service-->
+
+
 
 <!--Edit account-->
 <div data-role="page" id="edit_account" data-title="Editing your account">
@@ -157,7 +186,9 @@
                     <label>Profile image</label>
                     <div class="thumbnail_upload">
                         <input type="file" id="edit_profile_image" name="profile_image" />
-                        <img id="edit_profile_image_thumbnail" src="/style/images/default_profile_image.jpg" />
+                        <div>
+                            <img id="edit_profile_image_thumbnail" src="/style/images/default_profile_image.jpg" />
+                        </div>
                         <span>Click to edit</span>
                     </div>
 
@@ -172,15 +203,17 @@
                     </select>
 
                     <label>Extra information</label>
-                    <input type="text" id="edit_email" placeholder="email" />
+                    <input type="text" id="edit_email" placeholder="email" data-form="no-tick" />
                     <input type="text" id="edit_city" placeholder="city" />
-                    <input type="text" id="edit_country" placeholder="country" />
+                    <select id="edit_country" />
+                        <option value="" disabled="disabled" selected="selected">country</option>
+                    </select>
 
                     <label>Date of birth</label>
                     <fieldset class="date_of_birth">
-                        <input type="text" id="edit_date_of_birth_1" maxlength="2" placeholder="DD" />
-                        <input type="text" id="edit_date_of_birth_2" maxlength="2" placeholder="MM" />
-                        <input type="text" id="edit_date_of_birth_3" maxlength="4" placeholder="YYYY" />
+                        <input type="text" id="edit_date_of_birth_1" maxlength="2" placeholder="DD" data-form="no-tick" />
+                        <input type="text" id="edit_date_of_birth_2" maxlength="2" placeholder="MM" data-form="no-tick" />
+                        <input type="text" id="edit_date_of_birth_3" maxlength="4" placeholder="YYYY" data-form="no-tick" />
                     </fieldset>
 
                     <label>Change password</label>
@@ -218,10 +251,28 @@
 		<div class="container">
 
             <div class="subcontainer">
+
+                <!-- Desktop ver -->
                 <form action="/php/upload_images.php" class="dropzone" id="image-upload-dropzone"></form>
                 <input id="uploaded_images_field" type="hidden" />
+                <!----------------->
+
+                <!-- Mobile ver -->
+                <div class="center">
+                    <div id="mobile_trend_images_upload">
+                        <form method="post" enctype="multipart/form-data">
+                            <span>Add image</span>
+                            <img src="" />
+                            <input type="file" name="file" />
+                            <a href="#">Remove image</a>
+                        </form>
+                    </div>
+                </div>
+                <!---------------->
+
                 <a href="#" class="button no_image two" data-rel="back">Back</a>
                 <a href="#new_trend_2" class="button no_image red two" data-transition="slide" data-role="disable" id="new_trend_2_button">Step 2</a>
+
             </div>
 
 		</div>
@@ -237,12 +288,19 @@
                     <label>Title</label>
                     <input type="text" placeholder="title" id="new_trend_title" />
                     <label>Description</label>
-                    <textarea id="new_trend_description" placeholder="description"></textarea>
-                    <label>Video link <span>Youtube or Vimeo</span></label>
-                    <input type="text" placeholder="http://" id="new_trend_video" />
+                    <textarea id="new_trend_description" placeholder="description">
+                        <p><b>What it is</b></p>
+                        <p>-</p>
+                        <p><b>Why it is Cool</b></p>
+                        <p>-</p>
+                        <p><b>Why it has Future Growth Potential.</b></p>
+                        <p>-</p>
+                    </textarea>
+                    <label>Video link(s) <span>Youtube or Vimeo</span></label>
+                    <input type="text" placeholder="http://" class="new_trend_video multiple_on_input" data-type="new_trend_video" />
                     <label>Website link</label>
                     <input type="text" placeholder="http://" id="new_trend_website" />
-                    <label>Trend location</label>
+                    <label>Spotted where</label>
                     <input type="text" id="new_trend_location" placeholder="trend location" />
                 </form>
                 <a href="#" class="button no_image two" data-rel="back">Back</a>
@@ -266,6 +324,10 @@
                     <label>Workspace</label>
                     <select class="custom_select" id="new_trend_workspaces">
                         <option value="" disabled="disabled" selected="selected">Workspace</option>
+                        <option value="" disabled="disabled">------------</option>
+                        <option value="-1">Drafts</option>
+                        <option value="" disabled="disabled">------------</option>
+                        <option value="0">Open workspace</option>
                     </select>
                     <label>Mentality trend</label>
                     <select class="custom_select" id="new_trend_ment_trends">
@@ -284,7 +346,10 @@
 
     <div data-role="content">
         <div class="container">
-            <div class="subcontainer research_projects"></div>
+            <div class="subcontainer research_projects">
+                <a href="#view_project?type=drafts" data-transition="slide" class="button no_image red"><span class="blank"></span>Drafts</a>
+                <a href="#view_project?type=open_projects" data-transition="slide" class="button no_image"><span>1.</span>Open projects</a>
+            </div>
         </div>
     </div>
 
@@ -302,7 +367,7 @@
             <div class="mini_dropdown_surrounder clearfix">
                 <div id="workspace_filter_by" class="mini_dropdown_container static">
                     <section id="filter_by">
-                        <label>Filter posts by:</label>
+                        <label>Filter by:</label>
                         <a href="#" data-d-id="category">Category</a>
                         <div data-d-id="category"></div>
 
@@ -330,16 +395,26 @@
                         </div>
                     </section>
                 </div>
+                <a href="#" id="workspace_extra_info_button" class="button red">Extra info</a>
             </div>
+        </div>
+        <div id="trend_container" class="container"></div>
+        <div id="trend_container_copy"></div>
+    </div>
 
-            <div id="trend_container"></div>
-            <div id="trend_container_copy"></div>
+</div>
 
+<div data-role="page" id="workspace_extra_info" data-title="Extra workspace info">
+
+    <div data-role="content">
+        <div class="container margin">
+            <div class="subcontainer big"></div>
         </div>
     </div>
 
 </div>
-<div data-role="page" id="edit_trend_1" data-title="Edit trend | step 1">
+
+<div data-role="page" id="edit_trend_1" data-title="Edit sign | step 1">
 
     <div data-role="content">
         <div class="container margin">
@@ -349,8 +424,10 @@
                     <input type="text" placeholder="title" id="edit_trend_title" />
                     <label>Description</label>
                     <textarea id="edit_trend_description" placeholder="description"></textarea>
-                    <label>Video link <span>Youtube or Vimeo</span></label>
-                    <input type="text" placeholder="http://" id="edit_trend_video" />
+                    <label>Video link(s) <span>Youtube or Vimeo</span></label>
+                    <span id="edit_trend_videos">
+                        <input type="text" placeholder="http://" class="edit_trend_video multiple_on_input" data-type="edit_trend_video" />
+                    </span>
                     <label>Website link</label>
                     <input type="text" placeholder="http://" id="edit_trend_website" />
                     <label>Trend location</label>
@@ -364,7 +441,7 @@
 
 </div>
 
-<div data-role="page" id="edit_trend_2" data-title="Edit trend | step 2">
+<div data-role="page" id="edit_trend_2" data-title="Edit sign | step 2">
 
     <div data-role="content">
         <div class="container margin">
@@ -377,6 +454,10 @@
                     <label>Workspace</label>
                     <select class="custom_select" id="edit_trend_workspaces">
                         <option value="" disabled="disabled" selected="selected">Workspace</option>
+                        <option value="" disabled="disabled">------------</option>
+                        <option value="-1">Drafts</option>
+                        <option value="" disabled="disabled">------------</option>
+                        <option value="0">Open workspace</option>
                     </select>
                     <label>Mentality trend</label>
                     <select class="custom_select" id="edit_trend_ment_trends">
@@ -398,13 +479,19 @@
 <div data-role="page" id="explore" data-title="EXPLORE">
 
     <div data-role="content">
+        <form class="search_field" id="explore_search">
+            <input type="search" placeholder="Search signs..." />
+            <input type="submit" value="" />
+        </form>
         <div id="explore_filter_by" class="mini_dropdown_container">
             <section>
-                <label>Filter posts by:</label>
-                <a href="#" data-d-id="category">Category</a>
+                <div class="contain">
+                    <label>Filter by:</label>
+                    <a href="#" data-d-id="category">Category</a>
+                    <a href="#" data-d-id="popularity">Popularity</a>
+                    <a href="#" data-d-id="date">Date</a>
+                </div>
                 <div data-d-id="category"></div>
-
-                <a href="#" data-d-id="popularity">Popularity</a>
                 <div data-d-id="popularity">
                     <ul>
                         <li><a href="#">Views</a></li>
@@ -416,8 +503,6 @@
                         <li><a href="#">Discussions</a></li>
                     </ul>
                 </div>
-
-                <a href="#" data-d-id="date">Date</a>
                 <div data-d-id="date">
                     <ul>
                         <li><a href="#">Latest first</a></li>
@@ -428,9 +513,7 @@
                 </div>
             </section>
         </div>
-        <div id="image_list">
-            <!-- Dynamically created -->
-        </div>
+        <div id="image_list"></div>
         <div id="image_list_copy"></div>
     </div>
 
@@ -446,7 +529,22 @@
 <div data-role="page" id="about" data-title="ABOUT">
     <div data-role="content">
         <div class="container margin">
-            <p>About page...</p>
+            <p><b>Signs & Seeds Sign</b><br>
+            <i>“Something that suggests the presence or existence of a fact, condition, or quality.”</i>
+
+            <p>Great that you’re using Signs & Seeds!</p>
+
+            <p>This app is designed to help you document, analyze and interpret the signs that exist all around you. This app can also help you plant and harvest seeds. From collecting Signs of Cool to creating Science of Cool.</p>
+
+            <p>There are loads of places on the web where you can find the newest hypes. We distance ourselves from that. Hypes are interesting, but superficial. We are looking for the true meaning behind the things we find.</p>
+
+            <p>Collect your signs of Cool, plant your seeds. Make Science of Cool happen.</p>
+
+            <p>Science of the Time</p>
+
+            <p>Signs & Seeds is powered by the Science of the Time network. Learn what we and our network can do for you and your company. <a href="#">Link?</a></p>
+
+            <p>New to the field of trend research? Here are the ten basics <a href="#explore" data-transition="slide"></a></p>
         </div>
     </div>
 </div>
@@ -470,10 +568,14 @@
         <div><img src="/style/images/default_profile_image.jpg" id="account_profile" alt="profile_pic"></div>
         <a href="#edit_account" data-transition="slide"><span id="account_username">John Doe</span> <span class="small">(edit)</span></a>
     </div>
-<!--    <div>-->
-<!--        <div></div>-->
-<!--        <a href="#">Settings</a>-->
-<!--    </div>-->
+    <div class="research_projects_settings_button">
+        <div><img src="/style/images/icons/folder_icon.png" /></div>
+        <a href="#research_projects" id="research_projects_button" data-transition="slide">Research projects</a>
+    </div>
+    <div class="drafts_settings_button">
+        <div><img src="/style/images/icons/folder_icon.png" /></div>
+        <a href="#view_project?type=drafts" id="drafts_button" data-transition="slide">Drafts</a>
+    </div>
     <div>
         <div><img src="/style/images/settings_panel/logout_icon.png" /></div>
         <a href="#" id="logout_button">Logout</a>
@@ -493,13 +595,13 @@
     }(document));
 </script>
 <script src="js/jquery_latest.js"></script>
-<script src="js/all.js"></script>
 <script src="js/jquery_mobile.js"></script>
 <script src="js/jquery_cookie.js"></script>
 <script src="js/dropzone.js"></script>
 <script src="js/custom_select.js"></script>
 <script src="js/jquery_tags.js"></script>
 <script src="js/jquery_mousewheel.js"></script>
+<script src="js/jquery_kinetic.js"></script>
 <script src="js/jquery_smoothDivScroll.js"></script>
 <script src="js/jquery_easing.js"></script>
 <script src="js/jquery_raty.js"></script>
@@ -512,6 +614,7 @@
 <script src="js/tinymce/tinymce.min.js"></script>
 <script src="js/masonry.js"></script>
 <script src="https://maps.google.com/maps/api/js?sensor=false"></script>
+<script src="js/all.js"></script>
 
 <!-- Fancybox stuff -->
 <script type="text/javascript" src="/fancybox/jquery.fancybox.pack.js?v=2.1.5"></script>
